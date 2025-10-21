@@ -1,0 +1,6 @@
+[
+  { "id": "k1", "label": "SLA", "valor": 0.97, "meta": 0.95 },
+  { "id": "k2", "label": "MTTR", "valor": 3.4, "meta": 4.0 },
+  { "id": "k3", "label": "Taxa de Incidentes", "valor": 0.12, "meta": 0.2 }
+]
+

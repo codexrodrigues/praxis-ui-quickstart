@@ -1,0 +1,41 @@
+<mat-sidenav-container class="app-container">
+  <!-- Navegação principal -->
+  <mat-sidenav mode="side" opened class="app-sidenav glass-panel">
+    <div class="brand">
+      <span class="logo">🌀</span>
+      <strong>Praxis UI</strong>
+    </div>
+    <mat-nav-list>
+      <ng-container *ngFor="let group of groups">
+        <h3 matSubheader>{{ group.label }}</h3>
+        <a mat-list-item *ngFor="let item of group.items" [routerLink]="item.link" routerLinkActive="active">
+          <mat-icon aria-hidden="true">{{ item.icon }}</mat-icon>
+          <span>{{ item.label }}</span>
+        </a>
+        <mat-divider></mat-divider>
+      </ng-container>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <!-- Side-sheet contextual (rota auxiliar) -->
+  <mat-sidenav class="aside" position="end" mode="over" [opened]="(isAsideActive$ | async) ?? false" (closedStart)="closeAside()">
+    <router-outlet name="aside"></router-outlet>
+  </mat-sidenav>
+
+  <!-- Conteúdo principal -->
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" class="glass-panel">
+      <span>Praxis UI Quickstart</span>
+      <span class="spacer"></span>
+      <a mat-button routerLink="/operacoes/resumo">Início</a>
+      <a mat-button routerLink="/compliance/indicadores">Dashboard</a>
+      <button mat-stroked-button color="primary" (click)="onLogout()">
+        Sair
+      </button>
+    </mat-toolbar>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

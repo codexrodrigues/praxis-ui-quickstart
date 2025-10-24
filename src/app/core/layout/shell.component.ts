@@ -1,4 +1,4 @@
-import { AsyncPipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe, NgFor } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { filter, map, startWith } from 'rxjs/operators';
@@ -22,8 +22,6 @@ type NavGroup = { label: string; items: NavItem[] };
     RouterLink,
     RouterLinkActive,
     NgFor,
-    NgIf,
-    NgClass,
     AsyncPipe,
     MatToolbarModule,
     MatSidenavModule,

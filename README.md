@@ -17,17 +17,20 @@ Aplicação de demonstração oficial para o framework Praxis UI.
    ```bash
    npm install
    ```
-2. (Opcional) Ajuste o proxy se a API estiver em outra porta/host: `proxy.conf.json`.
+2. (Opcional) Ajuste o proxy se a API estiver em outra porta/host: `proxy.conf.js`.
+   - Sobrescreva o alvo: `PAX_PROXY_TARGET=http://127.0.0.1:8088 npm start`
+   - Liga debug do proxy: `PROXY_LOG_LEVEL=debug npm start`
+   - Em WSL, o proxy tenta descobrir o IP do host (lê `/etc/resolv.conf`).
 3. Inicie o backend (Praxis API Quickstart):
    - Abra o projeto em `/mnt/d/Developer/praxis-api-quickstart`
-   - Rode via IDE ou `./mvnw spring-boot:run` (porta padrão 8080)
+   - Rode via IDE ou `./mvnw spring-boot:run` (porta padrão 8088)
 4. Inicie o frontend:
    ```bash
    npm start
    ```
    Acesse: http://localhost:4200
 
-O projeto usa proxy para `/api` → `http://localhost:8080` (veja `proxy.conf.json`).
+O projeto usa proxy para `/api` → `http://localhost:8088` (veja `proxy.conf.js`).
 
 ## Variáveis necessárias (Backend)
 O projeto de backend (Praxis API Quickstart) utiliza as variáveis abaixo (todas com defaults em `application.properties`). Ajuste conforme o ambiente de deploy:
@@ -107,6 +110,8 @@ Isso mantém a rota principal visível e abre a folha lateral (side-sheet) com o
 Endpoints esperados (exemplos):
 - `GET /api/human-resources/habilidades`, `GET /api/human-resources/ameacas`, `GET /api/human-resources/vw-indicadores-incidentes` etc.
 - Ajuste os serviços conforme a taxonomia real da API; por padrão, o app demonstra o fluxo e chamadas básicas.
+
+Para um passo‑a‑passo de como alinhar os endpoints com a API real (incluindo mapeamentos de DTO → modelos locais e checagem de sessão), veja: `docs/ENDPOINTS-CONFIG.md`.
 
 > Dica: ajuste `environment.development.ts` ou o `proxy.conf.json` conforme a porta/host da API.
 

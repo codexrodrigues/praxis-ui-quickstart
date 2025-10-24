@@ -14,10 +14,13 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/praxis-ui-quickstart",
+            "outputPath": "dist/praxis-ui-quickstart/browser",
             "index": "src/index.html",
             "main": "src/main.ts",
             "tsConfig": "tsconfig.json",
+            "polyfills": [
+              "zone.js"
+            ],
             "assets": [
               "src/favicon.ico",
               "src/assets"
@@ -33,15 +36,19 @@
             },
             "scripts": []
           },
-          "configurations": {
+            "configurations": {
             "production": {
-              "optimization": true,
+              "optimization": { "scripts": true, "styles": true, "fonts": false },
               "extractLicenses": true,
               "sourceMap": false,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.production.ts"
+                },
+                {
+                  "replace": "src/assets/app-config.json",
+                  "with": "src/assets/app-config.prod.json"
                 }
               ]
             },
@@ -62,15 +69,15 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "praxis-ui-quickstart:build",
-            "proxyConfig": "proxy.conf.json"
+            "buildTarget": "praxis-ui-quickstart:build",
+            "proxyConfig": "proxy.conf.js"
           },
           "configurations": {
             "production": {
-              "browserTarget": "praxis-ui-quickstart:build:production"
+              "buildTarget": "praxis-ui-quickstart:build:production"
             },
             "development": {
-              "browserTarget": "praxis-ui-quickstart:build:development"
+              "buildTarget": "praxis-ui-quickstart:build:development"
             }
           },
           "defaultConfiguration": "development"

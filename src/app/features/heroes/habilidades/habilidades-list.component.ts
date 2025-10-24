@@ -1,4 +1,4 @@
-import { AsyncPipe, NgFor } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { HeroesService } from '../../../core/services/heroes.service';
@@ -9,7 +9,7 @@ import { catchError, startWith } from 'rxjs/operators';
 @Component({
   selector: 'app-habilidades-list',
   standalone: true,
-  imports: [NgFor, AsyncPipe, MatTableModule],
+  imports: [AsyncPipe, MatTableModule],
   template: `
     <table mat-table [dataSource]="(habilidades$ | async) ?? []" class="mat-elevation-z0 glass-panel">
       <ng-container matColumnDef="nome">
@@ -40,4 +40,3 @@ export class HabilidadesListComponent {
     catchError(() => of([] as Habilidade[]))
   );
 }
-

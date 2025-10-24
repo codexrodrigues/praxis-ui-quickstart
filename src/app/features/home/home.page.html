@@ -1,0 +1,120 @@
+<header class="home-header">
+  <nav class="meta-nav">
+    <ul class="nav-list tabs">
+      <li><a class="tab-link" routerLink="/home"><span class="material-symbols-outlined">home</span>Home</a></li>
+      <li><a class="tab-link" routerLink="/operacoes/resumo"><span class="material-symbols-outlined">apps</span>Exemplos</a></li>
+      <li><a class="tab-link" routerLink="/heroes/perfis"><span class="material-symbols-outlined">widgets</span>Componentes</a></li>
+      <li><a class="tab-link" href="https://praxis-api-quickstart.onrender.com/swagger-ui/index.html" target="_blank" rel="noopener"><span class="material-symbols-outlined">menu_book</span>Docs</a></li>
+      <li><a class="tab-link" routerLink="/compliance/indicadores"><span class="material-symbols-outlined">star</span>Showcase</a></li>
+      <li><a class="tab-link" href="https://github.com/codexrodrigues/praxis-ui-quickstart" target="_blank" rel="noopener"><span class="material-symbols-outlined">code</span>GitHub</a></li>
+    </ul>
+    <div class="brand">
+      <a routerLink="/home" class="brand-link" aria-label="Praxis Home">
+        <img class="logo" src="assets/praxis-logo.svg" alt="Praxis Logo" />
+      </a>
+    </div>
+  </nav>
+</header>
+
+<!-- Banner promocional central, inspirado no overlay da Macromedia -->
+<section class="promo">
+  <div class="promo-card">
+    <div class="promo-title">Praxis</div>
+    <p class="promo-copy">Construindo experiências dinâmicas guiadas por contratos — OpenAPI + x‑ui, formulários e tabelas em runtime.</p>
+    <a class="promo-cta" href="https://github.com/codexrodrigues/praxis-backend-seed-app" target="_blank" rel="noopener">Sobre o Praxis</a>
+  </div>
+</section>
+
+<section class="home-hero">
+  <h1 class="hero-title">Praxis UI Quickstart</h1>
+  <p class="hero-sub">
+    Hub visual de navegação para os principais módulos e exemplos: formulários e tabelas dinâmicas,
+    editores contextuais, visual builder e dashboards.
+  </p>
+  <div class="glow-strip"></div>
+</section>
+
+<section class="home-grid">
+  <!-- Coluna 1: Soluções / Casos de Uso -->
+  <div class="col">
+    <div class="panel">
+      <div class="panel-header">Soluções</div>
+      <div class="cards-col">
+      <article class="card gradient-1">
+        <div class="card-icon"><span class="material-symbols-outlined">dynamic_form</span></div>
+        <h3>Dynamic Forms</h3>
+        <p>Formulários guiados por metadados (OpenAPI + x‑ui), com validação e opções remotas.</p>
+        <a class="cta" routerLink="/heroes/perfis">Explorar</a>
+      </article>
+      <article class="card gradient-2">
+        <div class="card-icon"><span class="material-symbols-outlined">table_view</span></div>
+        <h3>Dynamic Tables</h3>
+        <p>Tabelas com filtros tipados, paginação e ordenação. Visual builder em breve.</p>
+        <a class="cta" routerLink="/heroes/habilidades">Ver Habilidades</a>
+      </article>
+      <a class="see-more" routerLink="/operacoes/resumo">Ver todas as soluções ›</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Coluna 2: Componentes / Produtos -->
+  <div class="col">
+    <div class="panel">
+      <div class="panel-header">Componentes</div>
+      <div class="cards-col">
+      <article class="card gradient-3">
+        <div class="card-icon"><span class="material-symbols-outlined">query_stats</span></div>
+        <h3>Praxis Dashboard</h3>
+        <p>Painéis configuráveis com tiles dinâmicos e leituras de views.</p>
+        <a class="cta" routerLink="/compliance/indicadores">Abrir Indicadores</a>
+      </article>
+      <article class="card gradient-4">
+        <div class="card-icon"><span class="material-symbols-outlined">view_timeline</span></div>
+        <h3>Side‑sheet Editor</h3>
+        <p>Edição contextual sem perder o estado da lista, com rota auxiliar.</p>
+        <a class="cta" routerLink="/heroes/perfis">Ver Perfis</a>
+      </article>
+      <a class="see-more" routerLink="/heroes/perfis">Explorar componentes ›</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Coluna 3: Docs / Showcase / Recursos -->
+  <div class="col">
+    <div class="panel">
+      <div class="panel-header">Recursos</div>
+      <div class="cards-col">
+      <article class="card gradient-5">
+        <div class="card-icon"><span class="material-symbols-outlined">menu_book</span></div>
+        <h3>Docs & OpenAPI</h3>
+        <p>Documentação interativa gerada e schema filtrado por operação.</p>
+        <a class="cta" href="https://praxis-api-quickstart.onrender.com/swagger-ui/index.html" target="_blank" rel="noopener">Abrir Swagger</a>
+      </article>
+      <article class="card gradient-6">
+        <div class="card-icon"><span class="material-symbols-outlined">rocket_launch</span></div>
+        <h3>Showcase</h3>
+        <p>Exemplos de listas, filtros e fluxos de operação baseados em schema.</p>
+        <a class="cta" routerLink="/operacoes/resumo">Ver Resumo</a>
+      </article>
+      <a class="see-more" routerLink="/compliance/indicadores">Showcase de exemplos ›</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="links">
+    <a href="#">Termos</a>
+    <span>•</span>
+    <a href="#">Privacidade</a>
+    <span>•</span>
+    <a href="#">Acessibilidade</a>
+    <span>•</span>
+    <a href="#">Contato</a>
+    <span>•</span>
+    <a href="https://github.com/codexrodrigues/praxis-ui-quickstart" target="_blank" rel="noopener">GitHub</a>
+  </div>
+  <div class="copy">© Praxis Framework — Open Source Initiative • Powered by Angular + Spring Boot</div>
+  <div class="glow"></div>
+  <div class="bottom-line"></div>
+</footer>

@@ -1,4 +1,4 @@
-import { AsyncPipe, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe, NgFor } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,7 +11,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-perfis-list',
   standalone: true,
-  imports: [NgFor, NgIf, AsyncPipe, MatCardModule, MatButtonModule],
+  imports: [NgFor, AsyncPipe, MatCardModule, MatButtonModule],
   template: `
     <div class="grid">
       <mat-card class="glass-panel" *ngFor="let p of (perfis$ | async) ?? []">
@@ -52,4 +52,3 @@ export class PerfisListComponent {
     ], { relativeTo: this.route.root });
   }
 }
-

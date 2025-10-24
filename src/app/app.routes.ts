@@ -3,6 +3,7 @@ import { ShellComponent } from './core/layout/shell.component';
 import { PerfilEditorComponent } from './features/heroes/perfis/perfil-editor.component';
 import { LoginComponent } from './features/shared/login/login.component';
 import { authGuard } from './core/guards/auth.guard';
+import { HomePage } from './features/home/home.page';
 
 export const APP_ROUTES: Routes = [
   { path: 'login', component: LoginComponent },
@@ -14,8 +15,9 @@ export const APP_ROUTES: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'operacoes/resumo'
+        redirectTo: 'home'
       },
+      { path: 'home', loadComponent: () => Promise.resolve(HomePage) },
 
       // Módulo: Heróis
       {

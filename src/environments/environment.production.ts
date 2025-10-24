@@ -1,6 +1,5 @@
 export const environment = {
   production: true,
-  // Substituído no CI por secrets.API_BASE_URL (ex.: https://api.suaempresa.com)
-  apiBaseUrl: 'API_BASE_URL'
+  // Produção aponta para a API pública do Quickstart
+  apiBaseUrl: 'https://praxis-api-quickstart.onrender.com/api'
 };
-

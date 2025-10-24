@@ -49,3 +49,8 @@ html, body { height: 100%; }
 // Ajustes típicos
 * { box-sizing: border-box; }
 body, h1, h2, h3, h4, h5, h6, p { margin: 0; }
+
+// Material Symbols Outlined (outlined icons with thin weight)
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 24;
+}

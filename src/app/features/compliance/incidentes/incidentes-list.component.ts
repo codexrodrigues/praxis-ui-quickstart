@@ -1,4 +1,4 @@
-import { AsyncPipe, NgFor } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { ComplianceService } from '../../../core/services/compliance.service';
@@ -9,7 +9,7 @@ import { catchError, startWith } from 'rxjs/operators';
 @Component({
   selector: 'app-incidentes-list',
   standalone: true,
-  imports: [NgFor, AsyncPipe, MatTableModule],
+  imports: [AsyncPipe, MatTableModule],
   template: `
     <table mat-table [dataSource]="(incidentes$ | async) ?? []" class="mat-elevation-z0 glass-panel">
       <ng-container matColumnDef="descricao">
@@ -37,4 +37,3 @@ export class IncidentesListComponent {
     catchError(() => of([] as Incidente[]))
   );
 }
-

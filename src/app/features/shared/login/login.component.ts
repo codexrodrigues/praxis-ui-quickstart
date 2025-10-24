@@ -14,39 +14,42 @@ import { AuthService } from '../../../core/services/auth.service';
   imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule],
   template: `
     <div class="login-page">
-      <mat-card class="glass-panel login-card">
-        <mat-card-header>
-          <mat-card-title>Entrar</mat-card-title>
-          <mat-card-subtitle>Praxis UI Quickstart</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-          <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
-            <mat-form-field appearance="outline">
-              <mat-label>Usuário</mat-label>
-              <input matInput formControlName="username" autocomplete="username" />
-            </mat-form-field>
-            <mat-form-field appearance="outline">
-              <mat-label>Senha</mat-label>
-              <input matInput type="password" formControlName="password" autocomplete="current-password" />
-            </mat-form-field>
-            <div class="actions">
-              <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading">Entrar</button>
-            </div>
-            <div class="hint">Use admin / changeMe! (dev)</div>
-            <div class="error" *ngIf="error">Credenciais inválidas.</div>
-          </form>
-        </mat-card-content>
-      </mat-card>
+      <div class="auth-shell">
+        <div class="glow-stage">
+          <div class="glow glow-a"></div>
+          <div class="glow glow-b"></div>
+          <div class="glow glow-c"></div>
+          <div class="noise"></div>
+        </div>
+
+        <div class="crumb">Dashboard</div>
+        <mat-card class="auth-card">
+          <mat-card-header>
+            <mat-card-title>Entrar</mat-card-title>
+            <mat-card-subtitle>Praxis UI Quickstart</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
+              <mat-form-field appearance="fill">
+                <mat-label>Usuário</mat-label>
+                <input matInput formControlName="username" autocomplete="username" />
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Senha</mat-label>
+                <input matInput type="password" formControlName="password" autocomplete="current-password" />
+              </mat-form-field>
+              <div class="actions">
+                <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading">Entrar</button>
+              </div>
+              <div class="hint">Use admin / changeMe! (dev)</div>
+              <div class="error" *ngIf="error">Credenciais inválidas.</div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
     </div>
   `,
-  styles: [`
-    .login-page { height: 100%; display:flex; align-items: center; justify-content: center; }
-    .login-card { width: min(420px, 92vw); }
-    .form { display:grid; gap: 12px; }
-    .actions { display:flex; justify-content: flex-end; }
-    .hint { opacity:.7; font-size:12px; }
-    .error { color: #ff7b7b; }
-  `]
+  styleUrls: ['auth-login.page.scss']
 })
 export class LoginComponent {
   private fb = inject(FormBuilder);
@@ -64,7 +67,7 @@ export class LoginComponent {
   onSubmit() {
     if (this.form.invalid) return;
     this.loading = true; this.error = false;
-    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/operacoes/resumo';
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/home';
     this.auth.login(this.form.getRawValue()).subscribe(ok => {
       this.loading = false;
       if (ok) {
@@ -75,4 +78,3 @@ export class LoginComponent {
     });
   }
 }
-

@@ -1,4 +1,4 @@
-import { AsyncPipe, CurrencyPipe, NgFor } from '@angular/common';
+import { AsyncPipe, CurrencyPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { ComplianceService } from '../../../core/services/compliance.service';
@@ -9,7 +9,7 @@ import { catchError, startWith } from 'rxjs/operators';
 @Component({
   selector: 'app-indenizacoes-list',
   standalone: true,
-  imports: [NgFor, AsyncPipe, MatTableModule, CurrencyPipe],
+  imports: [AsyncPipe, MatTableModule, CurrencyPipe],
   template: `
     <table mat-table [dataSource]="(indenizacoes$ | async) ?? []" class="mat-elevation-z0 glass-panel">
       <ng-container matColumnDef="motivo">

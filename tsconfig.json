@@ -27,5 +27,9 @@
     "strictInjectionParameters": true,
     "strictInputTypes": true,
     "strictTemplates": true
-  }
+  },
+  "exclude": [
+    "src/environments/environment.production.ts",
+    "src/environments/environment.development.ts"
+  ]
 }

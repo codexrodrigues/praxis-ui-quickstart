@@ -1,3 +1,4 @@
+<!-- TODO: migrar itens para <app-subnav> no Passo 2
 <header class="home-header">
   <nav class="meta-nav">
     <ul class="nav-list tabs">
@@ -15,88 +16,183 @@
     </div>
   </nav>
 </header>
+-->
 
-<!-- Banner promocional central, inspirado no overlay da Macromedia -->
-<section class="promo">
-  <div class="promo-card">
-    <div class="promo-title">Praxis</div>
-    <p class="promo-copy">Construindo experiências dinâmicas guiadas por contratos — OpenAPI + x‑ui, formulários e tabelas em runtime.</p>
-    <a class="promo-cta" href="https://github.com/codexrodrigues/praxis-backend-seed-app" target="_blank" rel="noopener">Sobre o Praxis</a>
-  </div>
-</section>
+<!-- removido: banner promocional não faz parte do layout de referência -->
 
-<section class="home-hero">
-  <h1 class="hero-title">Praxis UI Quickstart</h1>
-  <p class="hero-sub">
-    Hub visual de navegação para os principais módulos e exemplos: formulários e tabelas dinâmicas,
-    editores contextuais, visual builder e dashboards.
-  </p>
-  <div class="glow-strip"></div>
-</section>
+<!-- removido: hero não faz parte do layout de referência -->
 
 <section class="home-grid">
   <!-- Coluna 1: Soluções / Casos de Uso -->
   <div class="col">
-    <div class="panel">
-      <div class="panel-header">Soluções</div>
-      <div class="cards-col">
-      <article class="card gradient-1">
-        <div class="card-icon"><span class="material-symbols-outlined">dynamic_form</span></div>
-        <h3>Dynamic Forms</h3>
-        <p>Formulários guiados por metadados (OpenAPI + x‑ui), com validação e opções remotas.</p>
-        <a class="cta" routerLink="/heroes/perfis">Explorar</a>
-      </article>
-      <article class="card gradient-2">
-        <div class="card-icon"><span class="material-symbols-outlined">table_view</span></div>
-        <h3>Dynamic Tables</h3>
-        <p>Tabelas com filtros tipados, paginação e ordenação. Visual builder em breve.</p>
-        <a class="cta" routerLink="/heroes/habilidades">Ver Habilidades</a>
-      </article>
-      <a class="see-more" routerLink="/operacoes/resumo">Ver todas as soluções ›</a>
+    <div class="panel solutions-panel">
+      <div class="panel-header"><span class="icon material-symbols-outlined">extension</span><span class="title">Soluções com Praxis</span></div>
+      <div class="panel-sub">Crie experiências corporativas inteligentes e adaptáveis — formulários, tabelas e painéis que se constroem a partir de contratos e regras declarativas.</div>
+      <div class="panel-body">
+        <ul class="link-list">
+          <li>
+            <a href="#">
+              <span class="title"><span class="material-symbols-outlined">fact_check</span> Componente CRUD</span>
+              <span class="desc"><span class="p">Abra, edite e persista entidades em rota, modal ou gaveta (openMode).</span><span class="p">Templates de CRUD integram Dynamic Form e serviços, sem acoplamento.</span></span>
+              <span class="cta">Ver fluxo CRUD</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <span class="title"><span class="material-symbols-outlined">edit_note</span> Formulário Manual</span>
+              <span class="desc"><span class="p">Quando precisar controle total, componha formulários manuais com os mesmos componentes.</span><span class="p">Misture campos dinâmicos, use o Generic CRUD Service e valide com as mesmas regras.</span></span>
+              <span class="cta">Ver exemplo</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/heroes/perfis">
+              <span class="title"><span class="material-symbols-outlined">dynamic_form</span> Dynamic Forms — Formulários Declarativos</span>
+              <span class="desc"><span class="p">Gere formulários vivos a partir dos metadados (@UISchema).</span><span class="p">Dependências, máscaras e validações acontecem automaticamente.</span></span>
+              <span class="cta">Ver exemplo em ação</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/heroes/habilidades">
+              <span class="title"><span class="material-symbols-outlined">table_view</span> Dynamic Tables — Tabelas Inteligentes</span>
+              <span class="desc"><span class="p">Colunas e filtros nascem do contrato (OpenAPI + x‑ui).</span><span class="p">ETag, visibilidade por regras e edição inline prontas.</span></span>
+              <span class="cta">Explorar tabela</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/operacoes/resumo">
+              <span class="title"><span class="material-symbols-outlined">tune</span> Visual Builder — Regras Visuais</span>
+              <span class="desc"><span class="p">Crie Specifications que reagem a dados e eventos.</span><span class="p">Aplique cores, ícones e permissões sem tocar em código.</span></span>
+               <span class="cta">Abrir editor visual</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/operacoes/resumo">
+              <span class="title"><span class="material-symbols-outlined">rule</span> Rule Engine — Condições e Políticas</span>
+              <span class="desc"><span class="p">Descreva condições como $&#123;status&#125; === 'APROVADO'.</span><span class="p">A mesma regra vale na UI e no backend.</span></span>
+              <span class="cta">Ver regras em ação</span>
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
 
   <!-- Coluna 2: Componentes / Produtos -->
   <div class="col">
-    <div class="panel">
-      <div class="panel-header">Componentes</div>
-      <div class="cards-col">
-      <article class="card gradient-3">
-        <div class="card-icon"><span class="material-symbols-outlined">query_stats</span></div>
-        <h3>Praxis Dashboard</h3>
-        <p>Painéis configuráveis com tiles dinâmicos e leituras de views.</p>
-        <a class="cta" routerLink="/compliance/indicadores">Abrir Indicadores</a>
-      </article>
-      <article class="card gradient-4">
-        <div class="card-icon"><span class="material-symbols-outlined">view_timeline</span></div>
-        <h3>Side‑sheet Editor</h3>
-        <p>Edição contextual sem perder o estado da lista, com rota auxiliar.</p>
-        <a class="cta" routerLink="/heroes/perfis">Ver Perfis</a>
-      </article>
-      <a class="see-more" routerLink="/heroes/perfis">Explorar componentes ›</a>
+    <div class="panel components-panel">
+      <div class="panel-header"><span class="icon material-symbols-outlined">widgets</span><span class="title">Componentes</span></div>
+      <div class="panel-sub">O Praxis transforma como você projeta, configura e evolui aplicações, unindo backend, UI e regras de negócio em um único fluxo coeso.</div>
+      <div class="panel-body">
+        <ul class="link-list">
+          <li>
+            <a routerLink="/compliance/indicadores">
+              <span class="title"><span class="material-symbols-outlined">query_stats</span> Praxis Dashboard</span>
+              <span class="desc">Painéis configuráveis com tiles dinâmicos e leituras de views.</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/heroes/perfis">
+              <span class="title"><span class="material-symbols-outlined">view_timeline</span> Side‑sheet Editor</span>
+              <span class="desc">Edição contextual sem perder o estado da lista, com rota auxiliar.</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <span class="title"><span class="material-symbols-outlined">dynamic_form</span> Dynamic Form (praxis‑dynamic‑form)</span>
+              <span class="desc">Campos e validações a partir de metadados. Renderização e persistência automáticas.</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <span class="title"><span class="material-symbols-outlined">filter_alt</span> Filter Avançado (praxis‑filter)</span>
+              <span class="desc">Filtros tipados com persistência e reconciliação. Overlay, modal e gaveta.</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <span class="title"><span class="material-symbols-outlined">tab</span> Tabs (praxis‑tabs)</span>
+              <span class="desc">Navegação por abas com persistência local e editor de propriedades.</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <span class="title"><span class="material-symbols-outlined">dashboard_customize</span> Dynamic Gridster Page</span>
+              <span class="desc">Páginas moduláveis por grid. Drag/resize, persistência e paleta de componentes.</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <span class="title"><span class="material-symbols-outlined">rule</span> Table Rules Editor</span>
+              <span class="desc">Edite regras para tabelas: destaque, ícones e restrições baseadas em condições.</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <span class="title"><span class="material-symbols-outlined">hub</span> Connection Editor (grafo)</span>
+              <span class="desc">Defina conexões visuais entre componentes. Roteamento, labels e z‑order.</span>
+            </a>
+          </li>
+          <li class="more">
+            <a routerLink="/heroes/perfis">Explorar componentes</a>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
 
   <!-- Coluna 3: Docs / Showcase / Recursos -->
   <div class="col">
-    <div class="panel">
-      <div class="panel-header">Recursos</div>
-      <div class="cards-col">
-      <article class="card gradient-5">
-        <div class="card-icon"><span class="material-symbols-outlined">menu_book</span></div>
-        <h3>Docs & OpenAPI</h3>
-        <p>Documentação interativa gerada e schema filtrado por operação.</p>
-        <a class="cta" href="https://praxis-api-quickstart.onrender.com/swagger-ui/index.html" target="_blank" rel="noopener">Abrir Swagger</a>
-      </article>
-      <article class="card gradient-6">
-        <div class="card-icon"><span class="material-symbols-outlined">rocket_launch</span></div>
-        <h3>Showcase</h3>
-        <p>Exemplos de listas, filtros e fluxos de operação baseados em schema.</p>
-        <a class="cta" routerLink="/operacoes/resumo">Ver Resumo</a>
-      </article>
-      <a class="see-more" routerLink="/compliance/indicadores">Showcase de exemplos ›</a>
+    <div class="panel resources-panel">
+      <div class="panel-header"><span class="icon material-symbols-outlined">library_books</span><span class="title">Recursos</span></div>
+      <div class="panel-sub">Documente, integre e aprenda com exemplos — APIs abertas, showcase e materiais que aceleram a entrega.</div>
+      <div class="panel-body">
+        <ul class="link-list">
+          <li>
+            <a href="https://praxis-api-quickstart.onrender.com/swagger-ui/index.html" target="_blank" rel="noopener">
+              <span class="title"><span class="material-symbols-outlined">menu_book</span> Docs &amp; OpenAPI</span>
+              <span class="desc">Documentação interativa gerada e schema filtrado por operação.</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/operacoes/resumo">
+              <span class="title"><span class="material-symbols-outlined">rocket_launch</span> Showcase</span>
+              <span class="desc">Exemplos de listas, filtros e fluxos de operação baseados em schema.</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <span class="title"><span class="material-symbols-outlined">schema</span> Fluxo de Schema (ETag/304)</span>
+              <span class="desc">Identidade do schema, cache com ETag e reconciliação entre cliente e servidor.</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <span class="title"><span class="material-symbols-outlined">settings</span> Global Config</span>
+              <span class="desc">Configuração central de temas, serviços e integrações. Overrides por ambiente.</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <span class="title"><span class="material-symbols-outlined">view_sidebar</span> Templates — Drawer Adapters</span>
+              <span class="desc">Modelos prontos para CRUD e Filtro: rota/modal/gaveta com boas práticas.</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <span class="title"><span class="material-symbols-outlined">integration_instructions</span> Guia de Integração do Host</span>
+              <span class="desc">Adapte o host para abrir formulários e filtros. Persistência e openMode.</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <span class="title"><span class="material-symbols-outlined">terminal</span> Chrome DevTools MCP</span>
+              <span class="desc">Ferramentas de automação e inspeção orientadas a agentes para acelerar testes.</span>
+            </a>
+          </li>
+          <li class="more">
+            <a routerLink="/compliance/indicadores">Showcase de exemplos</a>
+          </li>
+        </ul>
       </div>
     </div>
   </div>

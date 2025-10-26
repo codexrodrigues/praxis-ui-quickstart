@@ -18,6 +18,10 @@ export const APP_ROUTES: Routes = [
         redirectTo: 'home'
       },
       { path: 'home', loadComponent: () => Promise.resolve(HomePage) },
+      { path: 'componentes', loadComponent: () => import('./features/componentes/componentes.page').then(m => m.ComponentesPage) },
+      { path: 'componentes/table', loadComponent: () => import('./features/componentes/table-demo.page').then(m => m.TableDemoPage) },
+      { path: 'componentes/form', loadComponent: () => import('./features/componentes/form-demo.page').then(m => m.FormDemoPage) },
+      { path: 'ferramentas', loadComponent: () => import('./features/ferramentas/ferramentas.page').then(m => m.FerramentasPage) },
 
       // Módulo: Heróis
       {

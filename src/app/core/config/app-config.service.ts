@@ -28,9 +28,18 @@ export class AppConfigService {
     return (this.cfg.apiBaseUrl ?? '').toString();
   }
 
-  // Para evitar discrepâncias entre apps, padronizamos auth sob a mesma base de API
-  // Ex.: /api/auth/login (em dev via proxy e em prod via URL absoluta)
+  // Auth base: em dev usamos "/api" (proxy reescreve /api/auth → /auth);
+  // em produção, se apiBaseUrl terminar com "/api", removemos o sufixo para chamar "/auth/*" na raiz.
   getAuthBaseUrl(): string {
-    return this.getApiBaseUrl();
+    const api = (this.getApiBaseUrl() || '').toString();
+    // API absoluta (https://host/...)
+    if (/^https?:\/\//i.test(api)) {
+      return api.replace(/\/+$/, '').replace(/\/(api)$/i, '');
+    }
+    // API relativa "/api" (dev)
+    if (api.replace(/\/+$/, '') === '/api') {
+      return '';
+    }
+    return api;
   }
 }

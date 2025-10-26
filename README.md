@@ -120,6 +120,10 @@ Para um passo‑a‑passo de como alinhar os endpoints com a API real (incluindo
 - Adicionar autenticação/guard (quando necessário)
 - Criar testes e validação de tipos mais detalhada
 
+## Documentação de Integração do Praxis UI
+- Guia passo‑a‑passo (tokens, providers, tema M3, shims e erros comuns):
+  - `docs/PraxisUI-Integration-Guide.md`
+
 ---
 Feito com ❤ para o ecossistema Praxis.
 

@@ -1,0 +1,15 @@
+<header class="app-header" *ngIf="!isLogin">
+  <app-top-bar></app-top-bar>
+  <div class="header-wrapper">
+    <app-primary-nav></app-primary-nav>
+    <app-subnav [items]="subnavItems"></app-subnav>
+  </div>
+</header>
+
+<main class="app-main">
+  <router-outlet></router-outlet>
+</main>
+
+<footer class="app-footer" *ngIf="!isLogin">
+  <small>© Praxis UI Quickstart</small>
+</footer>

@@ -1,0 +1,27 @@
+<header class="primary-nav">
+  <nav class="tabs" aria-label="Primary navigation">
+    <a
+      *ngFor="let t of tabs; let i = index"
+      [routerLink]="!t.external ? (t.link || null) : null"
+      [attr.href]="t.external ? (t.link || '#') : null"
+      [attr.target]="t.external ? '_blank' : null"
+      [attr.rel]="t.external ? 'noopener' : null"
+      routerLinkActive="active"
+      [attr.aria-current]="!t.external && t.link ? 'page' : null"
+    >
+      {{ t.label }}
+    </a>
+  </nav>
+
+  <div class="actions">
+    <button
+      mat-icon-button
+      (click)="openGlobalConfig()"
+      aria-label="Abrir Configurações Globais"
+      [matTooltip]="'Configurações Globais'"
+      matTooltipPosition="below"
+    >
+      <mat-icon fontIcon="tune" aria-hidden="true"></mat-icon>
+    </button>
+  </div>
+</header>

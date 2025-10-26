@@ -1,41 +1,168 @@
 <mat-sidenav-container class="app-container">
-  <!-- Navegação principal -->
-  <mat-sidenav mode="side" opened class="app-sidenav glass-panel">
-    <div class="brand">
-      <span class="logo">🌀</span>
-      <strong>Praxis UI</strong>
-    </div>
-    <mat-nav-list>
-      <ng-container *ngFor="let group of groups">
-        <h3 matSubheader>{{ group.label }}</h3>
-        <a mat-list-item *ngFor="let item of group.items" [routerLink]="item.link" routerLinkActive="active">
-          <span class="nav-icon material-symbols-outlined" aria-hidden="true">{{ item.icon }}</span>
-          <span>{{ item.label }}</span>
-        </a>
-        <mat-divider></mat-divider>
-      </ng-container>
-    </mat-nav-list>
-  </mat-sidenav>
-
   <!-- Side-sheet contextual (rota auxiliar) -->
-  <mat-sidenav class="aside" position="end" mode="over" [opened]="(isAsideActive$ | async) ?? false" (closedStart)="closeAside()">
+  <mat-sidenav #appAside class="aside" position="end" mode="over" [opened]="(asideOpened$ | async) ?? false" (closedStart)="onAsideClosed()">
+    <!-- Conteúdo aberto via DrawerService (adapters) -->
+    <ng-template appDrawerHost></ng-template>
+
+    <!-- Conteúdo via rota auxiliar -->
     <router-outlet name="aside"></router-outlet>
   </mat-sidenav>
 
   <!-- Conteúdo principal -->
   <mat-sidenav-content>
-    <mat-toolbar color="primary" class="glass-panel">
-      <span>Praxis UI Quickstart</span>
-      <span class="spacer"></span>
-      <a mat-button routerLink="/operacoes/resumo">Início</a>
-      <a mat-button routerLink="/compliance/indicadores">Dashboard</a>
-      <button mat-stroked-button color="primary" (click)="onLogout()">
-        Sair
-      </button>
-    </mat-toolbar>
-
     <main class="content">
-      <router-outlet></router-outlet>
+      <!-- Home: layout livre -->
+      <ng-container *ngIf="(isHome$ | async) ?? false; else twoCol">
+        <router-outlet></router-outlet>
+      </ng-container>
+
+      <!-- Internas: layout 2 colunas -->
+      <ng-template #twoCol>
+        <section class="page two-col">
+          <div class="page-main">
+            <article class="content-card">
+              <header class="content-card__header">
+                <span class="icon material-symbols-outlined">{{ pageIcon }}</span>
+                <div>
+                  <h1 class="title" [class.gradient-title]="isTableDemoRoute || isFormDemoRoute">{{ pageTitle }}</h1>
+                  <p class="desc" *ngIf="pageDesc">{{ pageDesc }}</p>
+                </div>
+                <div class="header-toggles">
+                  <!-- Toggle edição -->
+                  <button type="button" class="edit-toggle"
+                          [class.on]="custom.enabled()"
+                          (click)="custom.toggle()"
+                          [attr.aria-pressed]="custom.enabled()"
+                          [matTooltip]="custom.enabled()
+                            ? 'Desativar edição\nOculta recursos de configuração do componente.\nEm produção, use apenas com administradores.'
+                            : 'Ativar edição\nHabilita recursos de configuração do componente.\nNa Tabela: exibe o botão de Configurações para abrir o editor.\nEm produção, use apenas com administradores.'"
+                          [matTooltipClass]="'tooltip-edit'"
+                          [matTooltipShowDelay]="150"
+                          matTooltipPosition="below">
+                    <span class="label">{{ custom.enabled() ? 'Desativar edição' : 'Ativar edição' }}</span>
+                    <span class="switch" aria-hidden="true"><span class="thumb"></span></span>
+                  </button>
+                  <!-- Botão estilo Angular Material para alternar código -->
+                  <button *ngIf="isTableDemoRoute"
+                          mat-icon-button color="primary"
+                          class="toggle-code-btn"
+                          type="button"
+                          (click)="toggleTableCode()"
+                          [attr.aria-pressed]="showTableCode"
+                          [matTooltip]="showTableCode ? 'Ocultar código' : 'Ver código'"
+                          matTooltipPosition="below"
+                          aria-label="Alternar exibição do código">
+                    <mat-icon [fontIcon]="showTableCode ? 'code_off' : 'code'" aria-hidden="true"></mat-icon>
+                  </button>
+                </div>
+              </header>
+              <section class="content-card__body">
+                <!-- Rota Tabela: alterna entre tabela e código -->
+                <ng-container *ngIf="isTableDemoRoute; else normalBody">
+                  <ng-container *ngIf="!showTableCode; else codeView">
+                    <router-outlet></router-outlet>
+                  </ng-container>
+                  <ng-template #codeView>
+                    <div class="code-demo">
+                      <h3>Exemplo de uso (template)</h3>
+                      <pre><code [highlight]="tableDemoUsage" [language]="'xml'" lineNumbers></code></pre>
+                      <h3>Exemplo de componente (TypeScript)</h3>
+                      <pre><code [highlight]="tableDemoTs" [language]="'typescript'" lineNumbers></code></pre>
+                    </div>
+                  </ng-template>
+                </ng-container>
+                <ng-template #normalBody>
+                  <router-outlet></router-outlet>
+                </ng-template>
+              </section>
+            </article>
+          </div>
+          <aside class="page-aside" aria-label="Context sidebar">
+            <div class="doc-card">
+              <div class="doc-card__header">
+                <nav class="doc-tabs" role="tablist" aria-label="Documentação contextual">
+                  <button class="doc-tab" role="tab" [class.active]="activeDocTab==='how'" [attr.aria-selected]="activeDocTab==='how'" (click)="activeDocTab='how'">
+                    <span class="material-symbols-outlined" aria-hidden="true">build</span>
+                    <span>Como foi implementado</span>
+                  </button>
+                  <button class="doc-tab" role="tab" [class.active]="activeDocTab==='api'" [attr.aria-selected]="activeDocTab==='api'" (click)="activeDocTab='api'">
+                    <span class="material-symbols-outlined" aria-hidden="true">schema</span>
+                    <span>API &amp; Esquema</span>
+                  </button>
+                </nav>
+              </div>
+              <div class="doc-card__body">
+                <ng-container *ngIf="activeDocTab==='how'; else apiDoc">
+                  <div [innerHTML]="docHtml"></div>
+                </ng-container>
+                <ng-template #apiDoc>
+                  <div [innerHTML]="docHtmlApi"></div>
+                  <div *ngIf="isTableDemoRoute" class="doc-section">
+                    <h4 class="section-title">Links rápidos</h4>
+                    <ul class="endpoint-list">
+                      <li>
+                        <span class="http-badge get" aria-hidden="true">GET</span>
+                        <a [href]="swaggerUiUrl" target="_blank" rel="noopener">Swagger UI</a>
+                      </li>
+                      <li>
+                        <span class="http-badge get" aria-hidden="true">GET</span>
+                        <a [href]="endpointSchemasUrl" target="_blank" rel="noopener">Schemas (grid)</a>
+                      </li>
+                      <li>
+                        <span class="http-badge get" aria-hidden="true">GET</span>
+                        <a [href]="endpointSchemasFilteredUrl" target="_blank" rel="noopener">Schemas filtrados</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <div *ngIf="isFormDemoRoute" class="doc-section">
+                    <h4 class="section-title">Links rápidos</h4>
+                    <ul class="endpoint-list">
+                      <li>
+                        <span class="http-badge get" aria-hidden="true">GET</span>
+                        <a [href]="swaggerUiUrl" target="_blank" rel="noopener">Swagger UI</a>
+                      </li>
+                      <li>
+                        <span class="http-badge get" aria-hidden="true">GET</span>
+                        <a [href]="formEndpointSchemasUrl" target="_blank" rel="noopener">Schemas (form)</a>
+                      </li>
+                      <li>
+                        <span class="http-badge get" aria-hidden="true">GET</span>
+                        <a [href]="formEndpointSchemasFilteredUrl" target="_blank" rel="noopener">Schemas filtrados</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <div *ngIf="isTableDemoRoute" class="doc-section">
+                    <h4>Config da Tabela (usada pela UI)</h4>
+                    <div class="code-scroll">
+                      <pre><code [highlight]="tableConfigJson || tableConfigHint" [language]="'json'" lineNumbers></code></pre>
+                    </div>
+                  </div>
+                  <div *ngIf="isFormDemoRoute" class="doc-section">
+                    <h4>Config do Formulário (usada pela UI)</h4>
+                    <div class="code-scroll">
+                      <pre><code [highlight]="formConfigJson || formConfigHint" [language]="'json'" lineNumbers></code></pre>
+                    </div>
+                  </div>
+                  <div *ngIf="isTableDemoRoute" class="doc-section">
+                    <h4>Schema (raw) — /schemas/filtered</h4>
+                    <div class="meta-actions"><button type="button" class="btn small" (click)="reloadTableMetadata()">Atualizar</button></div>
+                    <div class="code-scroll">
+                      <pre><code [highlight]="schemasRawJson || schemasRawHint" [language]="'json'" lineNumbers></code></pre>
+                    </div>
+                  </div>
+                  <div *ngIf="isFormDemoRoute" class="doc-section">
+                    <h4>Schema (raw) — /schemas/filtered</h4>
+                    <div class="meta-actions"><button type="button" class="btn small" (click)="reloadFormMetadata()">Atualizar</button></div>
+                    <div class="code-scroll">
+                      <pre><code [highlight]="schemasRawJson || schemasRawHint" [language]="'json'" lineNumbers></code></pre>
+                    </div>
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+          </aside>
+        </section>
+      </ng-template>
     </main>
   </mat-sidenav-content>
 </mat-sidenav-container>

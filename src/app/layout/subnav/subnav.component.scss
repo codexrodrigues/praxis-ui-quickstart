@@ -1,0 +1,28 @@
+.subnav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  background: transparent; /* sem fundo */
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0; /* sem padding lateral para alinhar aos chips */
+}
+
+.subnav a,
+.chip {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  color: #eaeaf1; /* texto branco para fundo escuro */
+  text-decoration: none;
+}
+
+.subnav a:hover,
+.chip:hover { background: rgba(255,255,255,0.12); }
+
+.subnav a.active,
+.chip.active {
+  outline: 1px solid rgba(120,180,255,0.6);
+  color: #ffffff;
+}

@@ -21,12 +21,18 @@
             "polyfills": [
               "zone.js"
             ],
+            "allowedCommonJsDependencies": [
+              "cron-parser",
+              "cron-validator",
+              "cronstrue"
+            ],
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/highlight.js/styles/github-dark.min.css"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [

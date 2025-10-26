@@ -1,0 +1,44 @@
+.top-bar {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #ddd;
+  font-size: 12px;
+  box-shadow: none;
+  border: none;
+  background: transparent;
+  width: 90%;
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 4px 0;
+}
+
+.top-bar .left { display: flex; flex-direction: column; line-height: 1.2; }
+.top-bar .left .brand { font-weight: 700; color: var(--text-strong, #ebeff5); font-size: 12.5px; }
+.top-bar .left .tagline { color: var(--text-muted, rgba(255,255,255,0.72)); font-size: 11.5px; letter-spacing: .2px; }
+
+.top-bar .right { display: inline-flex; gap: 12px; align-items: center; }
+.top-bar .global-config-btn {
+  border: 1px solid rgba(255,255,255,0.18);
+  background: linear-gradient(90deg, var(--brand-grad-start), var(--brand-grad-end));
+  color: #fff;
+  width: 32px; height: 32px;
+  border-radius: 8px;
+}
+.top-bar .global-config-btn:hover { filter: brightness(1.06); }
+.top-bar .global-config-btn .mat-icon { font-size: 18px; line-height: 18px; }
+.top-bar .sep { color: rgba(255,255,255,0.2); }
+.top-bar .user { display: inline-flex; align-items: center; gap: 6px; color: var(--text-body, #e6ebf2); }
+.top-bar .user .icon { font-size: 16px; line-height: 1; }
+.top-bar .user .label { color: var(--text-muted, rgba(255,255,255,0.72)); }
+.top-bar .user strong { color: var(--text-strong, #ebeff5); }
+.top-bar .logout {
+  appearance: none; cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.28);
+  background: linear-gradient(90deg, #ef4444, #b91c1c);
+  color: #fff;
+  border-radius: 6px; padding: 6px 10px;
+  font-weight: 700; letter-spacing: .2px;
+}
+.top-bar .logout:hover { filter: brightness(1.05); }

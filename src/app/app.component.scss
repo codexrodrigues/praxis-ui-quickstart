@@ -1,0 +1,42 @@
+:host, app-root { display: block; min-height: 100dvh; }
+
+/* Macromedia-like floating header area */
+.app-header { position: relative; z-index: 1000; }
+
+.header-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 8px;
+  gap: 8px; /* space between primary nav and subnav */
+  margin-bottom: 8px; /* space between header and content */
+}
+
+.header-wrapper app-primary-nav {
+  width: 90%;
+  max-width: 1920px;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.header-wrapper app-subnav {
+  width: 90%;
+  max-width: 1920px;
+}
+
+.app-main {
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 8px 32px 24px; /* reduced top padding for tighter gap */
+  box-sizing: border-box;
+}
+
+.app-footer {
+  opacity: 0.7;
+  padding: 24px 32px 40px;
+  text-align: center;
+  max-width: 1920px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}

@@ -8,6 +8,19 @@ import { firebaseConfig } from './app/core/firebase/firebase.config';
 import { environment } from './environments/environment';
 bootstrapApplication(AppComponent, appConfig).catch((err) => console.error(err));
 
+// Dev helper: enable notch debug via ?debugNotch=1
+try {
+  if (typeof window !== 'undefined') {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('debugNotch')) {
+      document.documentElement.classList.add('debug-notch');
+      document.body.classList.add('debug-notch');
+      (window as any).__PRAXIS_DEBUG__ = true;
+      console.info('[Notch Debug] Enabled via ?debugNotch');
+    }
+  }
+} catch {}
+
 // Firebase (produção): inicializa app e Analytics somente no browser
 try {
   if (environment.production) {

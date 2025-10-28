@@ -6,6 +6,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
 import { PraxisDynamicForm } from '@praxisui/dynamic-form';
 import { MaterialAsyncSelectComponent } from '@praxisui/dynamic-fields';
 import { AppConfigService } from '../../core/config/app-config.service';
@@ -19,7 +20,7 @@ type FormMode = 'create' | 'edit' | 'view';
 @Component({
   selector: 'app-form-demo-page',
   standalone: true,
-  imports: [CommonModule, MatFormFieldModule, MatSelectModule, MatButtonModule, MatTooltipModule, MatIconModule, PraxisDynamicForm, MaterialAsyncSelectComponent],
+  imports: [CommonModule, MatFormFieldModule, MatSelectModule, MatButtonModule, MatTooltipModule, MatIconModule, MatMenuModule, PraxisDynamicForm, MaterialAsyncSelectComponent],
   template: `
     <section class="didactic-card gradient-border" aria-label="Explorar formulários dinâmicos">
       <div class="card-body">
@@ -34,78 +35,70 @@ type FormMode = 'create' | 'edit' | 'view';
     <div *ngIf="statusMessage" class="toast" role="alert">{{ statusMessage }}</div>
 
     <section class="form-card" aria-label="Formulário selecionado">
-      <header class="form-card__header">
-        <mat-icon [fontIcon]="selectedResource?.icon || 'dynamic_form'" aria-hidden="true"></mat-icon>
-        <div class="titles">
-          <h2 class="h">{{ selectedResource?.title || 'Formulário' }}</h2>
-          <p class="s" *ngIf="selectedResource?.description">{{ selectedResource?.description }}</p>
+      <!-- Toggle flutuante: Modo design (overlay no canto superior direito) -->
+      <button type="button" class="design-toggle"
+              [class.on]="custom.enabled()"
+              (click)="custom.toggle()"
+              [attr.aria-pressed]="custom.enabled()"
+              aria-label="Alternar Modo design"
+              [matTooltip]="custom.enabled()
+                ? 'Desativar Modo design\nOculta recursos de configuração do container.\nEm produção, use apenas com administradores.'
+                : 'Modo design\nHabilita recursos de configuração do container.\nNa Tabela: exibe o botão de Configurações para abrir o editor.\nEm produção, use apenas com administradores.'"
+              [matTooltipClass]="'tooltip-edit'"
+              [matTooltipShowDelay]="150"
+              matTooltipPosition="below">
+        <span class="label">Modo design</span>
+        <span class="switch" aria-hidden="true"><span class="thumb"></span></span>
+      </button>
+      <header class="form-card__header form-header">
+        <div class="left">
+          <div class="titles" [class.fade]="fadeOn">
+            <div class="title-row">
+              <mat-icon class="resource-icon" [fontIcon]="selectedResource?.icon || 'dataset'" aria-hidden="true"></mat-icon>
+              <h2 class="h">{{ (selectedResource?.displayName || selectedResource?.title) || 'Selecione um recurso' }}</h2>
+              <button mat-icon-button class="change-btn" [matMenuTriggerFor]="resourceMenu" matTooltip="Trocar recurso" aria-label="Trocar recurso">
+                <mat-icon>arrow_drop_down</mat-icon>
+              </button>
+            </div>
+            <p class="s">{{ selectedResource?.description || 'Nenhum recurso selecionado' }}</p>
+            <!-- Modo (ícones com tooltip) - abaixo da seleção de recursos -->
+            <div class="header-mode compact" role="group" aria-label="Modo do formulário">
+              <button type="button" class="seg" [class.active]="mode==='create'" (click)="setMode('create')" matTooltip="Alterar para o modo Novo" aria-label="Novo">
+                <mat-icon>add</mat-icon>
+              </button>
+              <button type="button" class="seg" [class.active]="mode==='edit'" (click)="setMode('edit')" matTooltip="Alterar para o modo Editar" aria-label="Editar">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button type="button" class="seg" [class.active]="mode==='view'" (click)="setMode('view')" matTooltip="Alterar para o modo Visualizar" aria-label="Visualizar">
+                <mat-icon>visibility</mat-icon>
+              </button>
+            </div>
+            <!-- Registro (compacto, abaixo do modo) -->
+            <ng-container *ngIf="mode !== 'create'">
+              <pdx-material-async-select
+                class="header-record compact"
+                [class.filled]="!!resourceId"
+                #recordSelect
+                [label]="'Registro'"
+                (optionsLoaded)="onRecordOptionsLoaded($event)"
+                (selectionChange)="onRecordSelectionChange($event)"
+              ></pdx-material-async-select>
+            </ng-container>
+          </div>
+          <mat-menu #resourceMenu="matMenu">
+            <button mat-menu-item *ngFor="let r of resources" (click)="selectResource(r)">
+              <mat-icon [fontIcon]="r.icon || 'dataset'" aria-hidden="true"></mat-icon>
+              <span>{{ r.displayName || r.title }}</span>
+            </button>
+          </mat-menu>
         </div>
         <div class="actions">
-          <!-- Toggle (linha 1) -->
-          <button type="button" class="edit-toggle"
-                  [class.on]="custom.enabled()"
-                  (click)="custom.toggle()"
-                  [attr.aria-pressed]="custom.enabled()"
-                  [matTooltip]="custom.enabled()
-                    ? 'Desativar edição\nOculta recursos de configuração do componente.\nEm produção, use apenas com administradores.'
-                    : 'Ativar edição\nHabilita recursos de configuração do componente.\nNa Tabela: exibe o botão de Configurações para abrir o editor.\nEm produção, use apenas com administradores.'"
-                  [matTooltipClass]="'tooltip-edit'"
-                  [matTooltipShowDelay]="150"
-                  matTooltipPosition="below">
-            <span class="label">{{ custom.enabled() ? 'Desativar edição' : 'Ativar edição' }}</span>
-            <span class="switch" aria-hidden="true"><span class="thumb"></span></span>
-          </button>
-
-          <!-- Recursos (linha 2) -->
-          <mat-form-field appearance="fill" class="select-field header-select">
-            <mat-label>{{ resourceLabel }}</mat-label>
-            <mat-icon matPrefix class="prefix-icon" [fontIcon]="selectedResource?.icon || 'dynamic_form'" aria-hidden="true"></mat-icon>
-            <mat-select [(value)]="selectedResource" panelClass="resource-select-panel" id="resourceSelectHeader" (selectionChange)="onResourceSelectionChange($event)">
-              <mat-option disabled class="search-option">
-                <div class="search-row" (click)="$event.stopPropagation()">
-                  <span class="material-symbols-outlined" aria-hidden="true">search</span>
-                  <input type="text" [value]="searchTerm" (input)="onFilter($event)" placeholder="Buscar por nome…" aria-label="Buscar recurso" />
-                  <button type="button" class="clear" *ngIf="searchTerm" (click)="clearFilter(); $event.stopPropagation();" aria-label="Limpar busca">Limpar</button>
-                </div>
-              </mat-option>
-              <ng-container *ngFor="let r of viewResources">
-                <mat-option [value]="r">
-                  <div class="opt">
-                    <mat-icon [fontIcon]="r.icon || 'dynamic_form'" aria-hidden="true"></mat-icon>
-                    <div class="opt-text">
-                      <div class="opt-title">{{ r.title }}</div>
-                      <div class="opt-desc">{{ r.description }}</div>
-                    </div>
-                  </div>
-                </mat-option>
-              </ng-container>
-              <ng-template matSelectTrigger>
-                <ng-container *ngIf="!selectedResource">
-                  <span class="placeholder">Selecione um recurso…</span>
-                </ng-container>
-              </ng-template>
-            </mat-select>
-          </mat-form-field>
-
-          <!-- Modo (linha 3) -->
-          <div class="segmented header-mode" role="group" aria-label="Modo do formulário">
-            <button type="button" class="seg" [class.active]="mode==='create'" (click)="setMode('create')" matTooltip="Novo registro" aria-label="Modo: Novo">Novo</button>
-            <button type="button" class="seg" [class.active]="mode==='edit'" (click)="setMode('edit')" matTooltip="Editar registro existente" aria-label="Modo: Editar">Editar</button>
-            <button type="button" class="seg" [class.active]="mode==='view'" (click)="setMode('view')" matTooltip="Visualizar registro" aria-label="Modo: Visualizar">Visualizar</button>
-          </div>
-
-          <!-- Registro (linha 4) -->
-          <pdx-material-async-select
-            class="header-record"
-            #recordSelect
-            [label]="'Registro'"
-            (optionsLoaded)="onRecordOptionsLoaded($event)"
-            (selectionChange)="onRecordSelectionChange($event)"
-          ></pdx-material-async-select>
+          <!-- Recursos (linha 2) substituído por menu → removido o select -->
         </div>
       </header>
       <div class="form-card__body">
-        <praxis-dynamic-form
+          <praxis-dynamic-form
+          *ngIf="formAlive"
           [formId]="demoFormId"
           [resourcePath]="resourcePath"
           [resourceId]="resourceId || undefined"
@@ -135,6 +128,12 @@ type FormMode = 'create' | 'edit' | 'view';
     .seg { height: 28px; padding: 0 10px; background: rgba(255,255,255,0.06); color: #eaeaf1; border-right: 1px solid rgba(255,255,255,0.14); }
     .seg:last-child { border-right: 0; }
     .seg.active { background: linear-gradient(90deg, #60a5fa, #8b5cf6); color: #fff; }
+    /* Compact mode buttons (no borders, smaller, under resource) */
+    .header-mode.compact { margin-top: 6px; display: inline-flex; gap: 4px; border: 0; overflow: visible; }
+    .header-mode.compact .seg { height: 24px; padding: 0 6px; background: transparent; border-right: 0; color: #cfd3da; border-radius: 6px; }
+    .header-mode.compact .seg .mat-icon { font-size: 18px; width: 18px; height: 18px; line-height: 18px; }
+    .header-mode.compact .seg.active { background: rgba(96,165,250,0.20); color: #ffffff; }
+    .header-mode.compact .seg:hover { background: rgba(255,255,255,0.07); }
     .input-row { display: flex; gap: 8px; }
     .text { flex: 1 1 auto; height: 32px; padding: 0 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.06); color: #eaeaf1; outline: none; }
     .apply { height: 32px; padding: 0 12px; border-radius: 8px; background: linear-gradient(90deg, #60a5fa, #8b5cf6); color: #fff; border: 1px solid rgba(255,255,255,0.22); }
@@ -169,16 +168,44 @@ type FormMode = 'create' | 'edit' | 'view';
     ::ng-deep .resource-select-panel .mat-mdc-option:last-child { border-bottom: 0; }
     .field-hint { color: #9aa0a6; }
     /* Form card */
-    .form-card { margin-top: 12px; border-radius: 10px; background: var(--md-sys-color-surface-container, rgba(255,255,255,0.03)); border: 1px solid var(--md-sys-color-outline-variant, rgba(255,255,255,0.12)); }
-    .form-card__header { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--md-sys-color-outline-variant, rgba(255,255,255,0.12)); }
-    .form-card__header .mat-icon { font-size: 20px; width: 20px; height: 20px; color: var(--mat-sys-color-primary, #60a5fa); }
-    .form-card__header .h { margin: 0; font-weight: 700; font-size: 15px; color: var(--text-strong, #e6ebf2); }
-    .form-card__header .s { margin: 0; font-size: 12.5px; color: var(--text-muted, #9aa0a6); }
-    .form-card__header .actions { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-    .form-card__header .inline-controls { display: none; }
-    .form-card__header .header-select { width: 280px; }
+    .form-card { margin-top: 12px; border-radius: 10px; background: var(--md-sys-color-surface-container, rgba(255,255,255,0.03)); border: 1px solid var(--md-sys-color-outline-variant, rgba(255,255,255,0.12)); position: relative; }
+    .form-card__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--md-sys-color-outline-variant, rgba(255,255,255,0.12)); }
+    .form-header { background: linear-gradient(90deg, rgba(34,36,40,0.9), rgba(28,29,33,0.9)); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; }
+    .form-card__header .left { display: inline-flex; align-items: flex-start; gap: 10px; }
+    .form-card__header .resource-icon { font-size: 20px; width: 20px; height: 20px; color: var(--mat-sys-color-primary, #60a5fa); }
+    /* Alinha o ícone com a linha do título */
+    .form-card__header .title-row .resource-icon { margin-right: 6px; align-self: baseline; transform: translateY(0); }
+    .form-card__header .titles { display: flex; flex-direction: column; line-height: 1.2; }
+    .form-card__header .title-row { display: inline-flex; align-items: baseline; gap: 4px; }
+    .form-card__header .change-btn { margin-left: 2px; }
+    .form-card__header .h { margin: 0; font-weight: 700; font-size: 15px; color: var(--md-sys-color-primary, #60a5fa); letter-spacing: .2px; }
+    .form-card__header .s { margin: 0; font-size: 12.5px; color: var(--text-muted, #9aa0a6); opacity: .6; padding-left: 2px; }
+    .form-card__header .actions { margin-left: auto; display: inline-flex; align-items: flex-start; gap: 10px; }
+    /* Espaçamento vertical entre recurso (título/descrição) e controles */
+    .form-card__header .titles > .header-mode.compact { margin-top: 12px; }
+    .form-card__header .titles > .header-record.compact { margin-top: 10px; }
     .form-card__header .header-mode .seg { height: 28px; }
+    .form-card__header .header-mode.compact .seg { height: 24px; }
     .form-card__header .header-record { width: 200px; }
+    .header-record.compact { width: auto; display: inline-flex; align-items: center; }
+    /* Compact Material field styling for record selector */
+    ::ng-deep .header-record.compact .mat-mdc-form-field-subscript-wrapper { display: none; }
+    ::ng-deep .header-record.compact .mat-mdc-form-field-label { display: none; }
+    ::ng-deep .header-record.compact .mat-mdc-form-field-infix { padding: 0 !important; min-height: 0; }
+    ::ng-deep .header-record.compact .mdc-text-field { height: auto; min-height: 0; }
+    ::ng-deep .header-record.compact .mat-mdc-form-field-focus-overlay,
+    ::ng-deep .header-record.compact .mat-mdc-form-field-ripple { display: none; }
+    ::ng-deep .header-record.compact .mdc-line-ripple { display: none; }
+    ::ng-deep .header-record.compact .mdc-notched-outline { display: none; }
+    ::ng-deep .header-record.compact .mat-mdc-text-field-wrapper { background: transparent !important; border: 0 !important; border-radius: 0; padding: 0; box-shadow: none; }
+    /* Apenas o texto selecionado (sem bordas) com seta */
+    ::ng-deep .header-record.compact .mat-mdc-form-field-flex { align-items: center; }
+    ::ng-deep .header-record.compact .mat-mdc-select-trigger { height: 20px; line-height: 20px; padding: 0; }
+    ::ng-deep .header-record.compact .mat-mdc-select-value-text { color: var(--md-sys-color-primary, #60a5fa); font-weight: 700; }
+    ::ng-deep .header-record.compact .mat-mdc-select-arrow-wrapper { transform: scale(0.9); margin-left: 2px; opacity: .9; }
+    ::ng-deep .header-record.compact:hover .mat-mdc-select-trigger { text-decoration: underline; }
+    ::ng-deep .header-record.compact .mat-mdc-form-field-icon-suffix .mat-icon, 
+    ::ng-deep .header-record.compact .mat-mdc-form-field-icon-prefix .mat-icon { font-size: 18px; width: 18px; height: 18px; line-height: 18px; }
     .form-card__header .edit-toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; background: transparent; border: 0; padding: 0; }
     .form-card__header .edit-toggle .label { font-size: 12px; color: var(--text-muted); letter-spacing: .2px; display: inline-flex; align-items: center; gap: 6px; }
     .form-card__header .edit-toggle .label::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.22); opacity: 0; transition: opacity .15s ease, background .15s ease; }
@@ -189,6 +216,11 @@ type FormMode = 'create' | 'edit' | 'view';
     .form-card__header .edit-toggle.on .label { color: var(--brand-grad-start); font-weight: 700; }
     .form-card__header .edit-toggle.on .label::before { opacity: 1; background: linear-gradient(90deg, var(--brand-grad-start), var(--brand-grad-end)); }
     .form-card__body { padding: 12px; }
+    /* Fade in for title/description upon resource change */
+    @keyframes fadeInShort { from { opacity: 0; transform: translateY(-2px); } to { opacity: 1; transform: translateY(0); } }
+    .titles.fade { animation: fadeInShort 150ms ease; }
+    /* Toggle flutuante: Modo design */
+    .design-toggle { position: absolute; top: 8px; right: 10px; z-index: 2; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; background: rgba(0,0,0,0.08); backdrop-filter: blur(2px); border: 1px solid rgba(255,255,255,0.15); padding: 4px 8px; border-radius: 999px; }
   `]
 })
 export class FormDemoPage implements AfterViewInit {
@@ -212,12 +244,14 @@ export class FormDemoPage implements AfterViewInit {
 
   @ViewChild(PraxisDynamicForm) private formRef?: any;
   @ViewChild('recordSelect') private recordSelect?: MaterialAsyncSelectComponent;
+  formAlive = true;
 
-  selectedResource: { path: string; title: string; description: string; icon?: string } | null = null;
-  resources: { path: string; title: string; description: string; icon?: string }[] = [];
-  viewResources: { path: string; title: string; description: string; icon?: string }[] = [];
+  selectedResource: { path: string; title: string; description: string; icon?: string; displayName?: string } | null = null;
+  resources: { path: string; title: string; description: string; icon?: string; displayName?: string }[] = [];
+  viewResources: { path: string; title: string; description: string; icon?: string; displayName?: string }[] = [];
   searchTerm = '';
   selectionConfirmed = false;
+  fadeOn = false;
   get resourceLabel(): string {
     try {
       const t = (this.selectedResource?.title || '').trim();
@@ -293,8 +327,8 @@ export class FormDemoPage implements AfterViewInit {
     this.persistAndReflect();
     this.pushMetadata();
     this.log('mode changed', { mode: this.mode, resourcePath: this.resourcePath, demoFormId: this.demoFormId });
-    // Reconfigure record selector when switching to edit/view or back
-    this.configureRecordSelect(true);
+    // Reconfigure record selector when switching to edit/view or back (after view updates)
+    setTimeout(() => this.configureRecordSelect(true), 0);
   }
   onApplySelected(ev?: Event): void { ev?.preventDefault(); if (this.selectedResource) this.applyResource(this.selectedResource.path); }
   applyResource(path: string): void {
@@ -313,13 +347,8 @@ export class FormDemoPage implements AfterViewInit {
       const url = base ? `${base}?path=${encodeURIComponent(pathAll)}&operation=get&schemaType=response&includeInternalSchemas=false` : '';
       this.log('resource changed', { resourcePath: this.resourcePath, demoFormId: this.demoFormId, schemasFiltered: url || '(base unavailable)' });
     } catch {}
-    // Reinitialize the DynamicForm to ensure fresh schema/config for the new resource.
-    // Use a microtask (or fallback) so child @Inputs receive updated values before reinit.
-    try {
-      const reinit = () => { try { (this.formRef as any)?.retryInitialization?.(); } catch {} };
-      const qmt: undefined | ((cb: () => void) => void) = (globalThis as any)?.queueMicrotask;
-      qmt ? qmt(reinit) : setTimeout(reinit, 0);
-    } catch {}
+    // Fully remount the DynamicForm to guarantee fresh schema/config for the new resource.
+    this.remountForm();
     // Synchronize resource meta (title/desc/icon) if possible
     try {
       const match = this.resources.find(r => this.normalize(r.path) === rp);
@@ -338,7 +367,16 @@ export class FormDemoPage implements AfterViewInit {
     try { this.bridge.setResourceMeta({ title: r.title, description: r.description, icon: r.icon }); } catch {}
     this.selectionConfirmed = true;
     setTimeout(() => (this.selectionConfirmed = false), 1200);
+    this.triggerFade();
   }
+
+  selectResource(r: any): void {
+    if (!r) return;
+    this.selectedResource = r;
+    this.applyResource(r.path);
+    this.triggerFade();
+  }
+  private triggerFade(): void { this.fadeOn = false; setTimeout(() => (this.fadeOn = true), 0); setTimeout(() => (this.fadeOn = false), 180); }
   refreshSample(): void { this.resourceId = ''; this.ensureIdForMode(true); }
 
   applyIdFromInput(): void {
@@ -385,7 +423,7 @@ export class FormDemoPage implements AfterViewInit {
       }
     } catch {}
   }
-  
+
   discovering = false;
   private ensureIdForMode(force = false): void {
     if (this.mode === 'create') { return; }
@@ -464,7 +502,7 @@ export class FormDemoPage implements AfterViewInit {
   private loadResources(): void {
     this.http.get<{ path: string; title: string; description: string; icon?: string }[]>(`/assets/resources.json`).subscribe({
       next: (list) => {
-        this.resources = Array.isArray(list) ? list.slice(0, 30) : [];
+        this.resources = Array.isArray(list) ? list.slice(0, 30).map(r => ({ ...r, displayName: r.title })) : [];
         this.applyOrderingAndFilter();
         const match = this.resources.find(r => this.normalize(r.path) === this.normalize(this.resourcePath));
         if (match) this.selectedResource = match;
@@ -512,6 +550,14 @@ export class FormDemoPage implements AfterViewInit {
     const params = new URLSearchParams({ resource: this.resourcePath, mode: this.mode });
     if (this.mode !== 'create' && this.resourceId) params.set('id', this.resourceId);
     return `${base}?${params.toString()}`;
+  }
+  private remountForm(): void {
+    try {
+      this.formAlive = false;
+      setTimeout(() => {
+        this.formAlive = true;
+      }, 0);
+    } catch {}
   }
   private normalize(p: string): string { let x = (p||'').trim(); if (!x.startsWith('/')) x = '/' + x; return x.replace(/\/$/, ''); }
   private normalizeMode(m: string): FormMode { const v = (m||'').toLowerCase(); return v==='edit'||v==='view' ? v : 'create'; }
@@ -592,5 +638,5 @@ export class FormDemoPage implements AfterViewInit {
       this.log('record selected', { id: this.resourceId, resourcePath: this.resourcePath });
     } catch {}
   }
-  
+
 }

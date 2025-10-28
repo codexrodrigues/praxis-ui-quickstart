@@ -226,8 +226,8 @@ body, h1, h2, h3, h4, h5, h6, p { margin: 0; }
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
-  /* Keep the gradient ring below notch/label backgrounds */
-  z-index: 0;
+  /* Keep the gradient ring behind all field internals */
+  z-index: -1;
 }
 .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
 .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing,
@@ -249,28 +249,16 @@ body, h1, h2, h3, h4, h5, h6, p { margin: 0; }
 /* Mantém o label legível cortando o anel (outline + label flutuado) */
 /*
   Alinha a cor do “notch” do label com o próprio container do campo.
-  - Para "filled", usa --mdc-filled-text-field-container-color
-  - Para "outline", tenta --mdc-outlined-text-field-container-color (quando existir)
-  - Fallbacks seguros para temas escuros: surface / surface-container
+  - Preferir variáveis de seção do formulário, depois MDC filled/outlined
+  - Fallback seguro para surface-container em temas escuros
+  Obs.: não definimos a var aqui para permitir que pais (ex.: .praxis-dynamic-form)
+  personalizem `--pfx-field-notch-bg`; usamos a var apenas como primeira opção.
 */
-.mat-mdc-form-field {
-  /* Preferir as variáveis do MDC; cair para a superfície do app quando não houver. */
-  --pfx-field-notch-bg: var(
-    --mdc-outlined-text-field-container-color,
-    var(
-      --mdc-filled-text-field-container-color,
-      var(
-        --pfx-form-section-surface,
-        var(--md-sys-color-surface, var(--md-sys-color-surface-container))
-      )
-    )
-  );
-}
 /* Ensure floating label always lifts above the gradient ring (focused or not) */
 .mat-mdc-form-field-appearance-outline .mat-mdc-floating-label.mdc-floating-label--float-above,
 .mat-mdc-form-field-appearance-fill .mat-mdc-floating-label.mdc-floating-label--float-above {
   position: relative;
-  z-index: 2; /* label stack above ring */
+  z-index: 2; /* ensure label text is above notch overlay */
 }
 .mat-mdc-form-field-appearance-outline .mat-mdc-floating-label.mdc-floating-label--float-above::before,
 .mat-mdc-form-field-appearance-fill .mat-mdc-floating-label.mdc-floating-label--float-above::before {
@@ -283,8 +271,14 @@ body, h1, h2, h3, h4, h5, h6, p { margin: 0; }
   background: var(
     --pfx-field-notch-bg,
     var(
-      --mdc-outlined-text-field-container-color,
-      var(--mdc-filled-text-field-container-color, var(--md-sys-color-surface, transparent))
+      --pfx-form-section-surface,
+      var(
+        --mdc-outlined-text-field-container-color,
+        var(
+          --mdc-filled-text-field-container-color,
+          var(--md-sys-color-surface-container, var(--md-sys-color-surface))
+        )
+      )
     )
   );
   border-radius: 6px;
@@ -298,35 +292,69 @@ body, h1, h2, h3, h4, h5, h6, p { margin: 0; }
   background: var(
     --pfx-field-notch-bg,
     var(
-      --mdc-outlined-text-field-container-color,
-      var(--mdc-filled-text-field-container-color, var(--md-sys-color-surface, #2a3038))
+      --pfx-form-section-surface,
+      var(
+        --mdc-outlined-text-field-container-color,
+        var(
+          --mdc-filled-text-field-container-color,
+          var(--md-sys-color-surface-container, var(--md-sys-color-surface, #2a3038))
+        )
+      )
     )
   );
 }
 
-/* Make the real notch paint above the gradient ring and match container color */
-.mat-mdc-form-field-appearance-outline .mdc-notched-outline__notch {
+/* Do NOT paint the full notch background (it spans field height).
+   We only paint a small shim behind the floating label via ::before above. */
+.mat-mdc-form-field-appearance-outline .mdc-notched-outline__notch,
+.mat-mdc-form-field .mdc-notched-outline__notch {
   position: relative;
-  z-index: 1; /* above ring (::after) but below the label text */
+  z-index: 1; /* ensure notch area sits above the ring */
+  /*overflow: visible; allow label/overlay to render beyond notch bounds */
+}
+
+/* Cut the top ring segment under the floating label by painting
+   a small strip only within the notch area (focused and unfocused). */
+.mat-mdc-form-field-appearance-outline .mdc-notched-outline__notch::after,
+.mat-mdc-form-field .mdc-notched-outline__notch::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  top: -2px; /* aligns with outlined ring inset/padding */
+  height: 8px; /* cover ring thickness with small safety */
   background: var(
     --pfx-field-notch-bg,
     var(
-      --mdc-outlined-text-field-container-color,
-      var(--mdc-filled-text-field-container-color, var(--md-sys-color-surface))
+      --pfx-form-section-surface,
+      var(
+        --mdc-outlined-text-field-container-color,
+        var(
+          --mdc-filled-text-field-container-color,
+          var(--md-sys-color-surface-container, var(--md-sys-color-surface))
+        )
+      )
     )
-  );
+  ) !important;
+  z-index: -1; /* above ring, below label (label z-index: 3) */
+  pointer-events: none;
 }
 
 /* DEBUG toggle: add .debug-notch to <body> or :root to force red */
-:root.debug-notch .mat-mdc-form-field-appearance-outline .mdc-notched-outline__notch,
-body.debug-notch .mat-mdc-form-field-appearance-outline .mdc-notched-outline__notch {
-  background: rgba(255, 0, 64, 0.8) !important;
-}
 :root.debug-notch .mat-mdc-form-field-appearance-outline .mat-mdc-floating-label.mdc-floating-label--float-above::before,
 body.debug-notch .mat-mdc-form-field-appearance-outline .mat-mdc-floating-label.mdc-floating-label--float-above::before,
 :root.debug-notch .mat-mdc-form-field-appearance-fill .mat-mdc-floating-label.mdc-floating-label--float-above::before,
 body.debug-notch .mat-mdc-form-field-appearance-fill .mat-mdc-floating-label.mdc-floating-label--float-above::before {
   background: rgba(255, 0, 64, 0.8) !important;
+}
+/* DEBUG: temporarily remove gradient ring to isolate notch layering */
+:root.debug-notch .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper.mdc-text-field--outlined::after,
+body.debug-notch .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper.mdc-text-field--outlined::after {
+  content: none !important;
+}
+/* DEBUG: visualize outline box area */
+:root.debug-notch .mat-mdc-form-field .mdc-notched-outline,
+body.debug-notch .mat-mdc-form-field .mdc-notched-outline {
+  outline: 2px dashed rgba(255,0,64,.6) !important;
 }
 
 /* DEBUG: remover bordas arredondadas dos inputs (outline e filled) */

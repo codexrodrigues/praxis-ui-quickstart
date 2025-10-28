@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 import { ShellComponent } from './core/layout/shell.component';
 import { PerfilEditorComponent } from './features/heroes/perfis/perfil-editor.component';
 import { LoginComponent } from './features/shared/login/login.component';
-import { authGuard } from './core/guards/auth.guard';
 import { HomePage } from './features/home/home.page';
 
 export const APP_ROUTES: Routes = [
@@ -10,7 +9,6 @@ export const APP_ROUTES: Routes = [
   {
     path: '',
     component: ShellComponent,
-    canActivate: [authGuard],
     children: [
       {
         path: '',
@@ -21,6 +19,8 @@ export const APP_ROUTES: Routes = [
       { path: 'componentes', loadComponent: () => import('./features/componentes/componentes.page').then(m => m.ComponentesPage) },
       { path: 'componentes/table', loadComponent: () => import('./features/componentes/table-demo.page').then(m => m.TableDemoPage) },
       { path: 'componentes/form', loadComponent: () => import('./features/componentes/form-demo.page').then(m => m.FormDemoPage) },
+      { path: 'componentes/tabs', loadComponent: () => import('./features/componentes/tabs-demo.page').then(m => m.TabsDemoPage) },
+      { path: 'componentes/list', loadComponent: () => import('./features/componentes/lists-demo.page').then(m => m.ListsDemoPage) },
       { path: 'ferramentas', loadComponent: () => import('./features/ferramentas/ferramentas.page').then(m => m.FerramentasPage) },
 
       // Módulo: Heróis

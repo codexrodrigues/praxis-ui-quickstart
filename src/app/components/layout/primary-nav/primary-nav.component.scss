@@ -19,9 +19,12 @@
   padding: 8px 12px; border-radius: 5px;
   color: #111; text-decoration: none;
   font-size: 14px; font-weight: 500;
+  display: inline-flex; align-items: center; gap: 6px;
 }
 .tabs a:hover { background: rgba(0,0,0,0.08); }
 .tabs a.active { background: rgba(255,255,255,0.15); }
+/* Cadeado para itens que exigem autenticação */
+.tabs a .lock { font-size: 14px; opacity: .8; }
 
 /* subtle separators between buttons */
 .tabs a + a { border-left: 1px solid rgba(255, 255, 255, 0.25); }

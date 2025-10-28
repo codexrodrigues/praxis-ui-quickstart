@@ -14,6 +14,7 @@ import { ViewChild } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { DrawerService } from '../drawer/drawer.service';
 import { DrawerHostDirective } from '../drawer/drawer-host.directive';
+import { GlobalLoadingComponent } from '../loading/global-loading.component';
 import { CustomizationModeService } from '../services/customization-mode.service';
 import { Highlight } from 'ngx-highlightjs';
 import { HighlightLineNumbers } from 'ngx-highlightjs/line-numbers';
@@ -37,6 +38,7 @@ type NavGroup = { label: string; items: NavItem[] };
     DrawerHostDirective,
     Highlight,
     HighlightLineNumbers,
+    GlobalLoadingComponent,
   ],
   templateUrl: './shell.component.html',
   styleUrls: ['./shell.component.scss']
@@ -118,6 +120,7 @@ export class ShellComponent {
   activeDocTab: 'how' | 'api' = 'how';
   isTableDemoRoute = false;
   isFormDemoRoute = false;
+  isManualFormDemoRoute = false;
   showTableCode = false;
   tableResourcePath = '';
   formResourcePath = '';
@@ -139,8 +142,8 @@ export class ShellComponent {
   formConfigHint = 'Aguardando configuração do formulário...';
   schemasRawJson = '';
   schemasRawHint = 'Carregando metadados do servidor...';
-  tableDemoUsage = `<!-- No template: informe apenas o caminho do recurso da API -->
-<praxis-table [resourcePath]="resourcePath"></praxis-table>`;
+  tableDemoUsage = `<!-- No template: informe o caminho do recurso da API e escute metadataChange -->
+<praxis-table [resourcePath]="resourcePath" (metadataChange)="onMetadataChanged($event)"></praxis-table>`;
   tableDemoTs = `import { Component } from '@angular/core';
 import { PraxisTable } from '@praxisui/table';
 
@@ -148,8 +151,8 @@ import { PraxisTable } from '@praxisui/table';
   selector: 'app-table-demo',
   standalone: true,
   imports: [PraxisTable],
-  // Dica: apenas informe o resourcePath. A UI se ajusta pelo contrato da API.
-  template: '<praxis-table [resourcePath]="resourcePath"></praxis-table>',
+  // Dica: informe o resourcePath e utilize metadataChange para reagir à meta da grade.
+  template: '<praxis-table [resourcePath]="resourcePath" (metadataChange)="onMetadataChanged($event)"></praxis-table>',
 })
 export class TableDemoComponent {
   resourcePath = '/human-resources/funcionarios';
@@ -167,6 +170,7 @@ export class TableDemoComponent {
     this.activeDocTab = 'how';
     this.isTableDemoRoute = false;
     this.isFormDemoRoute = false;
+    this.isManualFormDemoRoute = false;
     this.showTableCode = false;
 
     // Route-specific metadata
@@ -222,7 +226,7 @@ export class TableDemoComponent {
               <span class="step">2</span>
               <div class="step-content">
                 <div>No template:</div>
-                <pre><code>&lt;!-- Informe somente o resourcePath --&gt;\n&lt;praxis-table [resourcePath]=\"resourcePath\"&gt;&lt;/praxis-table&gt;</code></pre>
+                <pre><code>&lt;!-- Informe o resourcePath e escute metadataChange --&gt;\n&lt;praxis-table [resourcePath]=\"resourcePath\" (metadataChange)=\"onMetadataChanged($event)\"&gt;&lt;/praxis-table&gt;</code></pre>
               </div>
             </li>
             <li>
@@ -269,6 +273,19 @@ export class TableDemoComponent {
             <li><span class="k">Construção</span>: gera colunas (rótulo/tipo/ordem/visibilidade) e toolbar.</li>
             <li><span class="k">Renderização</span>: carrega dados de <code>${this.endpointAllUrl}</code>.</li>
           </ol>
+        </div>
+
+        <div class="doc-section">
+          <h4 class="section-title">Eventos recomendados</h4>
+          <ul>
+            <li>
+              <code>metadataChange</code> — evento preferido para refletir alterações de metadados (bootstrap/verificação/aplicação).
+              <pre><code>&lt;praxis-table [resourcePath]="resourcePath" (metadataChange)="onMetadataChanged($event)"&gt;&lt;/praxis-table&gt;</code></pre>
+            </li>
+            <li>
+              <code>schemaStatusChange</code> — mantido para compatibilidade. Útil para sinalizar <em>outdated</em> e timestamps.
+            </li>
+          </ul>
         </div>
 
         <div class="doc-section">
@@ -326,6 +343,14 @@ operation=get
 schemaType=response
 includeInternalSchemas=false</code></pre>
           <p class="muted">ETag/If-None-Match evita baixar o corpo quando não há mudanças de contrato.</p>
+        </div>
+
+        <div class="doc-section">
+          <h4 class="section-title">Eventos do componente</h4>
+          <ul class="endpoint-list">
+            <li><code>metadataChange</code> — recomendado; emite metadados consolidados e motivo: <code>bootstrap</code> | <code>verification</code> | <code>applied</code>.</li>
+            <li><code>schemaStatusChange</code> — compatibilidade; emite <code>{ outdated, serverHash?, lastVerifiedAt?, resourcePath? }</code>.</li>
+          </ul>
         </div>
       `;
       return;
@@ -473,6 +498,68 @@ includeInternalSchemas=false</code></pre>
               <strong>${this.formMode==='view'?'Carregar':'Salvar'}</strong>:
               <code>${this.formMode==='create'?this.formEndpointCreateUrl:this.formMode==='edit'?this.formEndpointUpdateUrl:this.formEndpointGetByIdUrl}</code>
             </li>
+          </ul>
+        </div>
+      `;
+      return;
+    }
+
+    // FORM MANUAL: list + manual form demo
+    if (clean.startsWith('/componentes/form-manual')) {
+      this.pageTitle = 'Formulário Manual — Demo';
+      this.pageIcon = 'fact_check';
+      this.pageDesc = 'Lista remota (VW_PERFIL_HEROI) no topo e formulário manual editando o Funcionário real, com validações e selects remotos.';
+      this.isManualFormDemoRoute = true;
+
+      const api = '/api';
+      const listUrl = `${api}/human-resources/vw-perfil-heroi/all`;
+      const getByIdUrl = `${api}/human-resources/funcionarios/{id}`;
+      const cargosUrl = `${api}/human-resources/cargos/options/filter`;
+      const deptosUrl = `${api}/human-resources/departamentos/options/filter`;
+
+      // Doc principal
+      this.docHtml = `
+        <div class="doc-section">
+          <h4 class="section-title">PASSO A PASSO</h4>
+          <ol>
+            <li>Importe <code>PraxisList</code> e <code>ManualFormComponent</code>.</li>
+            <li>No topo, renderize <code>&lt;praxis-list&gt;</code> com <code>resourcePath='/human-resources/vw-perfil-heroi'</code> e seleção <em>single</em>.</li>
+            <li>Ao selecionar, extraia <code>id = funcionarioId ?? id</code> e carregue o Funcionário real.</li>
+            <li>Use <code>&lt;praxis-manual-form [formGroup]&gt;</code> com campos <code>pdx-*</code> autodetectados.</li>
+            <li>Para combos remotos, carregue opções e aplique via <code>manualForm.instance.patchFieldMetadata()</code>.</li>
+            <li>Salvar com <code>GenericCrudService.update(id, payload)</code>.</li>
+          </ol>
+        </div>
+
+        <div class="doc-section">
+          <h4 class="section-title">Template (trecho)</h4>
+          <pre><code class="language-xml">&lt;praxis-list [config]=\"listConfig\" (selectionChange)=\"onSelection($event)\"&gt;&lt;/praxis-list&gt;\n\n&lt;form [formGroup]=\"form\" (ngSubmit)=\"onSubmit()\"&gt;\n  &lt;praxis-manual-form [formGroup]=\"form\" formId=\"funcionario-manual\" [editModeEnabled]=\"custom.enabled()\"&gt;\n    &lt;pdx-text-input formControlName=\"nomeCompleto\" label=\"Nome completo\"&gt;&lt;/pdx-text-input&gt;\n    &lt;pdx-material-datepicker formControlName=\"dataNascimento\" label=\"Data de nascimento\"&gt;&lt;/pdx-material-datepicker&gt;\n    &lt;pdx-material-currency formControlName=\"salario\" [metadata]=\"currencyMeta\"&gt;&lt;/pdx-material-currency&gt;\n    &lt;pdx-material-select formControlName=\"cargoId\" label=\"Cargo\"&gt;&lt;/pdx-material-select&gt;\n  &lt;/praxis-manual-form&gt;\n  &lt;button type=\"submit\"&gt;Salvar&lt;/button&gt;\n&lt;/form&gt;</code></pre>
+        </div>
+
+        <div class="doc-section">
+          <h4 class="section-title">TypeScript (trecho)</h4>
+          <pre><code class="language-typescript">onSelection(ev: any) {\n  const id = Number(ev?.ids?.[0] ?? ev?.items?.[0]?.funcionarioId ?? ev?.items?.[0]?.id);\n  if (!id) return;\n  crud.configure('/human-resources/funcionarios');\n  crud.getById(id).subscribe(x =&gt; form.patchValue(FuncionarioAdapter.toForm(x)));\n}\n\nfunction patchSelectOptions(field: string, opts: Array&lt;{ id: any; label: string }&gt;) {\n  const selectOptions = opts.map(o =&gt; ({ value: o.id, text: o.label }));\n  manualForm.instance?.patchFieldMetadata(field, { controlType: FieldControlType.SELECT, selectOptions });\n}\n\nfunction onSubmit() {\n  const payload = FuncionarioAdapter.toPayload(form.value);\n  crud.configure('/human-resources/funcionarios');\n  crud.update(selectedId, payload).subscribe();\n}</code></pre>
+        </div>
+
+        <div class="doc-section">
+          <h4 class="section-title">Dicas de UX</h4>
+          <ul>
+            <li><strong>Loading</strong>: desabilite o botão Salvar enquanto envia.</li>
+            <li><strong>Validações</strong>: use <code>mat-error</code> dos campos e helpers como <code>cpfValidator</code> e <code>pastDateValidator</code>.</li>
+            <li><strong>Editor</strong>: duplo clique abre editor quando o <em>Modo Edição</em> está ativo.</li>
+          </ul>
+        </div>
+      `;
+
+      // API & Esquema
+      this.docHtmlApi = `
+        <div class=\"doc-section\">
+          <h4 class=\"section-title\">Endpoints</h4>
+          <ul class=\"endpoint-list\">
+            <li><span class=\"http-badge get\">GET</span> Lista: <code>${listUrl}</code></li>
+            <li><span class=\"http-badge get\">GET</span> Detalhe: <code>${getByIdUrl}</code></li>
+            <li><span class=\"http-badge post\">POST</span> Cargos (options): <code>${cargosUrl}</code></li>
+            <li><span class=\"http-badge post\">POST</span> Departamentos (options): <code>${deptosUrl}</code></li>
           </ul>
         </div>
       `;

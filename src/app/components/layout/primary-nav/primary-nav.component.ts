@@ -1,11 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { NgFor } from '@angular/common';
+import { NgFor, CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { AuthService } from '../../../core/services/auth.service';
-import { Router } from '@angular/router';
+// removed unused AuthService/Router (public navigation)
 import { SettingsPanelService, GlobalConfigEditorComponent } from '@praxisui/settings-panel';
 
 type TabItem = { label: string; link?: string; external?: boolean };
@@ -13,23 +12,19 @@ type TabItem = { label: string; link?: string; external?: boolean };
 @Component({
   selector: 'app-primary-nav',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, NgFor, MatIconModule, MatButtonModule, MatTooltipModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive, NgFor, MatIconModule, MatButtonModule, MatTooltipModule],
   templateUrl: './primary-nav.component.html',
   styleUrls: ['./primary-nav.component.scss']
 })
 export class PrimaryNavComponent {
   protected readonly tabs: TabItem[] = [
     { label: 'Início', link: '/home' },
-    { label: 'Operações', link: '/operacoes/resumo' },
-    { label: 'Heróis', link: '/heroes/perfis' },
-    { label: 'Compliance', link: '/compliance/indicadores' },
     { label: 'Componentes', link: '/componentes' },
-    { label: 'Ferramentas', link: '/ferramentas' },
+    { label: 'Formulários', link: '/componentes/form' },
+    { label: 'Tabelas', link: '/componentes/table' },
     { label: 'Docs', link: 'https://praxis-api-quickstart.onrender.com/swagger-ui/index.html', external: true },
   ];
 
-  private auth = inject(AuthService);
-  private router = inject(Router);
   private settings = inject(SettingsPanelService);
 
   openGlobalConfig(): void {

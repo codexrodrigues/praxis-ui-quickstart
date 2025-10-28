@@ -55,10 +55,10 @@ Para builds de produção, o frontend injeta a URL base da API no arquivo `src/e
 ```
 src/
   app/
-    core/                  # Serviços, layout, guards
+    core/                  # Serviços e layout
       layout/              # Shell com sidenav + side-sheet
       services/            # ApiClient + serviços de domínio
-      guards/              # (placeholder) auth guard
+      guards/              # (não utilizado)
     features/
       heroes/
         perfis/            # lista + editor (side-sheet auxiliar)
@@ -117,12 +117,16 @@ Para um passo‑a‑passo de como alinhar os endpoints com a API real (incluindo
 
 ## Próximos passos
 - Ligar formulários do editor às entidades reais da API
-- Adicionar autenticação/guard (quando necessário)
+- (Opcional) UI pode sinalizar que escrita exige login; backend já valida escrita
 - Criar testes e validação de tipos mais detalhada
 
 ## Documentação de Integração do Praxis UI
 - Guia passo‑a‑passo (tokens, providers, tema M3, shims e erros comuns):
   - `docs/PraxisUI-Integration-Guide.md`
+
+### Eventos do PraxisTable (boas práticas)
+- Prefira o evento `metadataChange` para refletir alterações de metadados (bootstrap/verificação/aplicação).
+- O evento `schemaStatusChange` permanece por compatibilidade e sinaliza `outdated`/hash/verifiedAt.
 
 ---
 Feito com ❤ para o ecossistema Praxis.

@@ -61,9 +61,10 @@ export class AppComponent implements OnInit, OnDestroy {
         ];
       case 'componentes':
         return [
-          { label: 'Perfis (lista)', link: '/heroes/perfis' },
-          { label: 'Habilidades', link: '/heroes/habilidades' },
-          { label: 'Indicadores', link: '/compliance/indicadores' },
+          { label: 'Tabela (demo)', link: '/componentes/table' },
+          { label: 'Tabs (demo)', link: '/componentes/tabs' },
+          { label: 'Lista (demo)', link: '/componentes/list' },
+          { label: 'Formulário (demo)', link: '/componentes/form' },
         ];
       case 'ferramentas':
         return [
@@ -73,9 +74,10 @@ export class AppComponent implements OnInit, OnDestroy {
       case 'home':
       default:
         return [
-          { label: 'Exemplos', link: '/operacoes/resumo' },
           { label: 'Componentes', link: '/componentes' },
-          { label: 'Showcase', link: '/compliance/indicadores' },
+          { label: 'Formulários', link: '/componentes/form' },
+          { label: 'Tabelas', link: '/componentes/table' },
+          { label: 'Docs', link: 'https://praxis-api-quickstart.onrender.com/swagger-ui/index.html', external: true },
         ];
     }
   }

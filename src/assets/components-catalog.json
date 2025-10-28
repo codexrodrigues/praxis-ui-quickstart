@@ -1,0 +1,122 @@
+{
+  "groups": [
+    {
+      "label": "UI Básica (em breve)",
+      "items": [
+        { "id": "tabs", "title": "Praxis Tabs", "desc": "Abas com conteúdo e navegação", "icon": "tab", "kind": "internal", "link": "/componentes/tabs", "requiresAuth": false, "status": "soon" },
+        { "id": "expansion", "title": "Praxis Expansion", "desc": "Painéis expansíveis", "icon": "unfold_more", "kind": "internal", "link": "/componentes/expansion", "requiresAuth": false, "status": "soon" },
+        { "id": "lists", "title": "Praxis Lists", "desc": "Listagens com templates", "icon": "view_list", "kind": "internal", "link": "/componentes/lists", "requiresAuth": false, "status": "soon" },
+        { "id": "lists-remote", "title": "Praxis Lists (remoto)", "desc": "Listagens consumindo API", "icon": "list", "kind": "internal", "link": "/componentes/lists-remote", "requiresAuth": true, "status": "soon" },
+        { "id": "dialog", "title": "Praxis Dialog", "desc": "Diálogos e confirmações", "icon": "chat", "kind": "internal", "link": "/componentes/dialog", "requiresAuth": false, "status": "soon" }
+      ]
+    },
+    {
+      "label": "Showcases",
+      "items": [
+        {
+          "id": "table-demo",
+          "title": "Praxis Table (demo)",
+          "desc": "Lista com colunas e filtros gerados a partir do schema",
+          "icon": "table_view",
+          "kind": "internal",
+          "link": "/componentes/table",
+          "state": { "resource": "/human-resources/funcionarios" },
+          "requiresAuth": true,
+          "status": "stable"
+        },
+        {
+          "id": "list-demo",
+          "title": "Praxis Lists (demo)",
+          "desc": "Listas/cartões com ícones, chips e dados reais",
+          "icon": "format_list_bulleted",
+          "kind": "internal",
+          "link": "/componentes/list",
+          "requiresAuth": true,
+          "status": "stable"
+        },
+        {
+          "id": "tabs-demo",
+          "title": "Praxis Tabs (demo)",
+          "desc": "Abas com Tabela e Form configuráveis",
+          "icon": "tab",
+          "kind": "internal",
+          "link": "/componentes/tabs",
+          "requiresAuth": true,
+          "status": "stable"
+        },
+        {
+          "id": "form-demo",
+          "title": "Praxis Dynamic Form (demo)",
+          "desc": "UI dinâmica com validação e selects remotos conforme o schema",
+          "icon": "dynamic_form",
+          "kind": "internal",
+          "link": "/componentes/form",
+          "state": { "resource": "/human-resources/funcionarios", "mode": "create" },
+          "requiresAuth": true,
+          "status": "stable"
+        }
+      ]
+    },
+    {
+      "label": "Formulários (em breve)",
+      "items": [
+        { "id": "stepper-demo", "title": "Praxis Stepper", "desc": "Fluxos guiados por etapas", "icon": "format_list_numbered", "kind": "internal", "link": "/componentes/stepper", "requiresAuth": false, "status": "soon" },
+        { "id": "form-preview", "title": "Praxis Form Preview", "desc": "Pré-visualização de configs", "icon": "preview", "kind": "internal", "link": "/componentes/form-preview", "requiresAuth": false, "status": "soon" },
+        { "id": "form-config-editor", "title": "Praxis Form Config Editor", "desc": "Editor de definição de formulário", "icon": "tune", "kind": "internal", "link": "/componentes/form-config-editor", "requiresAuth": false, "status": "soon" }
+      ]
+    },
+    {
+      "label": "Layouts Dinâmicos (em breve)",
+      "items": [
+        { "id": "dynamic-grid", "title": "Praxis Dynamic Grid", "desc": "Layout de cartões em grid", "icon": "grid_view", "kind": "internal", "link": "/componentes/dynamic-grid", "requiresAuth": false, "status": "soon" },
+        { "id": "dynamic-gridster", "title": "Praxis Dynamic Gridster", "desc": "Painéis arrastáveis", "icon": "view_quilt", "kind": "internal", "link": "/componentes/dynamic-gridster", "requiresAuth": false, "status": "soon" },
+        { "id": "dynamic-page", "title": "Praxis Dynamic Page", "desc": "Páginas geradas por config", "icon": "description", "kind": "internal", "link": "/componentes/dynamic-page", "requiresAuth": false, "status": "soon" }
+      ]
+    },
+    {
+      "label": "Listas & Dashboards",
+      "items": [
+        {
+          "id": "heroes-perfis",
+          "title": "Perfis",
+          "desc": "Lista simples consumindo a API",
+          "icon": "badge",
+          "kind": "internal",
+          "link": "/heroes/perfis",
+          "requiresAuth": true,
+          "status": "stable"
+        },
+        {
+          "id": "heroes-habilidades",
+          "title": "Habilidades",
+          "desc": "Lista com mapeamento de campos e tipos",
+          "icon": "psychology",
+          "kind": "internal",
+          "link": "/heroes/habilidades",
+          "requiresAuth": true,
+          "status": "stable"
+        },
+        {
+          "id": "compliance-indicadores",
+          "title": "Indicadores",
+          "desc": "Dashboard de KPIs calculados",
+          "icon": "insights",
+          "kind": "internal",
+          "link": "/compliance/indicadores",
+          "requiresAuth": true,
+          "status": "stable"
+        }
+      ]
+    },
+    {
+      "label": "Avançados (em breve)",
+      "items": [
+        { "id": "crud-suite", "title": "Praxis CRUD Suite", "desc": "Tabela + Form integrados", "icon": "view_module", "kind": "internal", "link": "/componentes/crud", "requiresAuth": true, "status": "soon" },
+        { "id": "visual-builder", "title": "Praxis Visual Builder", "desc": "Montagem visual de páginas", "icon": "dashboard_customize", "kind": "external", "link": "", "requiresAuth": false, "status": "soon" },
+        { "id": "files-upload", "title": "Praxis Files Upload", "desc": "Upload com validação e progresso", "icon": "upload_file", "kind": "internal", "link": "/componentes/upload", "requiresAuth": true, "status": "soon" },
+        { "id": "cron-builder", "title": "Praxis Cron Builder", "desc": "Agendas CRON com builder visual", "icon": "schedule", "kind": "internal", "link": "/componentes/cron-builder", "requiresAuth": false, "status": "soon" },
+        { "id": "custom-components", "title": "Praxis Custom Components", "desc": "Componentes host‑específicos", "icon": "extension", "kind": "internal", "link": "/componentes/custom", "requiresAuth": false, "status": "soon" }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,15 @@
+// -----------------------------------------------
+// Estilos globais do Quickstart
+// - Mantém o tema Material v20 (tokens) e utilitários
+// - Inclui dicas e comentários educativos para novos devs
+// - Ordem Sass: @use deve vir antes de qualquer outra regra
+// -----------------------------------------------
 @use '@angular/material' as mat;
+
+// CSS base do CDK Overlay (backdrop/containers de menus, dialogs, tooltips, etc.)
+// Alternativa quando o projeto usa styles.css: adicione
+// "node_modules/@angular/cdk/overlay-prebuilt.css" em angular.json > build.options.styles
+@import "@angular/cdk/overlay-prebuilt.css";
 
 // Tema Material 3 escuro com tokens
 $primary-palette: mat.$cyan-palette;
@@ -32,6 +43,11 @@ $dark-theme: mat.define-theme((
   --accent: #60a5fa;
   --accent-2: #8b5cf6;
   --highlight: rgba(96,165,250,0.10);
+  // Tokens de gradiente (personalizáveis) usados por inputs Material (fill/outline)
+  // Ajuste --p-primary-gradient para mudar as cores do efeito
+  /* Gradient tokens for inputs and brand accents */
+  --p-primary-gradient: linear-gradient(90deg, #1f8a8a, #6c63ff);
+  --p-input-gradient: var(--p-primary-gradient);
   /* Brand gradient */
   --brand-grad-start: #60a5fa; /* cyan-400 */
   --brand-grad-end: #8b5cf6;   /* violet-400 */
@@ -99,6 +115,8 @@ body {
   color: var(--mat-sys-color-on-surface, #e6e6e6);
 }
 
+// Importante para overlays: o CDK cria .cdk-overlay-container no <body>
+// Duplicamos as CSS custom properties para que menus/dialogs herdem as mesmas cores
 /* Ensure overlays inherit the same variables even when rendered outside app root */
 .cdk-overlay-container, .cdk-global-overlay-wrapper {
   /* Core surfaces + text */
@@ -177,6 +195,151 @@ body, h1, h2, h3, h4, h5, h6, p { margin: 0; }
 .mat-mdc-dialog-container .mdc-dialog__content {
   background: var(--md-sys-color-surface);
   color: var(--md-sys-color-on-surface);
+}
+
+/*
+  Angular Material input gradients (fill/outline)
+  - Fill: pinta a linha inferior com gradiente no foco
+  - Outline: desenha um “anel” com gradiente usando máscara (com fallback)
+  Compatível com MDC / Material v15–v20
+*/
+/* Fill appearance: gradient line on focus */
+.mat-mdc-form-field-appearance-fill.mat-focused .mdc-line-ripple::after {
+  height: 2px;
+  border-radius: 1px;
+  background: var(--p-input-gradient) !important;
+}
+
+/* Outline appearance: gradient ring using masking */
+.mat-mdc-form-field-appearance-outline .mat-mdc-text-field-wrapper.mdc-text-field--outlined {
+  position: relative;
+  overflow: visible;
+}
+.mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper.mdc-text-field--outlined::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: var(--mdc-shape-medium, 8px);
+  padding: 2px;
+  background: var(--p-input-gradient);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  /* Keep the gradient ring below notch/label backgrounds */
+  z-index: 0;
+}
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch {
+  border-color: transparent !important;
+}
+
+/* Fallback when masking isn't supported (browsers antigos) */
+@supports not ((mask-composite: exclude) or (-webkit-mask-composite: xor)) {
+  .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper.mdc-text-field--outlined {
+    border: 2px solid transparent;
+    background:
+      linear-gradient(0deg, transparent, transparent) padding-box,
+      var(--p-input-gradient) border-box;
+    border-radius: var(--mdc-shape-medium, 8px);
+  }
+}
+
+/* Mantém o label legível cortando o anel (outline + label flutuado) */
+/*
+  Alinha a cor do “notch” do label com o próprio container do campo.
+  - Para "filled", usa --mdc-filled-text-field-container-color
+  - Para "outline", tenta --mdc-outlined-text-field-container-color (quando existir)
+  - Fallbacks seguros para temas escuros: surface / surface-container
+*/
+.mat-mdc-form-field {
+  /* Preferir as variáveis do MDC; cair para a superfície do app quando não houver. */
+  --pfx-field-notch-bg: var(
+    --mdc-outlined-text-field-container-color,
+    var(
+      --mdc-filled-text-field-container-color,
+      var(
+        --pfx-form-section-surface,
+        var(--md-sys-color-surface, var(--md-sys-color-surface-container))
+      )
+    )
+  );
+}
+/* Ensure floating label always lifts above the gradient ring (focused or not) */
+.mat-mdc-form-field-appearance-outline .mat-mdc-floating-label.mdc-floating-label--float-above,
+.mat-mdc-form-field-appearance-fill .mat-mdc-floating-label.mdc-floating-label--float-above {
+  position: relative;
+  z-index: 2; /* label stack above ring */
+}
+.mat-mdc-form-field-appearance-outline .mat-mdc-floating-label.mdc-floating-label--float-above::before,
+.mat-mdc-form-field-appearance-fill .mat-mdc-floating-label.mdc-floating-label--float-above::before {
+  content: "";
+  position: absolute;
+  left: -8px; right: -8px; /* pequena margem ao redor do texto */
+  top: 50%; transform: translateY(-50%);
+  height: 1.35em; /* cobre a altura do label flutuado */
+  /* usa a mesma cor percebida do container do campo para evitar faixa escura */
+  background: var(
+    --pfx-field-notch-bg,
+    var(
+      --mdc-outlined-text-field-container-color,
+      var(--mdc-filled-text-field-container-color, var(--md-sys-color-surface, transparent))
+    )
+  );
+  border-radius: 6px;
+  z-index: -1; /* atrás do texto, mas acima do anel por causa do pai */
+  pointer-events: none;
+}
+
+/* Tema escuro: usa o container de superfície definido no tema */
+.mdc-theme-dark .mat-mdc-form-field-appearance-outline .mat-mdc-floating-label.mdc-floating-label--float-above::before,
+.mdc-theme-dark .mat-mdc-form-field-appearance-fill .mat-mdc-floating-label.mdc-floating-label--float-above::before {
+  background: var(
+    --pfx-field-notch-bg,
+    var(
+      --mdc-outlined-text-field-container-color,
+      var(--mdc-filled-text-field-container-color, var(--md-sys-color-surface, #2a3038))
+    )
+  );
+}
+
+/* Make the real notch paint above the gradient ring and match container color */
+.mat-mdc-form-field-appearance-outline .mdc-notched-outline__notch {
+  position: relative;
+  z-index: 1; /* above ring (::after) but below the label text */
+  background: var(
+    --pfx-field-notch-bg,
+    var(
+      --mdc-outlined-text-field-container-color,
+      var(--mdc-filled-text-field-container-color, var(--md-sys-color-surface))
+    )
+  );
+}
+
+/* DEBUG toggle: add .debug-notch to <body> or :root to force red */
+:root.debug-notch .mat-mdc-form-field-appearance-outline .mdc-notched-outline__notch,
+body.debug-notch .mat-mdc-form-field-appearance-outline .mdc-notched-outline__notch {
+  background: rgba(255, 0, 64, 0.8) !important;
+}
+:root.debug-notch .mat-mdc-form-field-appearance-outline .mat-mdc-floating-label.mdc-floating-label--float-above::before,
+body.debug-notch .mat-mdc-form-field-appearance-outline .mat-mdc-floating-label.mdc-floating-label--float-above::before,
+:root.debug-notch .mat-mdc-form-field-appearance-fill .mat-mdc-floating-label.mdc-floating-label--float-above::before,
+body.debug-notch .mat-mdc-form-field-appearance-fill .mat-mdc-floating-label.mdc-floating-label--float-above::before {
+  background: rgba(255, 0, 64, 0.8) !important;
+}
+
+/* DEBUG: remover bordas arredondadas dos inputs (outline e filled) */
+.mat-mdc-text-field-wrapper { --mdc-shape-medium: 0px !important; border-radius: 0 !important; }
+.mat-mdc-form-field .mdc-notched-outline,
+.mat-mdc-form-field .mdc-notched-outline__leading,
+.mat-mdc-form-field .mdc-notched-outline__trailing { border-radius: 0 !important; }
+
+/* Contexto: formularios da lib praxis-dynamic-form usam seções com
+   background var(--pfx-form-section-surface, var(--md-sys-color-surface-container)).
+   Propagamos a mesma cor para o notch do label via CSS var. */
+.praxis-dynamic-form {
+  --pfx-field-notch-bg: var(--pfx-form-section-surface, var(--md-sys-color-surface-container));
 }
 
 /* Typographic harmony (content area including Praxis Table page) */

@@ -244,6 +244,64 @@ Rotas relativas (`/api`) funcionam em dev (proxy) e produção (host final). Evi
 
 ---
 
+5b) Integrando o Formulário
+---------------------------
+
+Uso básico:
+
+```
+<praxis-dynamic-form
+  [formId]="'form-demo:' + resourcePath.replace(/^\//,'').replace(/[^\w-]+/g, '_')"
+  [resourcePath]="resourcePath"
+  [resourceId]="resourceId"
+  [mode]="mode"
+  [editModeEnabled]="custom.enabled()"
+  (formReady)="onFormReady($event)"
+  (schemaStatusChange)="onSchemaStatusChange($event)"
+  (valueChange)="onValueChange($event)"
+  (initializationError)="onInitError($event)"
+></praxis-dynamic-form>
+```
+
+Melhores práticas ao trocar o recurso (`resourcePath`):
+- `PraxisDynamicForm` valida versões de schema ao mudar `resourcePath`, mas não reconstrói o formulário por padrão.
+- Para que o formulário reflita totalmente o novo recurso, chame `retryInitialization()` no componente após atualizar `resourcePath`/`formId`.
+
+Exemplo (host):
+
+```
+@ViewChild(PraxisDynamicForm) private formRef?: PraxisDynamicForm;
+
+applyResource(next: string) {
+  this.resourcePath = normalize(next);
+  this.resourceId = '';
+  // Aguarde a propagação de @Inputs e re-inicialize
+  const reinit = () => this.formRef?.retryInitialization?.();
+  (window as any).queueMicrotask ? queueMicrotask(reinit) : setTimeout(reinit, 0);
+}
+```
+
+Alternativa (remontagem): envolver o componente em `*ngIf` e alternar um flag para forçar destroy/create. Útil se preferir não chamar métodos do filho, mas menos eficiente:
+
+```
+<ng-container *ngIf="showForm">
+  <praxis-dynamic-form ...></praxis-dynamic-form>
+<ng-container>
+
+// no TS, ao trocar o recurso:
+this.showForm = false;
+setTimeout(() => this.showForm = true);
+```
+
+Observações:
+- `formId` estável por recurso permite persistir layout e verificar versões de schema via ETag (200/304) sem bloquear o usuário.
+- Endpoints usados: `GET /api/<recurso>/schemas` (que pode redirecionar a `/schemas/filtered?...`) e CRUD do recurso conforme `mode`.
+
+Dica de depuração:
+- Ative logs no console definindo `window.__PRAXIS_DEBUG__ = true` (ex.: via Console do navegador). O demo de host registra trocas de recurso, `formId` e a URL alvo de schemas.
+
+---
+
 6) Highlight.js (exibir exemplos de código)
 ------------------------------------------
 

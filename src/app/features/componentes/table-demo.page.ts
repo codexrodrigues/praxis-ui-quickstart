@@ -16,37 +16,10 @@ import { TableMetadataBridgeService } from '../../core/layout/table-metadata-bri
   template: `
     <section class="didactic-card gradient-border" aria-label="Explorar endpoints">
       <div class="card-body">
-        <div class="card-left">
-          <h3 class="title">Explore diferentes recursos</h3>
-          <p class="subtitle">Altere o <strong>resourcePath</strong> para ver a tabela se adaptar automaticamente.</p>
-          <div class="quick-options" role="group" aria-label="Atalhos de recursos">
-            <button type="button" class="chip" (click)="applyResource('/human-resources/funcionarios')">
-              <span class="material-symbols-outlined" aria-hidden="true">group</span>
-              <span>Funcionários</span>
-            </button>
-            <button type="button" class="chip" (click)="applyResource('/compliance/incidentes')">
-              <span class="material-symbols-outlined" aria-hidden="true">report</span>
-              <span>Incidentes</span>
-            </button>
-            <button type="button" class="chip" (click)="applyResource('/compliance/indenizacoes')">
-              <span class="material-symbols-outlined" aria-hidden="true">payments</span>
-              <span>Indenizações</span>
-            </button>
-          </div>
-        </div>
-        <form class="card-right" (submit)="onApplyCustom($event)" aria-label="Definir resourcePath manualmente">
-          <label for="resourceInput" class="label">resourcePath atual</label>
-          <div class="input-row">
-            <input id="resourceInput" class="text" type="text" [value]="resourcePath" (input)="resourceInput = ( $any($event.target).value || '' )" placeholder="/modulo/recurso" spellcheck="false" />
-            <button type="submit" class="apply">Carregar</button>
-          </div>
-          <small class="hint">Dica: você pode colar qualquer caminho da sua API (ex.: <code>/human-resources/funcionarios</code>).</small>
-
-          <div class="or">ou</div>
-
+        <form class="card-right" aria-label="Escolher recurso">
           <mat-form-field appearance="fill" class="select-field">
             <mat-label>Escolher um recurso</mat-label>
-            <mat-select [(value)]="selectedResource" panelClass="resource-select-panel">
+            <mat-select [(value)]="selectedResource" panelClass="resource-select-panel" (selectionChange)="selectedResource=$event.value; selectedResource && applyResource(selectedResource.path)">
               <mat-option disabled class="search-option">
                 <div class="search-row" (click)="$event.stopPropagation()">
                   <span class="material-symbols-outlined" aria-hidden="true">search</span>
@@ -71,8 +44,6 @@ import { TableMetadataBridgeService } from '../../core/layout/table-metadata-bri
               </ng-template>
             </mat-select>
           </mat-form-field>
-          <button type="button" class="apply" (click)="selectedResource && applyResource(selectedResource.path)">Aplicar seleção</button>
-          <small class="hint">O caminho real (resourcePath) é aplicado somente ao confirmar.</small>
         </form>
       </div>
       
@@ -80,7 +51,7 @@ import { TableMetadataBridgeService } from '../../core/layout/table-metadata-bri
 
     <praxis-table
       [resourcePath]="resourcePath"
-      (schemaStatusChange)="onSchemaStatus()"
+      (metadataChange)="onMetadataChanged($event)"
     ></praxis-table>
   `,
   styles: [`
@@ -174,7 +145,8 @@ export class TableDemoPage implements AfterViewInit {
     this.loadResources();
   }
 
-  onSchemaStatus(): void { this.pushMetadata(); }
+  // Prefer recommended event from @praxisui/table to react to metadata updates
+  onMetadataChanged(_: any): void { this.pushMetadata(); }
 
   private pushMetadata(): void {
     try {
@@ -256,9 +228,11 @@ export class TableDemoPage implements AfterViewInit {
     // Atualiza query param para facilitar compartilhamento de URL
     try { this.router.navigate([], { queryParams: { resource: rp }, queryParamsHandling: 'merge' }); } catch {}
     // Persiste última escolha
-    try { localStorage.setItem(this.storageKey, rp); } catch {}
-    this.pushMetadata();
-  }
+  try { localStorage.setItem(this.storageKey, rp); } catch {}
+  this.pushMetadata();
+}
+
+ 
 
   onApplyCustom(ev?: Event): void {
     ev?.preventDefault();

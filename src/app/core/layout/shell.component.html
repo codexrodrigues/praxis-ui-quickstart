@@ -10,6 +10,7 @@
 
   <!-- Conteúdo principal -->
   <mat-sidenav-content>
+    <app-global-loading></app-global-loading>
     <main class="content">
       <!-- Home: layout livre -->
       <ng-container *ngIf="(isHome$ | async) ?? false; else twoCol">
@@ -28,8 +29,8 @@
                   <p class="desc" *ngIf="pageDesc">{{ pageDesc }}</p>
                 </div>
                 <div class="header-toggles">
-                  <!-- Toggle edição -->
-                  <button type="button" class="edit-toggle"
+                  <!-- Toggle edição (oculto no demo de formulário; movido para o card local) -->
+                  <button *ngIf="!isFormDemoRoute" type="button" class="edit-toggle"
                           [class.on]="custom.enabled()"
                           (click)="custom.toggle()"
                           [attr.aria-pressed]="custom.enabled()"

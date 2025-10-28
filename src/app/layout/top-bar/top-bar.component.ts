@@ -1,16 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
-import { SettingsPanelService, GlobalConfigEditorComponent } from '@praxisui/settings-panel';
 import { Router } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatTooltipModule } from '@angular/material/tooltip';
+ 
 
 @Component({
   selector: 'app-top-bar',
   standalone: true,
-  imports: [AsyncPipe, NgIf, MatIconModule, MatButtonModule, MatTooltipModule],
+  imports: [AsyncPipe, NgIf],
   template: `
     <div class="top-bar" role="navigation" aria-label="Utility navigation">
       <div class="left">
@@ -29,9 +26,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
             <span class="label">Convidado</span>
           </span>
         </ng-template>
-        <button mat-icon-button color="primary" class="global-config-btn" (click)="openGlobalConfig($event)" aria-label="Abrir configurações globais" [matTooltip]="'Configurações Globais'" matTooltipPosition="below">
-          <mat-icon fontIcon="tune" aria-hidden="true"></mat-icon>
-        </button>
+        <button *ngIf="!(isAuth$ | async)" class="login" (click)="onLogin($event)" title="Entrar para alterar dados">Entrar</button>
         <button *ngIf="(isAuth$ | async)" class="logout" (click)="onLogout($event)" title="Encerrar sessão com segurança">Sair</button>
       </div>
     </div>
@@ -39,27 +34,19 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   styleUrls: ['./top-bar.component.scss']
 })
 export class TopBarComponent {
-  private readonly settings = inject(SettingsPanelService);
   protected readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   isAuth$ = this.auth.isAuthenticated$;
   username$ = this.auth.username$;
-  openGlobalConfig(ev?: Event): void {
-    ev?.preventDefault();
-    try {
-      this.settings.open({
-        id: 'global-config',
-        title: 'Configurações Globais',
-        titleIcon: 'tune',
-        content: { component: GlobalConfigEditorComponent, inputs: {} },
-      });
-    } catch (e) {
-      console.warn('Global Config editor indisponível:', e);
-    }
-  }
 
   onLogout(ev?: Event): void {
     ev?.preventDefault();
     this.auth.logout().subscribe(() => this.router.navigateByUrl('/login'));
+  }
+
+  onLogin(ev?: Event): void {
+    ev?.preventDefault();
+    const returnUrl = this.router.url || '/home';
+    this.router.navigate(['/login'], { queryParams: { returnUrl } });
   }
 }

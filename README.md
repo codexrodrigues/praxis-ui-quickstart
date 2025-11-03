@@ -16,6 +16,168 @@ Aplicação de demonstração oficial para o framework Praxis UI.
 
 Aplicação publicada (Firebase Hosting): https://praxis-ui-4e602.web.app/home
 
+## Sobre o Praxis
+O Praxis é um framework orientado a metadados para construir aplicações corporativas com menos boilerplate e mais consistência entre backend e frontend.
+
+- APIs autodescritivas: o backend publica OpenAPI enriquecido com a extensão `x-ui`.
+- UI orientada a contrato: componentes de tabela/formulário leem o contrato e se montam dinamicamente (schema‑driven UI).
+- Backend‑driven: anotações em DTOs (ex.: `@UISchema`) e validações definem labels, controles e regras da UI.
+- Evolução segura: uso de `ETag`/cache e versionamento lógico do contrato.
+
+Recursos e artigos introdutórios (no monorepo do Praxis): `../praxis/README.md`, `../praxis/APRESENTACAO.md`, `../praxis/APRESENTACAO-ANGULAR.md`, `../praxis/APRESENTACAO-BACKEND-METADATA-STARTER.md`.
+
+### Arquitetura do Praxis (resumo)
+- Backend publica contratos ricos: OpenAPI enriquecido com `x-ui` (controles, rótulos, validações, dicas, layout).
+- Extensão `x-ui` nasce de anotações no código (ex.: `@UISchema`) + Jakarta Validation + hints.
+- Endpoint de contrato agregado por operação: `/schemas/filtered?path=<Rota>&operation=<get|post|...>&schemaType=<request|response>`.
+- UI consome o contrato, cacheia por `ETag` e monta telas dinamicamente (tabelas, formulários, filtros, opções).
+- Governação por configuração: preferências globais/tenant e overrides locais, sem forks.
+
+Fluxo do contrato
+1) Desenvolvedor ajusta DTOs/validações no backend e expõe endpoints REST.
+2) O starter gera/enriquece o OpenAPI com `x-ui` e serve `/schemas/filtered`.
+3) A UI busca e interpreta o contrato; componentes se constroem em runtime.
+4) Mudanças propagam rápido sem reescrita manual de telas.
+
+Contrato `x-ui` (exemplo mínimo)
+```json
+{
+  "x-ui": {
+    "resource": {
+      "path": "/api/human-resources/habilidades",
+      "idField": "id",
+      "labelField": "nome"
+    },
+    "fields": [
+      { "name": "nome", "label": "Nome", "controlType": "input", "validation": { "required": true, "maxLength": 120 } },
+      { "name": "nivel", "label": "Nível", "controlType": "numericTextBox" },
+      { "name": "ativo", "label": "Ativo", "controlType": "checkbox" }
+    ]
+  }
+}
+```
+Os componentes de UI (tabela/form) leem essa estrutura e aplicam tipos de controle, validações e rótulos automaticamente.
+
+## Papel do Praxis UI Quickstart no ecossistema
+Este repositório é a aplicação Angular de referência para experimentar as bibliotecas de UI do Praxis e validar rapidamente a integração com um backend compatível (`/schemas/filtered` + `OpenAPI + x-ui`). Em resumo, ele:
+
+- Demonstra padrões de UX (route outlet auxiliar/side‑sheet, tema M3, layout base) prontos para copiar e colar.
+- Consome um backend do ecossistema (recomendado: Praxis API Quickstart) via proxy em dev e config em runtime em prod.
+- Serve como “host app” para as libs do `praxis-ui-workspace` (tabela, formulários dinâmicos, painéis, settings, etc.).
+- Oferece exemplos de serviços e adaptadores para ligar endpoints reais (ver `docs/ENDPOINTS-CONFIG.md`).
+
+Quando usar este projeto
+- Kickoff rápido de um front Angular já alinhado com as bibliotecas do Praxis.
+- Prototipagem de telas data‑driven consumindo contratos do backend.
+- Vitrine de integração com o `praxis-metadata-starter` (via Praxis API Quickstart) ou com o starter em Node.
+
+## Praxis UI Quickstart em detalhes
+
+Pilares de UX e layout
+- Shell responsivo com sidenav, toolbar superior e side‑sheet (rota auxiliar `aside`) para edição contextual.
+- Tema Material 3 (dark) com gradientes e glassmorphism (`styles.scss`).
+- Navegação primária pronta com menus e rotas por feature.
+
+Integração técnica com o ecossistema
+- Config em runtime via `assets/app-config*.json` e provider `API_URL`.
+- Proxy de desenvolvimento (`proxy.conf.js`) para `/api`, `/auth`, `/schemas` (evita CORS e mantém cookies same‑origin).
+- Interceptadores: `credentials` (cookies), `xsrf` (cabeçalho `X-XSRF-TOKEN`), `loading` (loader global com anti‑flicker).
+- Serviços de domínio de exemplo em `src/app/core/services/*` prontos para alinhar com sua API.
+
+Segurança e sessão
+- Sessão por cookie HttpOnly (ex.: `SESSION` ou custom via `APP_SESSION_COOKIE_NAME`).
+- Em produção com domínios distintos, use `Secure=true` e `SameSite=None` no cookie e backend sob HTTPS.
+- Para demo/vitrine pública, pode-se liberar leitura (ver `docs/api-render-config-exato.md`).
+
+Pontos de extensão (onde customizar)
+- Drawer de CRUD: `src/app/core/crud-drawer/*` — abre formulários em side‑sheet e integra eventos.
+- Drawer de filtro: `src/app/core/filter-drawer/*` — modo avançado de filtros (overlay/modal/drawer via adapter).
+- Layout/Shell: `src/app/core/layout/*` — top-bar, nav e slots para loaders/overlays.
+- Serviços: `src/app/core/services/*` — alinhar DTOs/rotas reais da sua API (veja `docs/ENDPOINTS-CONFIG.md`).
+- Global Config (quando integrando libs do workspace): providers de configuração e editor visual de preferências.
+
+Rotas e features inclusas (demo)
+- Heroes: perfis (lista+editor lateral), habilidades e reputações.
+- Operações: missões, ameaças e resumo.
+- Compliance: incidentes, indenizações e indicadores.
+
+Como trocar de backend rapidamente
+- Dev: ajuste `PAX_PROXY_TARGET` e rode `npm start`.
+- Prod: edite `src/assets/app-config.prod.json` com `apiBaseUrl` absoluto.
+- Se seus contratos já têm `x-ui`, plugue diretamente; do contrário, use o gerador de `x-ui` para acelerar.
+
+## Ecossistema Praxis (projetos e papéis)
+Segue a visão geral das peças relacionadas que compõem o ecossistema ao redor deste UI Quickstart:
+
+- Praxis UI Workspace (libs Angular)
+  - Caminho local: `/mnt/d/Developer/praxis/frontend-libs/praxis-ui-workspace`
+  - Conjunto de bibliotecas `@praxisui/*` (tabela, dynamic forms, settings, etc.) usadas por apps host como este.
+
+- Praxis OpenAPI UI Schema Generator (CLI)
+  - Caminho local: `/mnt/d/Developer/praxis-openapi-ui-schema-generator`
+  - Ferramenta que gera/ajusta esquemas `x-ui` a partir de OpenAPI, útil para acelerar mapeamentos de UI.
+
+- Praxis Backend Seed App (Spring Boot)
+  - Caminho local: `/mnt/d/Developer/praxis-backend-seed-app`
+  - Seed minimalista já integrado ao `praxis-metadata-starter` para iniciar um backend limpo.
+
+- Praxis Node Starter (NestJS/Drizzle)
+  - Caminho local: `/mnt/d/Developer/praxis/node` (workspace Node) ou `/mnt/d/Developer/praxis-node`
+  - Starter em Node com suporte ao endpoint `/schemas/filtered` e contrato compatível.
+
+- Praxis API Quickstart (Spring Boot)
+  - Caminho local: `/mnt/d/Developer/praxis-api-quickstart`
+  - Backend completo de demonstração (domínio de RH/heróis) recomendado para testar este UI.
+
+- Praxis Metadata Starter (biblioteca Java)
+  - Caminho local: `/mnt/d/Developer/praxis-metadata-starter`
+  - Núcleo de metadados no backend (anotações `@UISchema`, enriquecimento OpenAPI `x-ui`, `/schemas/filtered`).
+
+Como as peças se conectam
+- Backend (API Quickstart ou Seed/Node) publica `OpenAPI + x-ui` e `/schemas/filtered`.
+- Este UI Quickstart carrega a base da API via `assets/app-config*.json` e renderiza telas a partir dos contratos.
+- As libs do `praxis-ui-workspace` fornecem os componentes e serviços para interpretar o contrato.
+- O gerador `praxis-openapi-ui-schema-generator` pode auxiliar quando você parte de OpenAPI existentes sem `x-ui`.
+
+### Diagrama do Ecossistema
+
+```mermaid
+graph TD
+  subgraph Backend
+    starter["Praxis Metadata Starter\n(biblioteca)"]
+    seed["Backend Seed App\n(Spring Boot)"]
+    apiq["API Quickstart\n(Spring Boot)"]
+    node["Node Starter\n(NestJS/Drizzle)"]
+  end
+
+  subgraph Frontend
+    uiws["Praxis UI Workspace\n(libs @praxisui/*)"]
+    uiq["Praxis UI Quickstart\n(este app Angular)"]
+  end
+
+  subgraph Tools
+    gen["OpenAPI UI Schema Generator\n(CLI)"]
+  end
+
+  starter --> seed
+  starter --> apiq
+  seed -->|"OpenAPI + x-ui /schemas/filtered"| uiq
+  apiq -->|"OpenAPI + x-ui /schemas/filtered"| uiq
+  node -->|"OpenAPI + x-ui /schemas/filtered"| uiq
+  uiws --> uiq
+  gen -->|"gera/ajusta x-ui"| apiq
+  gen -->|"gera/ajusta x-ui"| seed
+```
+
+### Links úteis (repos e documentações)
+- Monorepo Praxis (visão geral): `../praxis/README.md`
+- UI Workspace (libs Angular): `../praxis/frontend-libs/praxis-ui-workspace/README.md`
+- OpenAPI UI Schema Generator (CLI): `../praxis-openapi-ui-schema-generator/README.md`
+- Backend Seed App (Spring Boot): `../praxis-backend-seed-app/README.md`
+- API Quickstart (Spring Boot): `../praxis-api-quickstart/README.md`
+- Metadata Starter (biblioteca Java): `../praxis-metadata-starter/README.md`
+- Node Starter (NestJS/Drizzle): `../praxis-node/AGENTS.md` (documentação principal neste repo)
+
 ## Requisitos
 - Node.js 18+ e npm
 - Angular CLI 20+ (`npm i -g @angular/cli@^20`)

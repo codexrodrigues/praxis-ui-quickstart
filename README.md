@@ -1,11 +1,20 @@
 # Praxis UI Quickstart (Angular 20+)
 
+[![Angular](https://img.shields.io/badge/Angular-20.x-DD0031?logo=angular)](https://angular.dev)
+![angular love](https://img.shields.io/badge/angular-love-blue?logo=angular&logoColor=white)
+[![Node](https://img.shields.io/badge/Node-18%2B-339933?logo=node.js)](https://nodejs.org)
+[![Last Commit](https://img.shields.io/github/last-commit/codexrodrigues/praxis-ui-quickstart?logo=github)](https://github.com/codexrodrigues/praxis-ui-quickstart/commits)
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-00C853?logo=firebase&logoColor=white)](https://praxis-ui-4e602.web.app/home)
+
 Aplicação de demonstração oficial para o framework Praxis UI.
 
 - Angular 20+ com componentes standalone e Material 3 (tema escuro)
 - Padrão de edição contextual com side-sheet usando rota auxiliar
 - Conexão com Praxis API Quickstart (Spring Boot)
 - Estrutura de pastas por features, menus e rotas já configurados
+
+Aplicação publicada (Firebase Hosting): https://praxis-ui-4e602.web.app/home
 
 ## Requisitos
 - Node.js 18+ e npm
@@ -45,11 +54,16 @@ O projeto de backend (Praxis API Quickstart) utiliza as variáveis abaixo (todas
 
 Observação para cookies cross-site: se o frontend (Firebase Hosting) e backend estiverem em domínios diferentes, habilite `APP_SESSION_SECURE=true` e `APP_SESSION_SAMESITE=None` e sirva o backend sob HTTPS.
 
-## Variáveis e segredos (Frontend/CI)
-Para builds de produção, o frontend injeta a URL base da API no arquivo `src/environments/environment.production.ts` via CI:
+## Configuração de API (runtime) e CI
 
-- `API_BASE_URL` (GitHub Secret) — URL base do backend incluindo `/api` (ex.: `https://api.suaempresa.com/api`)
-  - Em dev, o app usa `/api` via proxy local; em produção, esta variável deve apontar para o host real.
+- Runtime (recomendado): a base da API é lida em tempo de execução pelos arquivos de configuração em `assets`.
+  - Dev: `src/assets/app-config.json:2` — define `apiBaseUrl` (por padrão, `/api` via proxy)
+  - Prod: `src/assets/app-config.prod.json:2` — define `apiBaseUrl` absoluto (ex.: `https://api.seudominio.com/api`)
+  - O `AppConfigService` carrega o arquivo adequado e o provider `API_URL` monta a URL absoluta para as chamadas HTTP.
+
+- CI (fallback/override opcional): o pipeline pode sobrescrever `src/environments/environment.production.ts` com `API_BASE_URL`.
+  - `API_BASE_URL` (GitHub Secret ou input do workflow) — URL base do backend incluindo `/api` (ex.: `https://api.suaempresa.com/api`).
+  - Em dev, o app usa `/api` via proxy local; em produção, prefira manter `app-config.prod.json` atualizado. O valor do environment atua como fallback.
 
 ## Estrutura
 ```
@@ -100,9 +114,27 @@ Isso mantém a rota principal visível e abre a folha lateral (side-sheet) com o
 - Definido em `src/styles.scss` usando tokens do Material e `@use '@angular/material' as mat;`
 - Gradiente de fundo + classe `glass-panel` para efeito glassmorphism (backdrop blur)
 
+## Screenshots
+
+> Dica: se as imagens não aparecerem, adicione os arquivos nos caminhos indicados em `docs/screenshots/`.
+
+![Home](docs/screenshots/home.png)
+_Home com navegação principal e cards._
+
+![Perfis com editor lateral](docs/screenshots/perfis-aside.png)
+_Lista de Perfis com editor contextual abrindo em side‑sheet (rota auxiliar `aside`)._
+
+![Resumo de Operações](docs/screenshots/operacoes-resumo.png)
+_Painel de Resumo de Operações com gráficos/indicadores._
+
 ## Integração com API
-- `ApiClientService` usa `environment.apiBaseUrl`.
-- Serviços:
+- Chamada HTTP: `ApiClientService` → `ApiBaseService` → provider `API_URL` (derivado de `AppConfigService`).
+- Config em runtime: `AppConfigService` lê `src/assets/app-config.json` (dev) ou `src/assets/app-config.prod.json` (prod).
+- Interceptadores:
+  - `credentialsInterceptor` — envia cookies (`withCredentials`), ex.: `SESSION`, `XSRF-TOKEN`.
+  - `xsrfInterceptor` — adiciona `X-XSRF-TOKEN` a partir do cookie para métodos não idempotentes.
+  - `loading.interceptor.ts` — rastreia chamadas a `/api`, `/schemas*` e `/auth*` (relativas/absolutas) para o loader global.
+- Serviços de domínio:
   - `HeroesService`: perfis, habilidades, reputações
   - `OperacoesService`: missões, ameaças, resumo
   - `ComplianceService`: incidentes, indenizações, indicadores
@@ -113,7 +145,7 @@ Endpoints esperados (exemplos):
 
 Para um passo‑a‑passo de como alinhar os endpoints com a API real (incluindo mapeamentos de DTO → modelos locais e checagem de sessão), veja: `docs/ENDPOINTS-CONFIG.md`.
 
-> Dica: ajuste `environment.development.ts` ou o `proxy.conf.json` conforme a porta/host da API.
+> Dica: ajuste `src/assets/app-config.json` (dev), `src/assets/app-config.prod.json` (prod) e/ou o `proxy.conf.json` conforme a porta/host da API.
 
 ## Próximos passos
 - Ligar formulários do editor às entidades reais da API
@@ -135,15 +167,13 @@ Feito com ❤ para o ecossistema Praxis.
 
 Arquivos adicionados no repositório:
 
-- Workflow de CI: `.github/workflows/ci.yml`
-  - Faz build de produção em PRs e pushes, com cache de dependências.
-  - Injeta `API_BASE_URL` (se definido em Secrets) substituindo o placeholder de `src/environments/environment.production.ts`.
-  - Publica o artefato de build em `dist/`.
-
-- Workflow de Deploy: `.github/workflows/deploy-firebase.yml`
-  - Em pushes para `main`, compila e publica no Firebase Hosting (canal `live`).
-  - Usa a ação oficial `FirebaseExtended/action-hosting-deploy`.
-  - Projeto/Hosting definidos para: `projectId: praxis-ui-4e602` e `site: praxis-ui-4e602`.
+- Workflows do Firebase Hosting:
+  - Preview em PRs: `.github/workflows/firebase-hosting-pull-request.yml`
+    - Faz build de produção e publica um canal de preview.
+    - Opcionalmente injeta `API_BASE_URL` em `src/environments/environment.production.ts`.
+  - Deploy em `main`: `.github/workflows/firebase-hosting-merge.yml`
+    - Faz build e publica no canal `live` do Hosting.
+    - Pode receber `api_base_url` via `workflow_dispatch` ou obter de `secrets.API_BASE_URL`.
 
 - Config Firebase: `firebase.json` e `.firebaserc`
   - `public: dist/praxis-ui-quickstart`
@@ -160,8 +190,8 @@ Arquivos adicionados no repositório:
    - Salve o JSON e crie em GitHub Secrets:
      - `FIREBASE_SERVICE_ACCOUNT` — conteúdo JSON da chave
 
-3) Definir a URL da API no GitHub
-   - Em GitHub Secrets do repositório, adicione:
+3) Definir a URL da API (opcional, via CI)
+   - Em GitHub Secrets do repositório, adicione (para override do environment):
      - `API_BASE_URL` — ex.: `https://api.suaempresa.com/api`
 
 4) Ajustar CORS no backend
@@ -170,12 +200,19 @@ Arquivos adicionados no repositório:
    - Para cookie cross-site, habilite `APP_SESSION_SECURE=true` e `APP_SESSION_SAMESITE=None`.
 
 5) Pipeline
-   - Ao fazer push em `main`, o CI compila e o deploy roda automaticamente para Hosting (`channelId: live`).
-   - Em PRs, o CI compila e anexa o artefato `dist` para inspeção.
+   - Ao fazer push em `main`, o workflow de deploy compila e publica no Hosting (`channelId: live`).
+   - Em PRs, o workflow de preview compila e publica um canal temporário no Hosting.
 
 ### Build local de produção (opcional)
-Se quiser simular o build de produção com uma API específica, substitua o placeholder manualmente:
+Se quiser simular o build de produção com uma API específica, há duas opções:
 
+1) Ajustar runtime config (recomendado):
+```bash
+sed -i "s#\"apiBaseUrl\": \".*\"#\"apiBaseUrl\": \"https://api.suaempresa.com/api\"#" src/assets/app-config.prod.json
+npm run build -- --configuration production
+```
+
+2) Sobrescrever via environment (fallback do CI):
 ```bash
 sed -i "s#API_BASE_URL#https://api.suaempresa.com/api#g" src/environments/environment.production.ts
 npm run build -- --configuration production

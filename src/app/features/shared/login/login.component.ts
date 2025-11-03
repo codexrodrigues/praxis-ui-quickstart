@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -41,7 +42,7 @@ import { AuthService } from '../../../core/services/auth.service';
               <div class="actions">
                 <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading">Entrar</button>
               </div>
-              <div class="hint">Use admin / changeMe! (dev)</div>
+              <div class="hint" *ngIf="!isProd">Use admin / changeMe! (dev)</div>
               <div class="error" *ngIf="error">Credenciais inválidas.</div>
             </form>
           </mat-card-content>
@@ -63,6 +64,7 @@ export class LoginComponent {
   });
   loading = false;
   error = false;
+  readonly isProd = environment.production;
 
   onSubmit() {
     if (this.form.invalid) return;

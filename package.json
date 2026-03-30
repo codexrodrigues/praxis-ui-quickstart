@@ -1,0 +1,67 @@
+{
+  "name": "praxis-ui-quickstart",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve --host 127.0.0.1 --port 4301",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "test:smoke": "ng test --watch=false --browsers=ChromeHeadless"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "singleQuote": true,
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
+    ]
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^20.3.18",
+    "@angular/cdk": "^20.1.4",
+    "@angular/common": "^20.3.0",
+    "@angular/compiler": "^20.3.0",
+    "@angular/core": "^20.3.0",
+    "@angular/forms": "^20.3.0",
+    "@angular/material": "^20.1.4",
+    "@angular/platform-browser": "^20.3.0",
+    "@angular/router": "^20.3.0",
+    "@google/generative-ai": "^0.24.1",
+    "@praxisui/ai": "^3.0.0-beta.7",
+    "@praxisui/charts": "^3.0.0-beta.7",
+    "@praxisui/core": "^3.0.0-beta.7",
+    "@praxisui/cron-builder": "^3.0.0-beta.7",
+    "@praxisui/crud": "^3.0.0-beta.7",
+    "@praxisui/dynamic-fields": "^3.0.0-beta.7",
+    "@praxisui/dynamic-form": "^3.0.0-beta.7",
+    "@praxisui/editorial-forms": "^3.0.0-beta.7",
+    "@praxisui/expansion": "^3.0.0-beta.7",
+    "@praxisui/list": "^3.0.0-beta.7",
+    "@praxisui/manual-form": "^3.0.0-beta.7",
+    "@praxisui/stepper": "^3.0.0-beta.7",
+    "@praxisui/table": "^3.0.0-beta.7",
+    "@praxisui/tabs": "^3.0.0-beta.7",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^20.3.21",
+    "@angular/cli": "^20.3.21",
+    "@angular/compiler-cli": "^20.3.0",
+    "@types/jasmine": "~5.1.0",
+    "jasmine-core": "~5.9.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "typescript": "~5.9.2"
+  }
+}

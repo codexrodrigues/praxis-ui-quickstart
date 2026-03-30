@@ -1,0 +1,129 @@
+/* You can add global styles to this file, and also import other style files */
+@import '@angular/cdk/overlay-prebuilt.css';
+@import '@angular/material/prebuilt-themes/azure-blue.css';
+
+:root {
+  --font-display: 'Sora', 'Segoe UI', sans-serif;
+  --font-body: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+
+  /* Safe default bridge for PraxisUI libs running on Angular Material M3 tokens. */
+  --md-sys-color-primary: var(--mat-sys-primary);
+  --md-sys-color-on-primary: var(--mat-sys-on-primary);
+  --md-sys-color-primary-container: var(--mat-sys-primary-container);
+  --md-sys-color-on-primary-container: var(--mat-sys-on-primary-container);
+  --md-sys-color-secondary: var(--mat-sys-secondary);
+  --md-sys-color-on-secondary: var(--mat-sys-on-secondary);
+  --md-sys-color-secondary-container: var(--mat-sys-secondary-container);
+  --md-sys-color-on-secondary-container: var(--mat-sys-on-secondary-container);
+  --md-sys-color-tertiary: var(--mat-sys-tertiary);
+  --md-sys-color-on-tertiary: var(--mat-sys-on-tertiary);
+  --md-sys-color-tertiary-container: var(--mat-sys-tertiary-container);
+  --md-sys-color-on-tertiary-container: var(--mat-sys-on-tertiary-container);
+  --md-sys-color-error: var(--mat-sys-error);
+  --md-sys-color-on-error: var(--mat-sys-on-error);
+  --md-sys-color-error-container: var(--mat-sys-error-container);
+  --md-sys-color-on-error-container: var(--mat-sys-on-error-container);
+  --md-sys-color-surface: var(--mat-sys-surface);
+  --md-sys-color-surface-variant: var(--mat-sys-surface-variant);
+  --md-sys-color-surface-container: var(--mat-sys-surface-container);
+  --md-sys-color-surface-container-low: var(--mat-sys-surface-container-low);
+  --md-sys-color-surface-container-lowest: var(--mat-sys-surface-container-lowest);
+  --md-sys-color-surface-container-high: var(--mat-sys-surface-container-high);
+  --md-sys-color-surface-container-highest: var(--mat-sys-surface-container-highest);
+  --md-sys-color-on-surface: var(--mat-sys-on-surface);
+  --md-sys-color-on-surface-variant: var(--mat-sys-on-surface-variant);
+  --md-sys-color-outline: var(--mat-sys-outline);
+  --md-sys-color-outline-variant: var(--mat-sys-outline-variant);
+  --md-sys-color-shadow: var(--mat-sys-shadow);
+  --md-sys-color-scrim: var(--mat-sys-scrim);
+
+  --md-sys-elevation-level1: var(--mat-app-elevation-shadow-level1);
+  --md-sys-elevation-level2: var(--mat-app-elevation-shadow-level2);
+  --md-sys-elevation-level3: var(--mat-app-elevation-shadow-level3);
+
+  --qs-page-background:
+    radial-gradient(circle at top left, rgba(242, 138, 46, 0.16), transparent 26%),
+    radial-gradient(circle at top right, rgba(66, 133, 244, 0.16), transparent 28%),
+    linear-gradient(180deg, #f5f8fc 0%, #eef3f9 52%, #f9fbfd 100%);
+  --qs-page-text: #10233f;
+  --qs-shell-accent: #173ea5;
+  --qs-shell-muted: #6a7891;
+  --qs-shell-strong: #0f2450;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--qs-page-text);
+  background: var(--qs-page-background);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body[data-theme='corporate'],
+.shell[data-theme='corporate'] {
+  --md-sys-color-primary: #0f5c8d;
+  --md-sys-color-on-primary: #f6fbff;
+  --md-sys-color-primary-container: #d4ebf8;
+  --md-sys-color-on-primary-container: #0d3851;
+  --md-sys-color-secondary: #2f6d63;
+  --md-sys-color-on-secondary: #f5fffc;
+  --md-sys-color-secondary-container: #d6efe9;
+  --md-sys-color-on-secondary-container: #123a34;
+  --md-sys-color-surface: #f4f5f7;
+  --md-sys-color-surface-variant: #dbe4ec;
+  --md-sys-color-surface-container: #ffffff;
+  --md-sys-color-surface-container-low: #f8fafc;
+  --md-sys-color-surface-container-lowest: #ffffff;
+  --md-sys-color-surface-container-high: #eef3f7;
+  --md-sys-color-surface-container-highest: #e4ebf2;
+  --md-sys-color-on-surface: #10243f;
+  --md-sys-color-on-surface-variant: #516176;
+  --md-sys-color-outline: #7d92aa;
+  --md-sys-color-outline-variant: #b7c6d8;
+  --qs-page-text: #10243f;
+  --qs-page-background:
+    radial-gradient(circle at top left, rgba(16, 92, 141, 0.16), transparent 28%),
+    radial-gradient(circle at top right, rgba(21, 115, 111, 0.14), transparent 24%),
+    linear-gradient(180deg, #f4f5f7 0%, #edf2f6 54%, #fbfcfd 100%);
+  --qs-shell-accent: #0f5c8d;
+  --qs-shell-muted: #516176;
+  --qs-shell-strong: #10243f;
+}
+
+body[data-theme='high-contrast'],
+.shell[data-theme='high-contrast'] {
+  --md-sys-color-primary: #003fef;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #dfe7ff;
+  --md-sys-color-on-primary-container: #00184f;
+  --md-sys-color-secondary: #005b2e;
+  --md-sys-color-on-secondary: #ffffff;
+  --md-sys-color-secondary-container: #d9f3e4;
+  --md-sys-color-on-secondary-container: #08311b;
+  --md-sys-color-surface: #ffffff;
+  --md-sys-color-surface-variant: #e9eef5;
+  --md-sys-color-surface-container: #ffffff;
+  --md-sys-color-surface-container-low: #f7f9fc;
+  --md-sys-color-surface-container-lowest: #ffffff;
+  --md-sys-color-surface-container-high: #eef2f8;
+  --md-sys-color-surface-container-highest: #e4eaf3;
+  --md-sys-color-on-surface: #081018;
+  --md-sys-color-on-surface-variant: #223245;
+  --md-sys-color-outline: #0b1320;
+  --md-sys-color-outline-variant: #6d7d92;
+  --qs-page-text: #081018;
+  --qs-page-background:
+    radial-gradient(circle at top left, rgba(0, 63, 239, 0.12), transparent 26%),
+    radial-gradient(circle at top right, rgba(0, 91, 46, 0.1), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f4f7fb 58%, #ffffff 100%);
+  --qs-shell-accent: #003fef;
+  --qs-shell-muted: #223245;
+  --qs-shell-strong: #081018;
+}

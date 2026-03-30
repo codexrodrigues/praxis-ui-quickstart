@@ -16,6 +16,11 @@ This repository is the shortest path from zero to a working PraxisUI host. It is
 - [Quickstart repository](https://github.com/codexrodrigues/praxis-ui-quickstart)
 - [Live quickstart](https://praxis-ui-4e602.web.app)
 
+## Canonical platform sources
+
+- [praxis-metadata-starter](https://github.com/codexrodrigues/praxis-metadata-starter)
+  Canonical source for metadata-driven semantics and the `x-ui` vocabulary consumed by the platform.
+
 ## Why this repository exists
 
 Most teams do not need a bigger component catalog on day one. They need a host that:
@@ -88,6 +93,10 @@ flowchart LR
 - local app URL: `http://127.0.0.1:4301`
 
 `127.0.0.1:4301` is already allowed in CORS for this published API.
+
+## External adopters
+
+This quickstart consumes published `@praxisui/*` packages from npm. You do not need access to the PraxisUI source workspace or any internal library build orchestration to get started with this host.
 
 ## Canonical host decisions
 

@@ -9,12 +9,16 @@
 .topbar {
   width: min(1040px, calc(100% - 32px));
   margin: 24px auto 0;
-  padding: 18px 0 14px;
+  padding: 16px 18px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 20px;
-  border-bottom: 1px dashed #aab5c7;
+  border: 1px solid var(--qs-topbar-border);
+  border-radius: var(--qs-topbar-radius);
+  background: var(--qs-topbar-bg);
+  box-shadow: var(--qs-shell-glow);
+  backdrop-filter: blur(18px);
 }
 
 .topbar-actions {
@@ -64,11 +68,22 @@
   color: var(--qs-shell-accent);
   text-decoration: none;
   font-weight: 600;
+  padding: 10px 14px;
+  border-radius: var(--qs-nav-pill-radius);
+  border: 1px solid var(--qs-nav-pill-border);
+  background: var(--qs-nav-pill-bg);
+  box-shadow: var(--qs-nav-pill-shadow);
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background-color 0.18s ease;
 }
 
 .topnav a:hover,
 .topnav a.is-active {
-  text-decoration: underline;
+  text-decoration: none;
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--qs-shell-accent) 24%, transparent);
 }
 
 .theme-switcher {
@@ -79,19 +94,20 @@
 
 .theme-switcher button {
   border: 1px solid var(--md-sys-color-outline-variant);
-  border-radius: 999px;
+  border-radius: var(--qs-nav-pill-radius);
   background: var(--md-sys-color-surface-container-low);
   color: var(--md-sys-color-on-surface);
-  padding: 8px 12px;
+  padding: 10px 14px;
   font: inherit;
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
+  box-shadow: var(--qs-nav-pill-shadow);
 }
 
 .theme-switcher button.is-active {
-  background: var(--md-sys-color-primary);
-  border-color: var(--md-sys-color-primary);
+  background: linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary));
+  border-color: transparent;
   color: var(--md-sys-color-on-primary);
 }
 
@@ -102,8 +118,9 @@
   gap: 12px;
   padding: 8px 12px;
   border: 1px solid var(--md-sys-color-outline-variant);
-  border-radius: 999px;
+  border-radius: var(--qs-nav-pill-radius);
   background: var(--md-sys-color-surface-container-low);
+  box-shadow: var(--qs-nav-pill-shadow);
   cursor: pointer;
   user-select: none;
 }

@@ -24,6 +24,13 @@ export interface ThemeOwnershipPoint {
   readonly detail: string;
 }
 
+export interface PositioningPanel {
+  readonly eyebrow: string;
+  readonly title: string;
+  readonly detail: string;
+  readonly bullets: readonly string[];
+}
+
 export const PRAXIS_API_ORIGIN =
   (globalThis as { __PRAXIS_API_ORIGIN__?: string }).__PRAXIS_API_ORIGIN__?.trim() ||
   'https://praxis-api-quickstart.onrender.com';
@@ -49,6 +56,7 @@ export const HERO_FACTS = [
   '4 core runtimes in the main adoption path',
   '4 advanced examples kept outside the primary navigation',
   'Same public backend used by the landing page',
+  'Backend already exposes operations, assets, and risk intelligence',
   'Canonical bootstrap with API_URL, PAX_FETCH_HEADERS, and host-owned theme',
 ] as const;
 
@@ -128,6 +136,11 @@ export const SETUP_STEPS: readonly SetupStep[] = [
       'Table, form, CRUD, and list should consume the same published resourcePath to show the platform working for real.',
   },
   {
+    title: 'Expand only after the first proof',
+    detail:
+      'The published API already includes operations, assets, and risk-intelligence, but the quickstart should only branch into those domains after the primary resource path is proven.',
+  },
+  {
     title: 'Keep the theme in the host',
     detail:
       'Let Praxis resolve runtime behavior while your Angular host keeps control of tokens, typography, spacing, and brand identity.',
@@ -141,11 +154,36 @@ export const THEME_OWNERSHIP_POINTS: readonly ThemeOwnershipPoint[] = [
   },
   {
     title: 'No proprietary skin',
-    detail: 'The quickstart proves adoption on top of a host visual system instead of asking teams to accept a fixed Praxis look.',
+    detail: 'The quickstart proves adoption on top of a host visual system instead of asking teams to accept a fixed Praxis look or an Angular-default aesthetic.',
   },
   {
     title: 'Design-system friendly',
-    detail: 'The goal is platform acceleration without giving up the company identity that already exists in production apps.',
+    detail: 'The radical Corporate theme intentionally pushes gradients, larger radii, glass surfaces, and SaaS-like chrome to prove the host can reshape the visual language without changing the Praxis runtime.',
+  },
+] as const;
+
+export const POSITIONING_PANELS: readonly PositioningPanel[] = [
+  {
+    eyebrow: 'Frontend scope',
+    title: 'One resource path is still the first proof.',
+    detail:
+      'This quickstart intentionally stays centered on human-resources/funcionarios so teams can verify host bootstrap, metadata resolution, and runtime reuse before they branch into additional backend domains.',
+    bullets: [
+      'Table, form, CRUD, and list all reuse the same published resourcePath.',
+      'The first read is about proving the platform, not touring every backend route group.',
+      'This keeps onboarding stable while the backend continues to evolve.',
+    ],
+  },
+  {
+    eyebrow: 'Backend scope',
+    title: 'The published API is broader than the first UI path.',
+    detail:
+      'The backend already exposes operations, assets, and risk-intelligence in addition to human-resources. Those domains belong to later examples, not to the first-read adoption path of this host.',
+    bullets: [
+      'Human resources remains the canonical first contact.',
+      'Additional route groups are expansion material, not onboarding prerequisites.',
+      'The host should communicate this difference explicitly so expectations stay aligned.',
+    ],
   },
 ] as const;
 
@@ -494,7 +532,17 @@ export const TABS_READINESS_CHART_CONFIG: PraxisChartConfig = {
   ],
 };
 
-export function buildTabsShowcaseConfig(): TabsMetadata {
+export function buildTabsShowcaseConfig(
+  theme: 'default' | 'corporate' | 'high-contrast' = 'default'
+): TabsMetadata {
+  const paletteByTheme: Record<'default' | 'corporate' | 'high-contrast', string[]> = {
+    default: ['#1263b4', '#0f766e', '#f08c00', '#c92a2a'],
+    corporate: ['#7dd3fc', '#34d399', '#a78bfa', '#f59e0b'],
+    'high-contrast': ['#003fef', '#005b2e', '#081018', '#7a1cff'],
+  };
+
+  const chartPalette = paletteByTheme[theme];
+
   return {
     behavior: {
       lazyLoad: true,
@@ -510,11 +558,14 @@ export function buildTabsShowcaseConfig(): TabsMetadata {
         textLabel: 'Overview',
         widgets: [
           {
-            id: 'praxis-chart',
-            inputs: {
-              config: TABS_OVERVIEW_CHART_CONFIG,
+              id: 'praxis-chart',
+              inputs: {
+                config: {
+                  ...TABS_OVERVIEW_CHART_CONFIG,
+                  theme: { palette: chartPalette },
+                },
+              },
             },
-          },
         ],
       },
       {
@@ -534,11 +585,14 @@ export function buildTabsShowcaseConfig(): TabsMetadata {
         textLabel: 'Signals',
         widgets: [
           {
-            id: 'praxis-chart',
-            inputs: {
-              config: TABS_READINESS_CHART_CONFIG,
+              id: 'praxis-chart',
+              inputs: {
+                config: {
+                  ...TABS_READINESS_CHART_CONFIG,
+                  theme: { palette: chartPalette },
+                },
+              },
             },
-          },
         ],
       },
     ],

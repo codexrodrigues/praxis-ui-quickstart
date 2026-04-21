@@ -5,6 +5,7 @@ import { App } from './app';
 describe('App shell', () => {
   afterEach(() => {
     document.body.removeAttribute('data-theme');
+    localStorage.removeItem('praxis-ui-quickstart.host-theme');
   });
 
   it('renders the core navigation and host theme switcher', async () => {

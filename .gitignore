@@ -36,9 +36,11 @@ yarn-error.log
 /connect.lock
 /coverage
 /libpeerconnection.log
+/.local-praxis
 testem.log
 /typings
 __screenshots__/
+tsconfig.local-praxis.json
 
 # System files
 .DS_Store

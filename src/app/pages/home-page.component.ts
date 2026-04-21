@@ -7,6 +7,7 @@ import {
   CORE_CATALOG_LINKS,
   HERO_FACTS,
   HOME_INTRO,
+  POSITIONING_PANELS,
   PRAXIS_API_BASE_URL,
   PRAXIS_API_ORIGIN,
   SETUP_STEPS,
@@ -43,6 +44,31 @@ import {
         </div>
       </header>
 
+      <section class="positioning-section">
+        <div class="section-heading">
+          <p class="section-eyebrow">Positioning</p>
+          <h2>Keep the frontend narrow even when the backend is broad</h2>
+          <p>
+            The host should make the first proof obvious: one stable resource path now, broader domain coverage later.
+          </p>
+        </div>
+
+        <div class="positioning-grid">
+          @for (panel of positioningPanels; track panel.title) {
+            <article class="positioning-card">
+              <p class="positioning-eyebrow">{{ panel.eyebrow }}</p>
+              <h3>{{ panel.title }}</h3>
+              <p class="positioning-detail">{{ panel.detail }}</p>
+              <ul class="positioning-points">
+                @for (bullet of panel.bullets; track bullet) {
+                  <li>{{ bullet }}</li>
+                }
+              </ul>
+            </article>
+          }
+        </div>
+      </section>
+
       <section class="setup-section">
         <div class="section-heading">
           <p class="section-eyebrow">Core path</p>
@@ -67,6 +93,10 @@ import {
           <p>
             Praxis resolves metadata and runtime behavior. Your company theme still owns tokens, typography, spacing,
             density, and branding decisions.
+          </p>
+          <p class="theme-proof-note">
+            The <strong>Corporate</strong> mode is intentionally radical. It pushes darker gradients, larger radii, and
+            a more SaaS-like shell to prove that Praxis does not lock the host into an Angular-default look.
           </p>
         </div>
 
@@ -111,7 +141,7 @@ import {
 
         <div class="catalog-grid">
           @for (item of advancedLinks; track item.route) {
-            <article class="catalog-item">
+            <article class="catalog-item catalog-item--secondary">
               <div class="catalog-icon">
                 <mat-icon>{{ item.icon }}</mat-icon>
               </div>
@@ -161,7 +191,7 @@ import {
       h2,
       h3 {
         font-family: var(--font-display);
-        color: #111;
+        color: var(--qs-shell-strong);
       }
 
       .hero-copy,
@@ -185,6 +215,14 @@ import {
         line-height: 1.5;
       }
 
+      .theme-proof-note {
+        max-width: 52rem;
+      }
+
+      .theme-proof-note strong {
+        color: var(--md-sys-color-primary);
+      }
+
       .hero-facts {
         display: flex;
         flex-wrap: wrap;
@@ -194,8 +232,8 @@ import {
       .hero-facts span {
         padding: 8px 12px;
         border-radius: 999px;
-        background: var(--md-sys-color-primary-container);
-        color: var(--md-sys-color-on-primary-container);
+        background: var(--qs-hero-chip-bg);
+        color: var(--qs-hero-chip-text);
         font-size: 0.92rem;
         font-weight: 600;
       }
@@ -204,9 +242,11 @@ import {
       .setup-card,
       .theme-card,
       .catalog-item {
-        border: 1px solid #dce3ef;
-        border-radius: 18px;
-        background: #fff;
+        border: 1px solid var(--qs-surface-card-border);
+        border-radius: var(--qs-card-radius);
+        background: var(--qs-surface-card);
+        box-shadow: var(--qs-surface-card-shadow);
+        backdrop-filter: blur(10px);
       }
 
       .hero-note {
@@ -227,17 +267,23 @@ import {
       }
 
       .setup-section,
+      .positioning-section,
       .theme-section,
       .catalog-section {
         display: grid;
         gap: 18px;
       }
 
+      .positioning-grid,
       .setup-grid,
       .theme-grid,
       .catalog-grid {
         display: grid;
         gap: 18px;
+      }
+
+      .positioning-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
       .setup-grid,
@@ -250,10 +296,37 @@ import {
       }
 
       .setup-card,
+      .positioning-card,
       .theme-card {
         display: grid;
         gap: 10px;
         padding: 20px;
+      }
+
+      .positioning-card {
+        gap: 12px;
+      }
+
+      .positioning-eyebrow {
+        margin: 0;
+        color: var(--md-sys-color-primary);
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .positioning-detail {
+        color: var(--md-sys-color-on-surface-variant);
+        line-height: 1.5;
+      }
+
+      .positioning-points {
+        margin: 0;
+        padding-left: 18px;
+        display: grid;
+        gap: 8px;
+        color: var(--md-sys-color-on-surface-variant);
       }
 
       .setup-index {
@@ -296,18 +369,25 @@ import {
       }
 
       .catalog-copy p,
+      .positioning-points li,
       .setup-card p,
       .theme-card p {
         color: var(--md-sys-color-on-surface-variant);
         line-height: 1.45;
       }
 
+      .catalog-item--secondary {
+        opacity: 0.9;
+        background: color-mix(in srgb, var(--qs-surface-card) 82%, transparent);
+      }
+
       .catalog-section-secondary {
-        padding-top: 8px;
+        padding-top: 14px;
         border-top: 1px dashed #aab5c7;
       }
 
       @media (max-width: 900px) {
+        .positioning-grid,
         .setup-grid,
         .theme-grid {
           grid-template-columns: 1fr;
@@ -326,6 +406,7 @@ import {
 export class HomePageComponent {
   protected readonly intro = HOME_INTRO;
   protected readonly heroFacts = HERO_FACTS;
+  protected readonly positioningPanels = POSITIONING_PANELS;
   protected readonly steps = SETUP_STEPS;
   protected readonly themeOwnershipPoints = THEME_OWNERSHIP_POINTS;
   protected readonly coreLinks = CORE_CATALOG_LINKS;

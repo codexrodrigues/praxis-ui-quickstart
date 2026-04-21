@@ -53,7 +53,7 @@ export const appConfig: ApplicationConfig = {
     UpperCasePipe,
     LowerCasePipe,
     TitleCasePipe,
-    provideEnvironmentInitializer(() => () => {
+    provideEnvironmentInitializer(() => {
       (globalThis as any).PAX_FETCH_HEADERS = () => {
         if (typeof window === 'undefined') {
           return {};

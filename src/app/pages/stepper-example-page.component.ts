@@ -57,18 +57,50 @@ import {
   `,
   styles: [`
     .example-page { display:grid; gap:20px; }
-    .back-link { color:#173ea5; text-decoration:underline; width:max-content; }
-    .eyebrow { margin:0 0 8px; color:#777; text-transform:uppercase; letter-spacing:.08em; font-size:.85rem; }
+    .back-link { color:var(--qs-example-link); text-decoration:underline; width:max-content; }
+    .eyebrow { margin:0 0 8px; color:var(--qs-example-eyebrow); text-transform:uppercase; letter-spacing:.08em; font-size:.85rem; }
     .page-header { display:flex; justify-content:space-between; gap:18px; align-items:flex-start; }
     .page-header h1, .panel h2 { margin:0; }
-    .page-header h1, .panel h2 { font-family:var(--font-display); color:#111; }
+    .page-header h1, .panel h2 { font-family:var(--font-display); color:var(--qs-example-title); }
     .page-grid { display:grid; gap:20px; }
-    .panel { border:1px solid #d9dfeb; padding:18px; background:#fff; }
+    .panel { border:1px solid var(--qs-example-panel-border); padding:18px; background:var(--qs-example-panel-bg); box-shadow:var(--qs-example-panel-shadow); }
     .panel--compact { display:grid; gap:12px; }
     .panel--wide { display:grid; gap:12px; }
-    .panel ul { margin:0; padding-left:20px; color:#2f3747; display:grid; gap:8px; }
-    pre { margin:0; padding:16px; overflow:auto; background:#142847; color:#eef4ff; }
-    .runtime-panel { border-top:1px dashed #cad3e2; padding-top:16px; }
+    .panel ul { margin:0; padding-left:20px; color:var(--qs-example-body); display:grid; gap:8px; }
+    pre { margin:0; padding:16px; overflow:auto; background:var(--qs-example-code-bg); color:var(--qs-example-code-text); }
+    .runtime-panel { border-top:1px dashed var(--qs-example-divider); padding-top:16px; }
+
+    :host ::ng-deep .runtime-panel .mat-stepper-horizontal,
+    :host ::ng-deep .runtime-panel .mat-stepper-vertical {
+      border: 0 !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    :host ::ng-deep .runtime-panel .mat-horizontal-content-container,
+    :host ::ng-deep .runtime-panel .mat-vertical-content-container {
+      padding: 12px 0 0 !important;
+      border: 0 !important;
+    }
+
+    :host ::ng-deep .runtime-panel fieldset,
+    :host ::ng-deep .runtime-panel .form-section,
+    :host ::ng-deep .runtime-panel .section-card,
+    :host ::ng-deep .runtime-panel .group-card {
+      border-radius: 18px !important;
+      box-shadow: none !important;
+    }
+
+    :host ::ng-deep .runtime-panel .mat-step-actions,
+    :host ::ng-deep .runtime-panel [data-stepper-navigation],
+    :host ::ng-deep .runtime-panel .stepper-actions,
+    :host ::ng-deep .runtime-panel .navigation-actions {
+      padding: 18px 0 0 !important;
+      border: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
   `],
 })
 export class StepperExamplePageComponent {

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { PraxisTabs } from '@praxisui/tabs';
@@ -9,6 +9,7 @@ import {
   buildTabsShowcaseConfig,
   TABS_SNIPPET,
 } from '../quickstart-content';
+import { ThemeModeService } from '../theme-mode.service';
 
 @Component({
   selector: 'app-tabs-example-page',
@@ -47,7 +48,7 @@ import {
           <div class="runtime-panel">
             <praxis-tabs
               [tabsId]="tabsId"
-              [config]="tabsConfig"
+              [config]="tabsConfig()"
               [enableCustomization]="customizationEnabled()"
             />
           </div>
@@ -57,25 +58,26 @@ import {
   `,
   styles: [`
     .example-page { display:grid; gap:20px; }
-    .back-link { color:#173ea5; text-decoration:underline; width:max-content; }
-    .eyebrow { margin:0 0 8px; color:#777; text-transform:uppercase; letter-spacing:.08em; font-size:.85rem; }
+    .back-link { color:var(--qs-example-link); text-decoration:underline; width:max-content; }
+    .eyebrow { margin:0 0 8px; color:var(--qs-example-eyebrow); text-transform:uppercase; letter-spacing:.08em; font-size:.85rem; }
     .page-header { display:flex; justify-content:space-between; gap:18px; align-items:flex-start; }
     .page-header h1, .panel h2 { margin:0; }
-    .page-header h1, .panel h2 { font-family:var(--font-display); color:#111; }
+    .page-header h1, .panel h2 { font-family:var(--font-display); color:var(--qs-example-title); }
     .page-grid { display:grid; gap:20px; }
-    .panel { border:1px solid #d9dfeb; padding:18px; background:#fff; }
+    .panel { border:1px solid var(--qs-example-panel-border); padding:18px; background:var(--qs-example-panel-bg); box-shadow:var(--qs-example-panel-shadow); }
     .panel--compact { display:grid; gap:12px; }
     .panel--wide { display:grid; gap:12px; }
-    .panel ul { margin:0; padding-left:20px; color:#2f3747; display:grid; gap:8px; }
-    pre { margin:0; padding:16px; overflow:auto; background:#142847; color:#eef4ff; }
-    .runtime-panel { border-top:1px dashed #cad3e2; padding-top:16px; }
+    .panel ul { margin:0; padding-left:20px; color:var(--qs-example-body); display:grid; gap:8px; }
+    pre { margin:0; padding:16px; overflow:auto; background:var(--qs-example-code-bg); color:var(--qs-example-code-text); }
+    .runtime-panel { border-top:1px dashed var(--qs-example-divider); padding-top:16px; }
   `],
 })
 export class TabsExamplePageComponent {
   private readonly customizationMode = inject(CustomizationModeService);
+  private readonly themeMode = inject(ThemeModeService);
 
   protected readonly snippet = TABS_SNIPPET;
   protected readonly tabsId = QUICKSTART_TABS_ID;
-  protected readonly tabsConfig = buildTabsShowcaseConfig();
+  protected readonly tabsConfig = computed(() => buildTabsShowcaseConfig(this.themeMode.activeTheme()));
   protected readonly customizationEnabled = this.customizationMode.customizationEnabled;
 }

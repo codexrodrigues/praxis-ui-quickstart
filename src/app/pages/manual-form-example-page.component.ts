@@ -162,19 +162,19 @@ import { MANUAL_FORM_SNIPPET, QUICKSTART_MANUAL_FORM_ID } from '../quickstart-co
   `,
   styles: [`
     .example-page { display:grid; gap:20px; }
-    .back-link { color:#173ea5; text-decoration:underline; width:max-content; }
-    .eyebrow { margin:0 0 8px; color:#777; text-transform:uppercase; letter-spacing:.08em; font-size:.85rem; }
+    .back-link { color:var(--qs-example-link); text-decoration:underline; width:max-content; }
+    .eyebrow { margin:0 0 8px; color:var(--qs-example-eyebrow); text-transform:uppercase; letter-spacing:.08em; font-size:.85rem; }
     .page-header { display:flex; justify-content:space-between; gap:18px; align-items:flex-start; }
     .page-header h1, .panel h2, .profile-intro h3, .detail-card h3 { margin:0; }
-    .page-header h1, .panel h2, .profile-intro h3, .detail-card h3 { font-family:var(--font-display); color:#111; }
+    .page-header h1, .panel h2, .profile-intro h3, .detail-card h3 { font-family:var(--font-display); color:var(--qs-example-title); }
     .page-grid { display:grid; gap:20px; }
-    .panel { border:1px solid #d9dfeb; padding:18px; background:#fff; }
+    .panel { border:1px solid var(--qs-example-panel-border); padding:18px; background:var(--qs-example-panel-bg); box-shadow:var(--qs-example-panel-shadow); }
     .panel--compact { display:grid; gap:12px; }
     .panel--wide { display:grid; gap:12px; }
-    .panel-copy { margin:0; color:#495163; max-width:48rem; }
-    .panel ul { margin:0; padding-left:20px; color:#2f3747; display:grid; gap:8px; }
-    pre { margin:0; padding:16px; overflow:auto; background:#142847; color:#eef4ff; }
-    .runtime-panel { border-top:1px dashed #cad3e2; padding-top:16px; }
+    .panel-copy { margin:0; color:var(--qs-example-muted); max-width:48rem; }
+    .panel ul { margin:0; padding-left:20px; color:var(--qs-example-body); display:grid; gap:8px; }
+    pre { margin:0; padding:16px; overflow:auto; background:var(--qs-example-code-bg); color:var(--qs-example-code-text); }
+    .runtime-panel { border-top:1px dashed var(--qs-example-divider); padding-top:16px; }
 
     .profile-shell {
       --pdx-manual-form-gap: 18px;
@@ -196,22 +196,20 @@ import { MANUAL_FORM_SNIPPET, QUICKSTART_MANUAL_FORM_ID } from '../quickstart-co
     .profile-intro,
     .profile-card,
     .detail-card {
-      border:1px solid #d7dfeb;
+      border:1px solid var(--qs-manual-card-border);
       border-radius:18px;
-      background:#fff;
-      box-shadow:0 16px 34px rgba(15, 31, 54, .08);
+      background:var(--qs-manual-card-bg);
+      box-shadow:var(--qs-manual-card-shadow);
     }
 
     .profile-intro {
       display:grid;
       gap:14px;
       padding:22px;
-      background:
-        radial-gradient(circle at top left, rgba(242, 138, 46, .16), transparent 28%),
-        linear-gradient(160deg, #fffdf8 0%, #f8fbff 100%);
+      background:var(--qs-manual-hero-bg);
     }
 
-    .profile-intro p { margin:0; color:#4c5568; line-height:1.5; max-width:34rem; }
+    .profile-intro p { margin:0; color:var(--qs-example-muted); line-height:1.5; max-width:34rem; }
     .profile-chip {
       display:inline-flex;
       align-items:center;
@@ -220,8 +218,8 @@ import { MANUAL_FORM_SNIPPET, QUICKSTART_MANUAL_FORM_ID } from '../quickstart-co
       min-height:32px;
       padding:6px 14px;
       border-radius:999px;
-      background:#edf4ff;
-      color:#173ea5;
+      background:var(--qs-example-chip-bg);
+      color:var(--qs-example-chip-text);
       font-size:.76rem;
       font-weight:700;
       line-height:1;
@@ -233,7 +231,7 @@ import { MANUAL_FORM_SNIPPET, QUICKSTART_MANUAL_FORM_ID } from '../quickstart-co
       display:grid;
       gap:14px;
       padding:22px;
-      background:linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+      background:var(--qs-manual-card-bg);
     }
 
     .profile-card > *,
@@ -262,9 +260,7 @@ import { MANUAL_FORM_SNIPPET, QUICKSTART_MANUAL_FORM_ID } from '../quickstart-co
     }
 
     .detail-card--accent {
-      background:
-        radial-gradient(circle at top right, rgba(23, 62, 165, .12), transparent 30%),
-        #ffffff;
+      background:var(--qs-manual-accent-bg);
     }
 
     .detail-card header {
@@ -277,7 +273,7 @@ import { MANUAL_FORM_SNIPPET, QUICKSTART_MANUAL_FORM_ID } from '../quickstart-co
     }
 
     .detail-kicker {
-      color:#173ea5;
+      color:var(--qs-manual-kicker);
       font-size:.76rem;
       font-weight:700;
       letter-spacing:.05em;

@@ -32,6 +32,8 @@ Most teams do not need a bigger component catalog on day one. They need a host t
 
 That is the purpose of this quickstart.
 
+The published backend behind this host already exposes broader public domains such as `operations`, `assets`, and `risk-intelligence`, but this Angular quickstart intentionally keeps the first adoption path narrower. Its job is to prove the canonical path with one stable resource before expanding into additional domains.
+
 ## What it proves
 
 - Angular standalone host bootstrap
@@ -39,6 +41,7 @@ That is the purpose of this quickstart.
 - `PAX_FETCH_HEADERS` carrying tenant and locale
 - four core runtimes proving the same remote resource in real flows
 - host-owned theme over a shared Praxis runtime
+- compatibility with a backend that already publishes additional domains beyond the first quickstart path
 
 ## Core adoption path
 
@@ -70,6 +73,29 @@ npm start
 Open:
 
 - `http://127.0.0.1:4301`
+
+## Validate against local Praxis libs
+
+Use this mode when the quickstart needs to validate unpublished changes from `../praxis-ui-angular/dist`.
+
+```bash
+npm run build:local-praxis
+npm run start:local-praxis -- --host 127.0.0.1 --port 4301
+```
+
+What this does:
+
+- generates `tsconfig.local-praxis.json`
+- copies each required `@praxisui/*` dist package into `.local-praxis/node_modules/@praxisui/*`
+- keeps Angular and shared peer dependencies resolved from the quickstart host itself
+- starts the host on the same official validation origin: `http://127.0.0.1:4301`
+
+Operational notes:
+
+- build the libs in `../praxis-ui-angular/dist` first; `npm run watch-all` in `praxis-ui-angular` is the recommended source workflow
+- prefer this mode over `npm link` package by package; the host owns the mapping and the Praxis workspace stays canonical
+- `tsconfig.local-praxis.json` is generated and must not be versioned
+- use `npm run build:local-praxis` when you need a production-style host build still pointing to local Praxis libs
 
 ## How it works
 
@@ -107,6 +133,7 @@ This quickstart is opinionated on purpose.
 - the host registers `provideHttpClient(...)`, Praxis providers, and runtime defaults
 - tenant and locale flow through `PAX_FETCH_HEADERS`
 - the same backend surface is reused across table, form, CRUD, and list
+- the first path stays on `human-resources/funcionarios` even though the published backend also exposes `operations`, `assets`, and `risk-intelligence`
 
 This keeps the first integration aligned with the platform instead of improvising local shortcuts.
 
@@ -121,6 +148,8 @@ Praxis provides runtime behavior, metadata interpretation, and governed customiz
 - application composition
 
 Adopting PraxisUI does not require accepting a proprietary visual skin. The quickstart explicitly proves that the host can switch themes while Praxis runtimes continue to work on the same operational surface.
+
+The `Corporate` theme is intentionally more radical than a normal palette swap. It pushes darker gradients, larger radii, glass surfaces, and a more SaaS-like shell so teams can see that PraxisUI does not force an Angular-default visual language on the host.
 
 ## Core examples
 
@@ -179,6 +208,23 @@ The repository also includes:
 - `expansion`
 
 These examples are useful once the core host path is already clear. They should not replace the first adoption flow.
+
+## Backend scope versus frontend scope
+
+The backend published at `praxis-api-quickstart.onrender.com` already exposes multiple public route groups:
+
+- `/api/human-resources/**`
+- `/api/operations/**`
+- `/api/assets/**`
+- `/api/risk-intelligence/**`
+
+This frontend quickstart does not try to cover all of them at once. The current Angular host intentionally keeps its primary runtime examples on `human-resources/funcionarios` because that is the cleanest first proof that:
+
+- the host bootstrap is correct
+- metadata can be loaded from the published API
+- the same `resourcePath` works across table, form, CRUD, and list
+
+When this repository grows, the correct next step is to add new examples for those additional domains without diluting the first-read path.
 
 ## Why the install is broader than the first examples
 

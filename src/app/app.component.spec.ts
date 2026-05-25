@@ -25,8 +25,10 @@ describe('App shell', () => {
     expect(text).toContain('Form');
     expect(text).toContain('CRUD');
     expect(text).toContain('List');
-    expect(text).not.toContain('Manual Form');
-    expect(text).not.toContain('Stepper');
+    expect(text).toContain('Expansion');
+    expect(text).toContain('Manual form');
+    expect(text).toContain('Tabs');
+    expect(text).toContain('Stepper');
     expect(text).toContain('Default');
     expect(text).toContain('Corporate');
     expect(text).toContain('High contrast');

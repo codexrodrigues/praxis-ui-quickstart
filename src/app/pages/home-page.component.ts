@@ -26,8 +26,8 @@ import {
           <p class="eyebrow">{{ intro.eyebrow }}</p>
           <h1>{{ intro.title }}</h1>
           <p class="hero-description">
-            Start with the canonical host path, prove the same published resource in four core runtimes, and keep the
-            theme owned by your Angular host.
+            Prove the stable adoption path with table, form, CRUD, and list; then inspect manual layouts,
+            composition runtimes, embedded charts, editorial guidance, and runtime customization.
           </p>
 
           <div class="hero-facts">
@@ -47,9 +47,10 @@ import {
       <section class="positioning-section">
         <div class="section-heading">
           <p class="section-eyebrow">Positioning</p>
-          <h2>Keep the frontend narrow even when the backend is broad</h2>
+          <h2>Keep onboarding narrow while exposing the evolved runtime surface</h2>
           <p>
-            The host should make the first proof obvious: one stable resource path now, broader domain coverage later.
+            The host should make the first proof obvious without hiding the newer PraxisUI capabilities that teams will
+            evaluate next.
           </p>
         </div>
 
@@ -135,8 +136,8 @@ import {
       <section class="catalog-section catalog-section-secondary">
         <div class="section-heading">
           <p class="section-eyebrow">Advanced examples</p>
-          <h2>Expand after the host is proven</h2>
-          <p>These patterns stay available, but they are intentionally outside the primary navigation.</p>
+          <h2>Expansion path</h2>
+          <p>These examples now represent the next reading path for composition, guided forms, and runtime editing.</p>
         </div>
 
         <div class="catalog-grid">

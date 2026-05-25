@@ -7,7 +7,7 @@ Canonical Angular host for a first adoption path with PraxisUI.
 [![Firebase Hosting](https://img.shields.io/badge/Hosting-Firebase-FFCA28?logo=firebase&logoColor=black)](https://praxis-ui-4e602.web.app)
 [![Smoke tests](https://img.shields.io/badge/Smoke%20tests-passing-16A34A)](./package.json)
 
-This repository is the shortest path from zero to a working PraxisUI host. It is not a broad showcase first. It is a focused adoption starter that proves the platform with four core runtimes over the same published backend resource.
+This repository is the shortest path from zero to a working PraxisUI host. It keeps the first adoption path focused, then exposes the expanded runtime surface that the current PraxisUI libraries provide: core resource runtimes, manual layouts, composition primitives, embedded charts, editorial guidance, theme ownership, and runtime customization.
 
 ## Related links
 
@@ -40,19 +40,35 @@ The published backend behind this host already exposes broader public domains su
 - `API_URL` pointing to the published `praxis-api-quickstart`
 - `PAX_FETCH_HEADERS` carrying tenant and locale
 - four core runtimes proving the same remote resource in real flows
+- four expansion examples for manual layout, tabs, stepper, and expansion panels
+- charts and editorial runtime embedded inside composition examples
+- runtime customization toggled from the host shell
 - host-owned theme over a shared Praxis runtime
 - compatibility with a backend that already publishes additional domains beyond the first quickstart path
 
-## Core adoption path
+## Reading path
 
-The main path of this quickstart is intentionally narrow:
+The quickstart has two layers.
+
+The first layer is intentionally narrow:
 
 1. `praxis-table`
 2. `praxis-dynamic-form`
 3. `praxis-crud`
 4. `praxis-list`
 
-These four examples are the canonical first reading. Advanced examples remain available, but they are not the primary adoption path.
+These four examples are the canonical first reading because they prove the same published `resourcePath` through multiple resource runtimes.
+
+The second layer shows where the current libraries go next:
+
+1. `praxis-manual-form`
+2. `praxis-tabs`
+3. `praxis-stepper`
+4. `praxis-expansion`
+5. `praxis-charts` embedded in tabs and expansion panels
+6. `praxis-editorial-forms` embedded as guided narrative blocks
+
+Use this layer after the core path is clear. It is the expansion path, not a replacement for the first proof.
 
 ## First 10 minutes
 
@@ -61,7 +77,8 @@ These four examples are the canonical first reading. Advanced examples remain av
 3. Confirm the host points to the published API.
 4. Open `Table`, `Form`, `CRUD`, and `List`.
 5. Verify that all four surfaces reuse the same `resourcePath`.
-6. Change the host theme and confirm the runtime follows it.
+6. Open `Expansion` from the top navigation and inspect `Manual form`, `Tabs`, `Stepper`, and `Expansion`.
+7. Toggle customization and change the host theme to confirm the runtime follows host-owned state.
 
 ## Quick start
 
@@ -101,15 +118,21 @@ Operational notes:
 
 ```mermaid
 flowchart LR
-  A["Angular host"] --> B["API_URL + PAX_FETCH_HEADERS"]
-  B --> C["Published Praxis API"]
-  C --> D["Praxis runtimes"]
-  D --> E["Table"]
-  D --> F["Dynamic Form"]
-  D --> G["CRUD"]
-  D --> H["List"]
-  A --> I["Host-owned theme"]
-  I --> D
+  host["Angular host"] --> bootstrap["API_URL + PAX_FETCH_HEADERS + providers"]
+  bootstrap --> api["Published Praxis API"]
+  api --> metadata["Resource metadata and x-ui contracts"]
+  metadata --> core["Core resource runtimes"]
+  core --> table["Table"]
+  core --> form["Dynamic Form"]
+  core --> crud["CRUD"]
+  core --> list["List"]
+  host --> theme["Host-owned theme and customization toggle"]
+  theme --> core
+  core --> expansion["Expansion path"]
+  expansion --> manual["Manual Form"]
+  expansion --> tabs["Tabs + Charts + Editorial"]
+  expansion --> stepper["Stepper"]
+  expansion --> panels["Expansion + Charts + Editorial"]
 ```
 
 ## Public API mode
@@ -200,14 +223,16 @@ Use it to prove that the same published collection can be resolved by a differen
 
 ## Advanced examples
 
-The repository also includes:
+The expansion path includes:
 
 - `manual-form`
 - `tabs`
 - `stepper`
 - `expansion`
+- chart widgets embedded in `tabs` and `expansion`
+- editorial runtime blocks embedded in `tabs` and `expansion`
 
-These examples are useful once the core host path is already clear. They should not replace the first adoption flow.
+These examples are useful once the core host path is already clear. They are now surfaced from the top navigation under `Expansion` so users can see that the quickstart tracks the evolved PraxisUI runtime surface without making the first screen overwhelming.
 
 ## Backend scope versus frontend scope
 
@@ -224,7 +249,7 @@ This frontend quickstart does not try to cover all of them at once. The current 
 - metadata can be loaded from the published API
 - the same `resourcePath` works across table, form, CRUD, and list
 
-When this repository grows, the correct next step is to add new examples for those additional domains without diluting the first-read path.
+When this repository grows, the correct next step is to add new examples for those additional domains without diluting the first-read path. New examples should either strengthen the core adoption path or clearly belong to the expansion path.
 
 ## Why the install is broader than the first examples
 

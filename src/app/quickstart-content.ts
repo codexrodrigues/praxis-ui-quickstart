@@ -54,15 +54,15 @@ export const HERO_PILLS = [
 
 export const HERO_FACTS = [
   '4 core runtimes in the main adoption path',
-  '4 advanced examples kept outside the primary navigation',
+  '4 expansion examples for composition and guided workflows',
+  'Charts and editorial runtime embedded in composition examples',
+  'Runtime customization toggle for supported components',
   'Same public backend used by the landing page',
-  'Backend already exposes operations, assets, and risk intelligence',
-  'Canonical bootstrap with API_URL, PAX_FETCH_HEADERS, and host-owned theme',
 ] as const;
 
 export const HOME_INTRO = {
-  title: 'Connect the host, prove the core path, then expand into advanced patterns.',
-  eyebrow: 'Canonical first contact with PraxisUI and the Praxis platform.',
+  title: 'Start with the canonical host path, then inspect the expanded PraxisUI runtime surface.',
+  eyebrow: 'Angular quickstart for metadata-driven UI, composition, and runtime customization.',
 };
 
 export const CORE_CATALOG_LINKS: readonly CatalogLink[] = [
@@ -97,25 +97,25 @@ export const ADVANCED_CATALOG_LINKS: readonly CatalogLink[] = [
     title: 'Praxis Manual Form',
     route: '/examples/manual-form',
     icon: 'dashboard_customize',
-    description: 'Keep a host-owned layout and still unlock governed customization when the core path is already clear.',
+    description: 'Use Praxis fields inside a host-owned layout when schema-driven rendering is not the whole screen.',
   },
   {
     title: 'Praxis Tabs',
     route: '/examples/tabs',
     icon: 'tabs',
-    description: 'Split supporting content into focused views after the host, resource path, and theme ownership are already proven.',
+    description: 'Compose charts and editorial runtime blocks into focused views without building a tab shell.',
   },
   {
     title: 'Praxis Stepper',
     route: '/examples/stepper',
     icon: 'checklist',
-    description: 'Guide a longer flow once the baseline runtime integration is already in place.',
+    description: 'Guide multi-step data capture with metadata-backed forms and predictable navigation.',
   },
   {
     title: 'Praxis Expansion',
     route: '/examples/expansion',
     icon: 'expand_content',
-    description: 'Group supporting content into panels when the team is ready to explore richer composition patterns.',
+    description: 'Group charts, narrative guidance, and operational signals into scannable panels.',
   },
 ];
 
@@ -138,10 +138,15 @@ export const SETUP_STEPS: readonly SetupStep[] = [
   {
     title: 'Expand only after the first proof',
     detail:
-      'The published API already includes operations, assets, and risk-intelligence, but the quickstart should only branch into those domains after the primary resource path is proven.',
+      'Use manual form, tabs, stepper, expansion, charts, and editorial runtime after the primary resource path is proven.',
   },
   {
-    title: 'Keep the theme in the host',
+    title: 'Test runtime customization',
+    detail:
+      'Toggle customization mode to confirm that supported runtimes can expose editor affordances without changing host wiring.',
+  },
+  {
+    title: 'Keep ownership in the host',
     detail:
       'Let Praxis resolve runtime behavior while your Angular host keeps control of tokens, typography, spacing, and brand identity.',
   },
@@ -165,24 +170,24 @@ export const THEME_OWNERSHIP_POINTS: readonly ThemeOwnershipPoint[] = [
 export const POSITIONING_PANELS: readonly PositioningPanel[] = [
   {
     eyebrow: 'Frontend scope',
-    title: 'One resource path is still the first proof.',
+    title: 'The first path is narrow; the runtime surface is not.',
     detail:
-      'This quickstart intentionally stays centered on human-resources/funcionarios so teams can verify host bootstrap, metadata resolution, and runtime reuse before they branch into additional backend domains.',
+      'The quickstart starts with human-resources/funcionarios to keep onboarding stable, then shows composition and customization patterns that reflect the newer PraxisUI libraries.',
     bullets: [
       'Table, form, CRUD, and list all reuse the same published resourcePath.',
-      'The first read is about proving the platform, not touring every backend route group.',
-      'This keeps onboarding stable while the backend continues to evolve.',
+      'Manual form, tabs, stepper, and expansion demonstrate where the runtime goes after the first proof.',
+      'Charts and editorial forms appear inside composition examples instead of as isolated demos.',
     ],
   },
   {
     eyebrow: 'Backend scope',
-    title: 'The published API is broader than the first UI path.',
+    title: 'The published API and docs are broader than this host.',
     detail:
-      'The backend already exposes operations, assets, and risk-intelligence in addition to human-resources. Those domains belong to later examples, not to the first-read adoption path of this host.',
+      'The public API and Praxis docs cover more domains and contracts than a first Angular host should expose at once. This repo proves the runtime path and points users to the broader platform.',
     bullets: [
-      'Human resources remains the canonical first contact.',
-      'Additional route groups are expansion material, not onboarding prerequisites.',
-      'The host should communicate this difference explicitly so expectations stay aligned.',
+      'praxis-metadata-starter owns resource semantics and x-ui contracts.',
+      'praxis-config-starter owns runtime configuration, AI registry, and authoring state.',
+      'praxisui.dev is the public narrative for examples, docs, and playgrounds.',
     ],
   },
 ] as const;

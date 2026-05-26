@@ -26,8 +26,9 @@ import {
           <p class="eyebrow">{{ intro.eyebrow }}</p>
           <h1>{{ intro.title }}</h1>
           <p class="hero-description">
-            Prove the stable adoption path with table, form, CRUD, and list; then inspect manual layouts,
-            composition runtimes, embedded charts, editorial guidance, and runtime customization.
+            Start here when you need a real Angular shell connected to the published Praxis API. The quickstart proves
+            host bootstrap, headers, theme ownership, core resource runtimes, and the first composition path without
+            pretending to be the full documentation site.
           </p>
 
           <div class="hero-facts">
@@ -47,10 +48,10 @@ import {
       <section class="positioning-section">
         <div class="section-heading">
           <p class="section-eyebrow">Positioning</p>
-          <h2>Keep onboarding narrow while exposing the evolved runtime surface</h2>
+          <h2>Know what this host owns, and what it deliberately delegates</h2>
           <p>
-            The host should make the first proof obvious without hiding the newer PraxisUI capabilities that teams will
-            evaluate next.
+            The quickstart is the installable proof. Contracts, long-form docs, recipes, and platform governance stay in
+            their canonical projects.
           </p>
         </div>
 

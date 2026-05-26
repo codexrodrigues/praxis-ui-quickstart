@@ -3,6 +3,7 @@ import { providePraxisCharts, providePraxisChartsI18n } from '@praxisui/charts';
 import { GenericCrudService } from '@praxisui/core';
 import { providePraxisDynamicFormMetadata } from '@praxisui/dynamic-form';
 import { providePraxisEditorialForms, providePraxisEditorialFormsI18n } from '@praxisui/editorial-forms';
+import { providePraxisTableMetadata } from '@praxisui/table';
 import { provideQuickstartEditorialWidgetMetadata } from './quickstart-editorial-widget.metadata';
 
 export const routes: Routes = [
@@ -15,6 +16,13 @@ export const routes: Routes = [
     path: 'examples/table',
     loadComponent: () => import('./pages/table-example-page.component').then((m) => m.TableExamplePageComponent),
     title: 'Praxis UI Quickstart | Table',
+    providers: [
+      GenericCrudService,
+      providePraxisDynamicFormMetadata(),
+      providePraxisTableMetadata(),
+      ...providePraxisCharts(),
+      ...providePraxisChartsI18n({ locale: 'en-US', fallbackLocale: 'en-US' }),
+    ],
   },
   {
     path: 'examples/form',

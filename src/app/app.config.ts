@@ -19,15 +19,19 @@ import { provideRouter } from '@angular/router';
 import {
   API_URL,
   type ApiUrlConfig,
+  GenericCrudService,
   provideGlobalConfig,
   provideGlobalConfigReady,
   provideGlobalConfigSeed,
   providePraxisLoadingDefaults,
   withPraxisHttpLoading,
+  GLOBAL_SURFACE_SERVICE,
 } from '@praxisui/core';
 import { providePraxisDynamicFieldsCore } from '@praxisui/dynamic-fields';
+import { providePraxisDynamicFormMetadata } from '@praxisui/dynamic-form';
 import { routes } from './app.routes';
-import { GLOBAL_CONFIG_SEED, PRAXIS_API_BASE_URL } from './quickstart-content';
+import { GLOBAL_CONFIG_SEED, PRAXIS_API_BASE_URL } from './quickstart-platform-config';
+import { QuickstartSurfaceOpenService } from './quickstart-surface-open.service';
 
 const API_URL_VALUE: ApiUrlConfig = {
   default: { baseUrl: PRAXIS_API_BASE_URL },
@@ -41,8 +45,12 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(withPraxisHttpLoading()),
     ...providePraxisDynamicFieldsCore(),
+    providePraxisDynamicFormMetadata(),
     ...providePraxisLoadingDefaults(),
     { provide: API_URL, useValue: API_URL_VALUE },
+    GenericCrudService,
+    QuickstartSurfaceOpenService,
+    { provide: GLOBAL_SURFACE_SERVICE, useExisting: QuickstartSurfaceOpenService },
     provideGlobalConfig(GLOBAL_CONFIG_SEED),
     provideGlobalConfigSeed(GLOBAL_CONFIG_SEED),
     provideGlobalConfigReady(),

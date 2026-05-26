@@ -1,11 +1,12 @@
 import type { CrudMetadata } from '@praxisui/crud';
-import type { PraxisChartConfig } from '@praxisui/charts';
+import type { PraxisChartConfig, PraxisXUiChartContract } from '@praxisui/charts';
 import type { EditorialRuntimeInput } from '@praxisui/editorial-forms';
 import type { ExpansionMetadata } from '@praxisui/expansion';
-import type { FormConfig, GlobalConfig, TableConfig } from '@praxisui/core';
+import type { FormConfig, SurfaceOpenPayload, TableConfig } from '@praxisui/core';
 import type { PraxisListConfig } from '@praxisui/list';
 import type { StepperMetadata } from '@praxisui/stepper';
 import type { TabsMetadata } from '@praxisui/tabs';
+import { PRAXIS_API_BASE_URL } from './quickstart-platform-config';
 
 export interface SetupStep {
   readonly title: string;
@@ -31,12 +32,11 @@ export interface PositioningPanel {
   readonly bullets: readonly string[];
 }
 
-export const PRAXIS_API_ORIGIN =
-  (globalThis as { __PRAXIS_API_ORIGIN__?: string }).__PRAXIS_API_ORIGIN__?.trim() ||
-  'https://praxis-api-quickstart.onrender.com';
-
-export const PRAXIS_API_BASE_URL = `${PRAXIS_API_ORIGIN}/api`;
+export { GLOBAL_CONFIG_SEED, PRAXIS_API_BASE_URL, PRAXIS_API_ORIGIN } from './quickstart-platform-config';
 export const QUICKSTART_RESOURCE_PATH = 'human-resources/funcionarios';
+export const QUICKSTART_PAYROLL_RESOURCE_PATH = 'human-resources/folhas-pagamento';
+export const QUICKSTART_PAYROLL_ANALYTICS_RESOURCE_PATH = 'human-resources/vw-analytics-folha-pagamento';
+export const QUICKSTART_MISSION_PARTICIPANTS_RESOURCE_PATH = 'operations/missao-participantes';
 export const QUICKSTART_FORM_ID = 'quickstart-funcionarios';
 export const QUICKSTART_CRUD_ID = 'quickstart-crud';
 export const QUICKSTART_LIST_ID = 'quickstart-list';
@@ -53,16 +53,16 @@ export const HERO_PILLS = [
 ] as const;
 
 export const HERO_FACTS = [
-  '4 core runtimes in the main adoption path',
-  '4 expansion examples for composition and guided workflows',
-  'Charts and editorial runtime embedded in composition examples',
-  'Runtime customization toggle for supported components',
-  'Same public backend used by the landing page',
+  'Angular 20 host pinned to the compatible PraxisUI beta train',
+  '4 core runtimes proving one published resource contract',
+  'Composition examples for guided flows, charts, and editorial blocks',
+  'Runtime customization toggle owned by the host shell',
+  'Clear bridge to praxisui.dev, metadata starter, and config starter',
 ] as const;
 
 export const HOME_INTRO = {
-  title: 'Start with the canonical host path, then inspect the expanded PraxisUI runtime surface.',
-  eyebrow: 'Angular quickstart for metadata-driven UI, composition, and runtime customization.',
+  title: 'Use this repo as the minimal public Angular host for PraxisUI adoption.',
+  eyebrow: 'Quickstart host for metadata-driven UI, runtime composition, and public API integration.',
 };
 
 export const CORE_CATALOG_LINKS: readonly CatalogLink[] = [
@@ -121,9 +121,9 @@ export const ADVANCED_CATALOG_LINKS: readonly CatalogLink[] = [
 
 export const SETUP_STEPS: readonly SetupStep[] = [
   {
-    title: 'Install the aligned stack',
+    title: 'Install the Angular 20 beta train',
     detail:
-      'Keep the @praxisui/* packages on the same range and avoid starting with local dependencies or temporary aliases.',
+      'Use the pinned @praxisui/* 8.0.0-beta.28 packages so npm does not resolve peers from the Angular 21 train.',
   },
   {
     title: 'Configure the host correctly',
@@ -169,21 +169,21 @@ export const THEME_OWNERSHIP_POINTS: readonly ThemeOwnershipPoint[] = [
 
 export const POSITIONING_PANELS: readonly PositioningPanel[] = [
   {
-    eyebrow: 'Frontend scope',
-    title: 'The first path is narrow; the runtime surface is not.',
+    eyebrow: 'Quickstart role',
+    title: 'This repo proves host integration, not the whole platform catalog.',
     detail:
-      'The quickstart starts with human-resources/funcionarios to keep onboarding stable, then shows composition and customization patterns that reflect the newer PraxisUI libraries.',
+      'The quickstart starts with human-resources/funcionarios to keep onboarding stable, then shows enough composition and customization to prove the runtime model.',
     bullets: [
       'Table, form, CRUD, and list all reuse the same published resourcePath.',
       'Manual form, tabs, stepper, and expansion demonstrate where the runtime goes after the first proof.',
-      'Charts and editorial forms appear inside composition examples instead of as isolated demos.',
+      'Broader component documentation, recipes, and playgrounds live on praxisui.dev.',
     ],
   },
   {
-    eyebrow: 'Backend scope',
-    title: 'The published API and docs are broader than this host.',
+    eyebrow: 'Platform relationship',
+    title: 'The quickstart consumes canonical contracts; it does not define them.',
     detail:
-      'The public API and Praxis docs cover more domains and contracts than a first Angular host should expose at once. This repo proves the runtime path and points users to the broader platform.',
+      'Use this repository to verify the Angular host path while keeping contract ownership in the platform projects that publish the semantics.',
     bullets: [
       'praxis-metadata-starter owns resource semantics and x-ui contracts.',
       'praxis-config-starter owns runtime configuration, AI registry, and authoring state.',
@@ -193,11 +193,15 @@ export const POSITIONING_PANELS: readonly PositioningPanel[] = [
 ] as const;
 
 export const INSTALL_COMMAND = `npm install \\
-  @angular/animations @angular/cdk @angular/material \\
-  @praxisui/ai @praxisui/core @praxisui/cron-builder @praxisui/charts \\
-  @praxisui/dynamic-fields @praxisui/dynamic-form @praxisui/crud \\
-  @praxisui/editorial-forms @praxisui/list @praxisui/manual-form \\
-  @praxisui/table @praxisui/tabs @praxisui/stepper @praxisui/expansion`;
+  @angular/animations@^20.3.18 @angular/cdk@^20.1.4 @angular/material@^20.1.4 \\
+  @angular/platform-browser-dynamic@^20.3.0 \\
+  @praxisui/ai@8.0.0-beta.28 @praxisui/core@8.0.0-beta.28 \\
+  @praxisui/charts@8.0.0-beta.28 @praxisui/crud@8.0.0-beta.28 \\
+  @praxisui/dynamic-fields@8.0.0-beta.28 @praxisui/dynamic-form@8.0.0-beta.28 \\
+  @praxisui/editorial-forms@8.0.0-beta.28 @praxisui/list@8.0.0-beta.28 \\
+  @praxisui/manual-form@8.0.0-beta.28 @praxisui/table@8.0.0-beta.28 \\
+  @praxisui/tabs@8.0.0-beta.28 @praxisui/stepper@8.0.0-beta.28 \\
+  @praxisui/expansion@8.0.0-beta.28`;
 
 export const BOOTSTRAP_SNIPPET = `const API_URL_VALUE = {
   default: { baseUrl: '${PRAXIS_API_BASE_URL}' },
@@ -230,6 +234,60 @@ export const TABLE_SNIPPET = `<praxis-table
   tableId="quickstart-table"
   [resourcePath]="'${QUICKSTART_RESOURCE_PATH}'">
 </praxis-table>`;
+
+export const TABLE_FILTERS_SNIPPET = `<praxis-table
+  tableId="quickstart-table-filters"
+  [resourcePath]="'${QUICKSTART_RESOURCE_PATH}'"
+  [config]="tableFiltersConfig">
+</praxis-table>`;
+
+export const TABLE_ACTIONS_SNIPPET = `<praxis-table
+  tableId="quickstart-table-surfaces-icons"
+  [resourcePath]="'${QUICKSTART_RESOURCE_PATH}'"
+  [config]="tableActionsConfig"
+  (rowAction)="openBackendSurface($event)">
+</praxis-table>
+
+const tableActionsConfig = {
+  actions: {
+    row: {
+      display: 'icons',
+      width: '152px',
+      header: {
+        icon: 'hub',
+        tooltip: 'Acoes e surfaces relacionadas ao item',
+        align: 'center'
+      },
+      maxVisibleActions: 3,
+      actions: [
+        {
+          id: 'hero-profile',
+          action: 'hero-profile',
+          label: 'Perfil 360',
+          icon: 'account_circle'
+        },
+        {
+          id: 'employee-payroll-surface',
+          label: 'Folha',
+          icon: 'payments',
+          globalAction: {
+            actionId: 'surface.open',
+            payload: EMPLOYEE_PAYROLL_SURFACE_PAYLOAD
+          }
+        },
+        {
+          id: 'employee-missions-relation',
+          label: 'Missoes',
+          icon: 'flag',
+          globalAction: {
+            actionId: 'surface.open',
+            payload: EMPLOYEE_MISSIONS_SURFACE_PAYLOAD
+          }
+        }
+      ]
+    }
+  }
+};`;
 
 export const FORM_SNIPPET = `<praxis-dynamic-form
   [formId]="'${QUICKSTART_FORM_ID}'"
@@ -277,6 +335,392 @@ export const EXPANSION_SNIPPET = `<praxis-expansion
 </praxis-expansion>`;
 
 export const TABLE_CONFIG: TableConfig = {
+  localization: {
+    locale: 'en-US',
+    currency: {
+      code: 'USD',
+      symbol: '$',
+    },
+  },
+} as unknown as TableConfig;
+
+export const TABLE_DYNAMIC_FILTERS_CONFIG: TableConfig = {
+  columns: [],
+  toolbar: {
+    visible: true,
+    position: 'top',
+    actionsPosition: 'top',
+    title: 'Funcionarios',
+    subtitle: 'Filtros dinÃ¢micos derivados do FilterDTO publicado pelo backend',
+    layout: {
+      alignment: 'space-between',
+      showSeparator: true,
+    },
+  },
+  behavior: {
+    filtering: {
+      enabled: true,
+      strategy: 'server',
+      debounceTime: 300,
+      advancedFilters: {
+        enabled: true,
+        queryBuilder: false,
+        savePresets: true,
+        settings: {
+          alwaysVisibleFields: ['nomeCompleto', 'ativo', 'cpf', 'email'],
+          selectedFieldIds: ['telefone'],
+          changeDebounceMs: 300,
+          mode: 'filter',
+          placeBooleansInActions: true,
+          showToggleLabels: true,
+          alwaysMinWidth: 220,
+          alwaysColsMd: 2,
+          alwaysColsLg: 4,
+          tagColor: 'primary',
+          tagVariant: 'outlined',
+          actionsButtonColor: 'primary',
+          actionsVariant: 'outlined',
+          advancedOpenMode: 'drawer',
+          overlayVariant: 'frosted',
+        },
+      },
+    },
+  },
+  localization: {
+    locale: 'en-US',
+    currency: {
+      code: 'USD',
+      symbol: '$',
+    },
+  },
+} as unknown as TableConfig;
+
+const relatedSurfacePayloadBase = {
+  presentation: 'modal',
+  size: {
+    width: '1040px',
+    maxWidth: 'calc(100vw - 32px)',
+    maxHeight: 'calc(100vh - 48px)',
+  },
+} as const;
+
+const EMPLOYEE_PAYROLL_CHART_DOCUMENT: PraxisXUiChartContract = {
+  version: '1.0.0',
+  chartId: 'quickstart-employee-payroll-chart',
+  kind: 'line',
+  preset: 'kpi-trend',
+  title: 'Folha liquida por competencia',
+  subtitle: 'Historico recente da pessoa selecionada',
+  sizing: {
+    mode: 'fixed',
+    height: 360,
+  },
+  source: {
+    kind: 'praxis.stats',
+    resource: QUICKSTART_PAYROLL_ANALYTICS_RESOURCE_PATH,
+    operation: 'timeseries',
+    options: {
+      granularity: 'month',
+      fillGaps: true,
+      orderBy: 'key-asc',
+      limit: 12,
+    },
+  },
+  limit: 12,
+  dimensions: [
+    {
+      field: 'competencia',
+      label: 'Competencia',
+      role: 'time',
+      format: 'month-year',
+    },
+  ],
+  metrics: [
+    {
+      field: 'salarioLiquido',
+      label: 'Salario liquido',
+      aggregation: 'sum',
+      seriesKind: 'line',
+      format: 'USD|symbol|0|compact',
+      color: '#1f6feb',
+    },
+  ],
+  legend: false,
+  labels: false,
+  tooltip: true,
+  theme: { variant: 'executive' },
+  motion: { enabled: true, preset: 'subtle' },
+  state: {
+    empty: {
+      title: 'Sem dados de folha',
+      description: 'Nenhum historico de folha foi publicado para a pessoa selecionada.',
+    },
+    error: {
+      title: 'Falha ao carregar analytics',
+      description: 'Confira se o recurso analytics de folha esta disponivel na API publicada.',
+    },
+  },
+};
+
+const EMPLOYEE_PAYROLL_CHART_CONFIG: PraxisChartConfig = {
+  id: 'quickstart-employee-payroll-chart',
+  type: 'line',
+  title: 'Folha liquida por competencia',
+  subtitle: 'Historico recente da pessoa selecionada',
+  sizing: {
+    mode: 'fixed',
+    height: 360,
+  },
+  axes: {
+    x: {
+      field: 'competencia',
+      label: 'Competencia',
+      type: 'category',
+      labels: {
+        rotate: 25,
+      },
+    },
+    y: {
+      label: 'Salario liquido',
+      type: 'value',
+      labels: {
+        format: 'USD|symbol|0|compact',
+      },
+    },
+  },
+  series: [
+    {
+      id: 'salarioLiquido',
+      name: 'Salario liquido',
+      type: 'line',
+      metric: {
+        field: 'salarioLiquido',
+        aggregation: 'sum',
+      },
+      color: '#1f6feb',
+      smooth: true,
+      labels: {
+        visible: false,
+        format: 'USD|symbol|0|compact',
+      },
+    },
+  ],
+  theme: {
+    tooltip: {
+      enabled: true,
+      trigger: 'axis',
+    },
+  },
+  emptyState: {
+    title: 'Sem dados de folha',
+    description: 'Nenhum historico de folha foi publicado para a pessoa selecionada.',
+  },
+};
+
+const EMPLOYEE_PAYROLL_SURFACE_PAYLOAD: SurfaceOpenPayload = {
+  ...relatedSurfacePayloadBase,
+  title: 'Analytics de folha',
+  subtitle:
+    'Payroll analytics rendered by Praxis Chart from a declarative x-ui.chart contract.',
+  icon: 'payments',
+  size: { width: '1040px', maxWidth: 'calc(100vw - 32px)', maxHeight: 'calc(100vh - 48px)' },
+  widget: {
+    id: 'praxis-chart',
+    bindingOrder: ['config', 'chartDocument', 'queryContext', 'enableCustomization'],
+    inputs: {
+      config: EMPLOYEE_PAYROLL_CHART_CONFIG,
+      chartDocument: EMPLOYEE_PAYROLL_CHART_DOCUMENT,
+      queryContext: {
+        filters: {},
+        limit: 12,
+      },
+      enableCustomization: false,
+    },
+  },
+  bindings: [
+    { from: 'payload.row.id', to: 'widget.inputs.queryContext.filters.funcionarioId' },
+    {
+      mode: 'template',
+      value: 'Folha de ${payload.row.nomeCompleto}',
+      to: 'title',
+    },
+    {
+      mode: 'template',
+      value: 'Recent payroll cycles rendered from declarative chart config.',
+      to: 'subtitle',
+    },
+    {
+      mode: 'template',
+      value: 'Competencias de ${payload.row.nomeCompleto}',
+      to: 'widget.inputs.chartDocument.subtitle',
+    },
+  ],
+};
+
+const EMPLOYEE_MISSIONS_SURFACE_PAYLOAD: SurfaceOpenPayload = {
+  ...relatedSurfacePayloadBase,
+  title: 'Missoes do funcionario',
+  subtitle:
+    'Participacoes operacionais da pessoa selecionada.',
+  icon: 'flag',
+  widget: {
+    id: 'praxis-table',
+    bindingOrder: [
+      'resourcePath',
+      'tableId',
+      'componentInstanceId',
+      'queryContext',
+      'title',
+      'subtitle',
+      'icon',
+      'config',
+      'enableCustomization',
+    ],
+    inputs: {
+      resourcePath: QUICKSTART_MISSION_PARTICIPANTS_RESOURCE_PATH,
+      tableId: 'quickstart-employee-missions-surface',
+      componentInstanceId: 'quickstart-employee-missions-surface',
+      title: 'Missoes',
+      subtitle: 'Participacoes operacionais do funcionario selecionado',
+      icon: 'flag',
+      queryContext: {
+        filters: {},
+      },
+      config: {
+        columns: [
+          { field: 'missaoTitulo', header: 'Missao', width: '240px' },
+          { field: 'papel', header: 'Papel', width: '160px' },
+          { field: 'ordem', header: 'Ordem', width: '96px' },
+          { field: 'principal', header: 'Principal', type: 'boolean', width: '120px' },
+          { field: 'resultado', header: 'Resultado', width: '180px' },
+        ],
+        pagination: {
+          enabled: true,
+          pageSize: 8,
+          pageSizeOptions: [8, 16, 32],
+        },
+        appearance: {
+          density: 'comfortable',
+        },
+      },
+      enableCustomization: false,
+    },
+  },
+  bindings: [
+    { from: 'payload.row.id', to: 'widget.inputs.queryContext.filters.funcionarioId' },
+    {
+      mode: 'template',
+      value: 'Missoes de ${payload.row.nomeCompleto}',
+      to: 'title',
+    },
+    {
+      mode: 'template',
+      value: 'Missoes relacionadas a ${payload.row.nomeCompleto}.',
+      to: 'subtitle',
+    },
+    {
+      mode: 'template',
+      value: 'Participacoes de ${payload.row.nomeCompleto}',
+      to: 'widget.inputs.subtitle',
+    },
+    {
+      mode: 'template',
+      value: 'quickstart-missions-${payload.row.id}',
+      to: 'widget.inputs.componentInstanceId',
+    },
+  ],
+};
+
+export const TABLE_RELATED_SURFACES_CONFIG: TableConfig = {
+  columns: [],
+  toolbar: {
+    visible: true,
+    position: 'top',
+    actionsPosition: 'top',
+    title: 'Employees with related surfaces',
+    subtitle: 'Row actions open a backend 360 profile, payroll analytics, and operational relations',
+    layout: {
+      alignment: 'space-between',
+      showSeparator: true,
+    },
+  },
+  behavior: {
+    sorting: {
+      enabled: true,
+      strategy: 'server',
+      defaultSort: { column: 'id', direction: 'asc' },
+    },
+    selection: {
+      enabled: true,
+      type: 'multiple',
+      mode: 'checkbox',
+      allowSelectAll: true,
+      checkboxPosition: 'start',
+      persistSelection: false,
+      persistOnDataUpdate: false,
+      visual: {
+        highlightSelected: true,
+        showSelectionCount: true,
+      },
+    },
+  },
+  actions: {
+    row: {
+      enabled: true,
+      position: 'end',
+      width: '152px',
+      sticky: 'end',
+      display: 'icons',
+      trigger: 'always',
+      menuIcon: 'more_vert',
+      discovery: {
+        enabled: true,
+      },
+      header: {
+        icon: 'hub',
+        tooltip: 'Actions and related surfaces',
+        align: 'center',
+      },
+      maxVisibleActions: 3,
+      behavior: {
+        enabled: true,
+        maxInline: 3,
+        autoStrategy: 'breakpoints',
+      },
+      actions: [
+        {
+          id: 'hero-profile',
+          action: 'hero-profile',
+          label: 'Perfil 360',
+          icon: 'account_circle',
+          color: 'primary',
+          tooltip: 'Open the backend-published Perfil 360 surface',
+        },
+        {
+          id: 'employee-payroll-surface',
+          label: 'Folha',
+          icon: 'payments',
+          color: 'accent',
+          tooltip: 'Open payroll analytics for the selected employee',
+          globalAction: {
+            actionId: 'surface.open',
+            payload: EMPLOYEE_PAYROLL_SURFACE_PAYLOAD,
+          },
+        },
+        {
+          id: 'employee-missions-relation',
+          label: 'Missoes',
+          icon: 'flag',
+          color: 'accent',
+          tooltip: 'Open mission participation filtered by the selected employee',
+          globalAction: {
+            actionId: 'surface.open',
+            payload: EMPLOYEE_MISSIONS_SURFACE_PAYLOAD,
+          },
+        },
+      ],
+    },
+  },
   localization: {
     locale: 'en-US',
     currency: {
@@ -939,32 +1383,3 @@ export function buildExpansionShowcaseConfig(): ExpansionMetadata {
 
 export const EXPANSION_CONFIG: ExpansionMetadata = buildExpansionShowcaseConfig();
 
-export const GLOBAL_CONFIG_SEED: Partial<GlobalConfig> = {
-  crud: {
-    defaults: {
-      openMode: 'modal',
-    },
-  },
-  dynamicFields: {
-    asyncSelect: { loadOn: 'open' },
-    cascade: { enable: true, loadOnChange: 'respectLoadOn', debounceMs: 250 },
-  },
-  table: {
-    appearance: {
-      density: 'compact',
-      spacing: {
-        cellPadding: '6px 12px',
-        headerPadding: '8px 12px',
-      },
-      typography: {
-        fontSize: '13px',
-        headerFontSize: '13px',
-      },
-    },
-    filteringUi: {
-      advancedOpenMode: 'drawer',
-      overlayVariant: 'card',
-      overlayBackdrop: true,
-    },
-  },
-};

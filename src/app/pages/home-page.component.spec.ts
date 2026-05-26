@@ -19,7 +19,7 @@ describe('HomePageComponent', () => {
     expect(text).toContain('The host keeps the visual identity');
     expect(text).toContain('Start here');
     expect(text).toContain('Expansion path');
-    expect(text).toContain('embedded charts');
+    expect(text).toContain('charts');
     expect(text).toContain('Praxis Table');
     expect(text).toContain('Praxis Dynamic Form');
     expect(text).toContain('Praxis CRUD');

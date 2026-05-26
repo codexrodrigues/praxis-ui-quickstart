@@ -7,7 +7,9 @@ Canonical Angular host for a first adoption path with PraxisUI.
 [![Firebase Hosting](https://img.shields.io/badge/Hosting-Firebase-FFCA28?logo=firebase&logoColor=black)](https://praxis-ui-4e602.web.app)
 [![Smoke tests](https://img.shields.io/badge/Smoke%20tests-passing-16A34A)](./package.json)
 
-This repository is the shortest path from zero to a working PraxisUI host. It keeps the first adoption path focused, then exposes the expanded runtime surface that the current PraxisUI libraries provide: core resource runtimes, manual layouts, composition primitives, embedded charts, editorial guidance, theme ownership, and runtime customization.
+This repository is the shortest path from zero to a working PraxisUI Angular host. It is the installable proof that a host can bootstrap PraxisUI, call the published API, pass tenant and locale headers, keep visual ownership, and render metadata-driven runtimes without local shortcuts.
+
+It is not the full component catalog and it is not the source of platform semantics. The quickstart proves the host path; [praxisui.dev](https://praxisui.dev) publishes the broader documentation and playgrounds; `praxis-metadata-starter` and `praxis-config-starter` own the backend and runtime contracts.
 
 ## Related links
 
@@ -20,6 +22,32 @@ This repository is the shortest path from zero to a working PraxisUI host. It ke
 
 - [praxis-metadata-starter](https://github.com/codexrodrigues/praxis-metadata-starter)
   Canonical source for metadata-driven semantics and the `x-ui` vocabulary consumed by the platform.
+- [praxis-config-starter](https://github.com/codexrodrigues/praxis-config-starter)
+  Canonical source for runtime configuration, authoring state, AI registry, templates, headers, and ETag behavior.
+
+## Role in the Praxis ecosystem
+
+Use this repository when you need to verify that an Angular application can consume the public Praxis stack correctly.
+
+```mermaid
+flowchart LR
+  metadata["praxis-metadata-starter"] --> api["Published quickstart API"]
+  config["praxis-config-starter"] --> runtimeConfig["Runtime config and authoring state"]
+  api --> quickstart["praxis-ui-quickstart"]
+  runtimeConfig --> quickstart
+  quickstart --> core["Table / Form / CRUD / List"]
+  quickstart --> composition["Manual Form / Tabs / Stepper / Expansion"]
+  quickstart --> docs["praxisui.dev"]
+  docs --> playgrounds["Docs, examples, recipes, playgrounds"]
+```
+
+The ownership boundary is intentional:
+
+- `praxis-ui-quickstart` proves the host integration path.
+- `praxisui.dev` explains the broader product surface.
+- `praxis-metadata-starter` owns resource semantics, `x-ui`, schemas, actions, and capabilities.
+- `praxis-config-starter` owns runtime configuration and authoring persistence.
+- `praxis-ui-angular` owns the public Angular runtime packages.
 
 ## Why this repository exists
 
@@ -39,6 +67,7 @@ The published backend behind this host already exposes broader public domains su
 - Angular standalone host bootstrap
 - `API_URL` pointing to the published `praxis-api-quickstart`
 - `PAX_FETCH_HEADERS` carrying tenant and locale
+- Angular 20 compatible PraxisUI package train pinned to `8.0.0-beta.28`
 - four core runtimes proving the same remote resource in real flows
 - four expansion examples for manual layout, tabs, stepper, and expansion panels
 - charts and editorial runtime embedded inside composition examples
@@ -90,6 +119,15 @@ npm start
 Open:
 
 - `http://127.0.0.1:4301`
+
+### Dependency train
+
+This project is intentionally pinned to the Angular 20 compatible PraxisUI train:
+
+- Angular packages: `^20.x`
+- PraxisUI packages: `8.0.0-beta.28`
+
+Do not replace these with the npm `latest` tag without migrating the host to the matching Angular peer range. Some newer PraxisUI package tags already target Angular 21, and `@praxisui/ai` currently has a non-representative `latest` tag. The pinned dependency graph keeps a clean public install without `--force` or `--legacy-peer-deps`.
 
 ## Validate against local Praxis libs
 
@@ -146,6 +184,8 @@ flowchart LR
 ## External adopters
 
 This quickstart consumes published `@praxisui/*` packages from npm. You do not need access to the PraxisUI source workspace or any internal library build orchestration to get started with this host.
+
+The package list is broader than the first screen because several runtimes expose peer packages for authoring, settings panels, metadata editing, rich content, dialogs, files upload, and visual builder integration. They are pinned in `package.json` so a fresh install resolves the Angular 20 compatible graph deterministically.
 
 ## Canonical host decisions
 

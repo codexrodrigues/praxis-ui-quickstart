@@ -6,6 +6,7 @@ import { PraxisTable } from '@praxisui/table';
 import { CustomizationModeService } from '../customization-mode.service';
 import {
   QUICKSTART_RESOURCE_PATH,
+  TABLE_CONFIG,
   TABLE_ACTIONS_SNIPPET,
   TABLE_DYNAMIC_FILTERS_CONFIG,
   TABLE_FILTERS_SNIPPET,
@@ -33,7 +34,7 @@ import { QuickstartSurfaceOpenService } from '../quickstart-surface-open.service
 
       <div class="page-grid">
         <article class="panel panel--snippet">
-          <h2>Minimal snippet</h2>
+          <h2>Configured snippet</h2>
           <pre><code>{{ snippet }}</code></pre>
         </article>
 
@@ -43,13 +44,18 @@ import { QuickstartSurfaceOpenService } from '../quickstart-surface-open.service
               <p class="stage-step">Baseline</p>
               <h2>Live example</h2>
             </div>
-            <span>resourcePath only</span>
+            <span>resourcePath + tableConfig</span>
           </div>
+          <p class="stage-copy">
+            A small host config selects the core business columns, avatar renderer, date formatting, and
+            server-side table behavior while the rows still come from the published resource.
+          </p>
           <div class="runtime-panel runtime-panel--wide">
-            <div class="runtime-shell runtime-shell--table">
+            <div class="runtime-shell runtime-shell--table runtime-shell--table-compact">
                 <praxis-table
                   tableId="quickstart-table"
                   [resourcePath]="resourcePath"
+                  [config]="tableConfig"
                   [enableCustomization]="customizationEnabled()"
                 />
             </div>
@@ -131,12 +137,14 @@ import { QuickstartSurfaceOpenService } from '../quickstart-surface-open.service
     .runtime-panel--wide { border-top:1px dashed var(--qs-example-divider); padding-top:14px; }
     .runtime-shell { min-width:max-content; }
     .runtime-shell--table { min-width:980px; }
+    .runtime-shell--table-compact { min-width:540px; }
     .runtime-shell > praxis-table { display:block; }
 
     @media (max-width: 720px) {
       .stage-header { display:grid; }
       .stage-header span { white-space:normal; width:max-content; max-width:100%; }
       .runtime-shell--table { min-width:820px; }
+      .runtime-shell--table-compact { min-width:540px; }
     }
   `],
 })
@@ -148,6 +156,7 @@ export class TableExamplePageComponent {
   protected readonly filtersSnippet = TABLE_FILTERS_SNIPPET;
   protected readonly actionsSnippet = TABLE_ACTIONS_SNIPPET;
   protected readonly resourcePath = QUICKSTART_RESOURCE_PATH;
+  protected readonly tableConfig = TABLE_CONFIG;
   protected readonly tableFiltersConfig = TABLE_DYNAMIC_FILTERS_CONFIG;
   protected readonly tableActionsConfig = TABLE_RELATED_SURFACES_CONFIG;
   protected readonly customizationEnabled = this.customizationMode.customizationEnabled;

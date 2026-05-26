@@ -232,7 +232,8 @@ export const TEMPLATE_SNIPPET = `<praxis-table
 
 export const TABLE_SNIPPET = `<praxis-table
   tableId="quickstart-table"
-  [resourcePath]="'${QUICKSTART_RESOURCE_PATH}'">
+  [resourcePath]="'${QUICKSTART_RESOURCE_PATH}'"
+  [config]="tableConfig">
 </praxis-table>`;
 
 export const TABLE_FILTERS_SNIPPET = `<praxis-table
@@ -387,8 +388,88 @@ export const EXPANSION_SNIPPET = `<praxis-expansion
 </praxis-expansion>`;
 
 export const TABLE_CONFIG: TableConfig = {
+  columns: [
+    {
+      field: 'fotoPerfilUrl',
+      header: 'Foto',
+      width: '72px',
+      align: 'center',
+      sortable: false,
+      filterable: false,
+      renderer: {
+        type: 'avatar',
+        avatar: {
+          srcField: 'fotoPerfilUrl',
+          altField: 'nomeCompleto',
+          initialsField: 'nomeCompleto',
+          shape: 'circle',
+          size: 40,
+        },
+      },
+    },
+    {
+      field: 'nomeCompleto',
+      header: 'Nome Completo',
+      width: '220px',
+      sortable: true,
+    },
+    {
+      field: 'dataAdmissao',
+      header: 'Data de Admissao',
+      type: 'date',
+      format: 'dd/MM/yyyy',
+      width: '150px',
+      sortable: true,
+    },
+  ],
+  behavior: {
+    pagination: {
+      enabled: true,
+      pageSize: 10,
+      pageSizeOptions: [10, 25, 50],
+      showFirstLastButtons: true,
+      showPageInfo: true,
+      position: 'bottom',
+      style: 'compact',
+      strategy: 'server',
+    },
+    sorting: {
+      enabled: true,
+      strategy: 'server',
+      defaultSort: { column: 'dataAdmissao', direction: 'desc' },
+      showSortIndicators: true,
+      allowClearSort: true,
+    },
+    selection: {
+      enabled: false,
+    },
+  },
+  appearance: {
+    density: 'comfortable',
+    spacing: {
+      cellPadding: '10px 14px',
+      headerPadding: '12px 14px',
+    },
+    typography: {
+      fontSize: '14px',
+      headerFontSize: '13px',
+      headerFontWeight: '700',
+      fontWeight: '400',
+    },
+    borders: {
+      showRowBorders: true,
+      showColumnBorders: false,
+      showOuterBorder: true,
+      style: 'solid',
+      width: 1,
+      color: '#d3d8e1',
+    },
+  },
   localization: {
     locale: 'en-US',
+    dateTime: {
+      dateFormat: 'dd/MM/yyyy',
+    },
     currency: {
       code: 'USD',
       symbol: '$',
@@ -397,7 +478,66 @@ export const TABLE_CONFIG: TableConfig = {
 } as unknown as TableConfig;
 
 export const TABLE_DYNAMIC_FILTERS_CONFIG: TableConfig = {
-  columns: [],
+  columns: [
+    {
+      field: 'fotoPerfilUrl',
+      header: 'Foto',
+      width: '72px',
+      align: 'center',
+      sortable: false,
+      filterable: false,
+      renderer: {
+        type: 'avatar',
+        avatar: {
+          srcField: 'fotoPerfilUrl',
+          altField: 'nomeCompleto',
+          initialsField: 'nomeCompleto',
+          shape: 'circle',
+          size: 40,
+        },
+      },
+    },
+    {
+      field: 'nomeCompleto',
+      header: 'Nome Completo',
+      width: '220px',
+      sortable: true,
+    },
+    {
+      field: 'dataAdmissao',
+      header: 'Data de Admissao',
+      type: 'date',
+      format: 'dd/MM/yyyy',
+      width: '150px',
+      sortable: true,
+    },
+    {
+      field: 'ativo',
+      header: 'Ativo',
+      type: 'boolean',
+      format: 'custom|Ativo|Inativo',
+      width: '120px',
+      sortable: true,
+    },
+    {
+      field: 'estadoCivil',
+      header: 'Estado Civil',
+      width: '150px',
+      sortable: true,
+    },
+    {
+      field: 'cargoNome',
+      header: 'Cargo',
+      width: '240px',
+      sortable: true,
+    },
+    {
+      field: 'departamentoNome',
+      header: 'Departamento',
+      width: '260px',
+      sortable: true,
+    },
+  ],
   toolbar: {
     visible: true,
     position: 'top',
@@ -684,7 +824,58 @@ const EMPLOYEE_MISSIONS_SURFACE_PAYLOAD: SurfaceOpenPayload = {
 };
 
 export const TABLE_RELATED_SURFACES_CONFIG: TableConfig = {
-  columns: [],
+  columns: [
+    {
+      field: 'fotoPerfilUrl',
+      header: 'Foto',
+      width: '72px',
+      align: 'center',
+      sortable: false,
+      filterable: false,
+      renderer: {
+        type: 'avatar',
+        avatar: {
+          srcField: 'fotoPerfilUrl',
+          altField: 'nomeCompleto',
+          initialsField: 'nomeCompleto',
+          shape: 'circle',
+          size: 40,
+        },
+      },
+    },
+    {
+      field: 'nomeCompleto',
+      header: 'Nome Completo',
+      width: '220px',
+      sortable: true,
+    },
+    {
+      field: 'dataAdmissao',
+      header: 'Data de Admissao',
+      type: 'date',
+      format: 'dd/MM/yyyy',
+      width: '150px',
+      sortable: true,
+    },
+    {
+      field: 'estadoCivil',
+      header: 'Estado Civil',
+      width: '150px',
+      sortable: true,
+    },
+    {
+      field: 'cargoNome',
+      header: 'Cargo',
+      width: '240px',
+      sortable: true,
+    },
+    {
+      field: 'departamentoNome',
+      header: 'Departamento',
+      width: '260px',
+      sortable: true,
+    },
+  ],
   toolbar: {
     visible: true,
     position: 'top',

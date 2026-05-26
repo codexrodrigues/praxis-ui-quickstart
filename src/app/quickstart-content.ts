@@ -248,23 +248,27 @@ export const TABLE_ACTIONS_SNIPPET = `<praxis-table
   (rowAction)="openBackendSurface($event)">
 </praxis-table>
 
+// 1) The table only declares where row actions live.
+//    The backend-published "hero-profile" surface is opened by the host adapter
+//    so the example can show discovery from the selected row _links.
 const tableActionsConfig = {
   actions: {
     row: {
+      enabled: true,
+      position: 'end',
       display: 'icons',
+      sticky: 'end',
       width: '152px',
-      header: {
-        icon: 'hub',
-        tooltip: 'Acoes e surfaces relacionadas ao item',
-        align: 'center'
-      },
+      discovery: { enabled: true },
+      header: { icon: 'hub', tooltip: 'Related surfaces', align: 'center' },
       maxVisibleActions: 3,
       actions: [
         {
           id: 'hero-profile',
           action: 'hero-profile',
           label: 'Perfil 360',
-          icon: 'account_circle'
+          icon: 'account_circle',
+          tooltip: 'Backend READ_PROJECTION discovered from row capabilities'
         },
         {
           id: 'employee-payroll-surface',
@@ -272,7 +276,7 @@ const tableActionsConfig = {
           icon: 'payments',
           globalAction: {
             actionId: 'surface.open',
-            payload: EMPLOYEE_PAYROLL_SURFACE_PAYLOAD
+            payload: payrollSurfacePayload
           }
         },
         {
@@ -281,12 +285,60 @@ const tableActionsConfig = {
           icon: 'flag',
           globalAction: {
             actionId: 'surface.open',
-            payload: EMPLOYEE_MISSIONS_SURFACE_PAYLOAD
+            payload: missionsSurfacePayload
           }
         }
       ]
     }
   }
+};
+
+// 2) A host-declared surface can still be configuration-first.
+//    The row id is bound into the widget input; no imperative if/else is needed.
+const payrollSurfacePayload = {
+  presentation: 'modal',
+  title: 'Folha',
+  icon: 'payments',
+  widget: {
+    id: 'praxis-chart',
+    inputs: {
+      chartDocument: payrollChartDocument,
+      queryContext: { filters: {}, limit: 12 },
+      enableCustomization: false
+    }
+  },
+  context: {
+    surface: {
+      id: 'payroll-history',
+      kind: 'READ_PROJECTION',
+      scope: 'ITEM',
+      responseCardinality: 'COLLECTION'
+    }
+  },
+  bindings: [
+    { from: 'payload.row.id', to: 'widget.inputs.queryContext.filters.funcionarioId' },
+    { mode: 'template', value: 'Folha de \${payload.row.nomeCompleto}', to: 'title' }
+  ]
+};
+
+// 3) The same surface.open action can render a related collection as a table.
+const missionsSurfacePayload = {
+  presentation: 'modal',
+  title: 'Missoes',
+  icon: 'flag',
+  widget: {
+    id: 'praxis-table',
+    inputs: {
+      resourcePath: 'operations/missao-participantes',
+      queryContext: { filters: {} },
+      config: missionsTableConfig,
+      enableCustomization: false
+    }
+  },
+  bindings: [
+    { from: 'payload.row.id', to: 'widget.inputs.queryContext.filters.funcionarioId' },
+    { mode: 'template', value: 'Missoes de \${payload.row.nomeCompleto}', to: 'title' }
+  ]
 };`;
 
 export const FORM_SNIPPET = `<praxis-dynamic-form

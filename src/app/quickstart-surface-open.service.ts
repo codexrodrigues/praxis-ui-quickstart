@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Injectable, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Injectable, inject, signal, type WritableSignal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef, MatDialogState } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { firstValueFrom } from 'rxjs';
 import {
   type GlobalActionContext,
@@ -11,40 +12,74 @@ import {
   ResourceDiscoveryService,
   type ResourceSurfaceCatalogItem,
   ResourceSurfaceOpenAdapterService,
+  SurfaceOpenMaterializerService,
   type SurfaceOpenPayload,
 } from '@praxisui/core';
 
 interface RelatedSurfaceDialogData {
+  readonly state: WritableSignal<RelatedSurfaceDialogState>;
+}
+
+interface RelatedSurfaceDialogState {
+  readonly status: 'loading' | 'ready' | 'error';
   readonly title: string;
   readonly subtitle: string;
   readonly icon: string;
-  readonly widget: SurfaceOpenPayload['widget'];
+  readonly widget?: SurfaceOpenPayload['widget'];
   readonly context: Record<string, unknown>;
+  readonly loadingMessage?: string;
+  readonly errorMessage?: string;
 }
 
 @Component({
   selector: 'app-related-surface-dialog',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatDialogModule, MatIconModule, PraxisSurfaceHostComponent],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    PraxisSurfaceHostComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="surface-modal">
       <header class="surface-modal__header">
         <span class="surface-modal__icon">
-          <mat-icon>{{ data.icon }}</mat-icon>
+          <mat-icon>{{ state().icon }}</mat-icon>
         </span>
         <div>
-          <h2 mat-dialog-title>{{ data.title }}</h2>
-          <p class="surface-modal__subtitle">{{ data.subtitle }}</p>
+          <h2 mat-dialog-title>{{ state().title }}</h2>
+          <p class="surface-modal__subtitle">{{ state().subtitle }}</p>
         </div>
       </header>
 
       <mat-dialog-content class="surface-modal__content">
-        <praxis-surface-host
-          [widget]="data.widget"
-          [context]="data.context"
-          [renderTitleInsideBody]="false"
-        />
+        <ng-container [ngSwitch]="state().status">
+          <div *ngSwitchCase="'loading'" class="surface-modal__loading" role="status" aria-live="polite">
+            <mat-spinner diameter="28" strokeWidth="3" />
+            <div>
+              <strong>Preparando surface</strong>
+              <p>{{ state().loadingMessage || 'Carregando contrato, dados e metadados publicados pelo backend.' }}</p>
+            </div>
+          </div>
+
+          <div *ngSwitchCase="'error'" class="surface-modal__error" role="alert">
+            <mat-icon>error_outline</mat-icon>
+            <div>
+              <strong>Nao foi possivel abrir a surface</strong>
+              <p>{{ state().errorMessage }}</p>
+            </div>
+          </div>
+
+          <praxis-surface-host
+            *ngSwitchDefault
+            [widget]="state().widget!"
+            [context]="state().context"
+            [renderTitleInsideBody]="false"
+          />
+        </ng-container>
       </mat-dialog-content>
 
       <mat-dialog-actions align="end">
@@ -59,6 +94,22 @@ interface RelatedSurfaceDialogData {
     h2[mat-dialog-title] { margin:0; padding:0; font-size:1.35rem; font-weight:700; color:#111827; }
     .surface-modal__subtitle { margin:6px 0 0; color:#475569; line-height:1.45; }
     .surface-modal__content { display:grid; gap:16px; padding-top:0; }
+    .surface-modal__loading,
+    .surface-modal__error {
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+      padding:18px;
+      border:1px solid #dbe4f0;
+      background:#f8fafc;
+      min-height:104px;
+    }
+    .surface-modal__loading strong,
+    .surface-modal__error strong { display:block; margin:0 0 4px; color:#111827; }
+    .surface-modal__loading p,
+    .surface-modal__error p { margin:0; color:#475569; line-height:1.45; }
+    .surface-modal__error { border-color:#fecaca; background:#fff7f7; }
+    .surface-modal__error mat-icon { color:#dc2626; }
     @media (max-width: 640px) {
       .surface-modal__header { display:grid; }
     }
@@ -66,6 +117,7 @@ interface RelatedSurfaceDialogData {
 })
 class RelatedSurfaceDialogComponent {
   protected readonly data = inject<RelatedSurfaceDialogData>(MAT_DIALOG_DATA);
+  protected readonly state = this.data.state;
   private readonly dialogRef = inject(MatDialogRef<RelatedSurfaceDialogComponent>);
 
   protected close(): void {
@@ -78,34 +130,27 @@ export class QuickstartSurfaceOpenService implements GlobalSurfaceService {
   private readonly dialog = inject(MatDialog);
   private readonly discovery = inject(ResourceDiscoveryService);
   private readonly surfaceAdapter = inject(ResourceSurfaceOpenAdapterService);
+  private readonly surfaceMaterializer = inject(SurfaceOpenMaterializerService);
 
-  open(payload: SurfaceOpenPayload, context?: GlobalActionContext): void {
+  async open(payload: SurfaceOpenPayload, context?: GlobalActionContext): Promise<void> {
     const row = (context?.runtime?.row || context?.payload?.row || {}) as Record<string, unknown>;
-
-    this.dialog.open(RelatedSurfaceDialogComponent, {
-      data: {
-        title: payload.title || 'Surface relacionada',
-        subtitle: payload.subtitle || '',
-        icon: payload.icon || 'hub',
-        widget: payload.widget,
-        context: {
-          payload: context?.payload ?? {},
-          runtime: context?.runtime ?? {},
-          row,
-          meta: context?.meta ?? {},
-          surface: payload.context ?? {},
-        },
-      } satisfies RelatedSurfaceDialogData,
-      width: payload.size?.width || '880px',
-      maxWidth: payload.size?.maxWidth || 'calc(100vw - 32px)',
-      height: payload.size?.height,
-      minWidth: payload.size?.minWidth,
-      minHeight: payload.size?.minHeight,
-      maxHeight: payload.size?.maxHeight,
-      autoFocus: 'dialog',
-      restoreFocus: true,
-      panelClass: 'quickstart-related-surface-dialog',
+    const pending = this.openPendingDialog({
+      title: payload.title || 'Surface relacionada',
+      subtitle: payload.subtitle || '',
+      icon: payload.icon || 'hub',
+      size: payload.size,
+      row,
+      context: {
+        payload: context?.payload ?? {},
+        runtime: context?.runtime ?? {},
+        row,
+        meta: context?.meta ?? {},
+        surface: payload.context ?? {},
+      },
+      loadingMessage: 'Carregando dados e metadados da surface.',
     });
+
+    void this.materializeIntoDialog(pending, payload, context, row);
   }
 
   async openBackendSurfaceFromRow(options: {
@@ -117,34 +162,144 @@ export class QuickstartSurfaceOpenService implements GlobalSurfaceService {
     icon?: string;
     size?: SurfaceOpenPayload['size'];
   }): Promise<void> {
-    const catalog = await firstValueFrom(this.discovery.getSurfaces((options.row as any)._links));
-    const surface = catalog.surfaces.find((candidate) => candidate.id === options.surfaceId);
-    if (!surface) {
-      throw new Error(`Backend surface "${options.surfaceId}" was not published for this row.`);
+    const row = options.row;
+    const pending = this.openPendingDialog({
+      title: options.title || 'Surface relacionada',
+      subtitle: options.subtitle || 'Preparando contrato publicado pelo backend.',
+      icon: options.icon || 'hub',
+      size: options.size,
+      row,
+      context: {
+        payload: { row },
+        runtime: { row },
+        row,
+        meta: { actionId: options.surfaceId },
+        surface: {},
+      },
+      loadingMessage: 'Consultando surfaces, contrato e dados publicados pelo backend.',
+    });
+
+    try {
+      const catalog = await firstValueFrom(this.discovery.getSurfaces((options.row as any)._links));
+      const surface = catalog.surfaces.find((candidate) => candidate.id === options.surfaceId);
+      if (!surface) {
+        throw new Error(`Backend surface "${options.surfaceId}" was not published for this row.`);
+      }
+
+      const resourceId = catalog.resourceId ?? (options.row['id'] as string | number | null);
+      const payload = this.surfaceAdapter.toPayload(surface as ResourceSurfaceCatalogItem, {
+        resourcePath: options.resourcePath,
+        resourceId,
+        presentation: 'modal',
+        title: options.title || surface.title,
+        subtitle: options.subtitle || surface.description || undefined,
+        icon: options.icon,
+      });
+
+      payload.size = options.size ?? payload.size;
+      payload.widget.inputs = {
+        ...(payload.widget.inputs || {}),
+        enableCustomization: false,
+        configPersistenceStrategy: 'input-first',
+        componentInstanceId: `quickstart-${surface.id}-${resourceId}`,
+      };
+
+      await this.materializeIntoDialog(pending, payload, {
+        payload: { row: options.row },
+        runtime: { row: options.row },
+        meta: { actionId: surface.id, surface },
+      }, row);
+    } catch (error) {
+      this.showDialogError(pending, error);
     }
+  }
 
-    const resourceId = catalog.resourceId ?? (options.row['id'] as string | number | null);
-    const payload = this.surfaceAdapter.toPayload(surface as ResourceSurfaceCatalogItem, {
-      resourcePath: options.resourcePath,
-      resourceId,
-      presentation: 'modal',
-      title: options.title || surface.title,
-      subtitle: options.subtitle || surface.description || undefined,
+  private openPendingDialog(options: {
+    title: string;
+    subtitle: string;
+    icon: string;
+    size?: SurfaceOpenPayload['size'];
+    row: Record<string, unknown>;
+    context: Record<string, unknown>;
+    loadingMessage: string;
+  }): {
+    ref: MatDialogRef<RelatedSurfaceDialogComponent>;
+    state: WritableSignal<RelatedSurfaceDialogState>;
+  } {
+    const state = signal<RelatedSurfaceDialogState>({
+      status: 'loading',
+      title: options.title,
+      subtitle: options.subtitle,
       icon: options.icon,
+      context: options.context,
+      loadingMessage: options.loadingMessage,
     });
 
-    payload.size = options.size ?? payload.size;
-    payload.widget.inputs = {
-      ...(payload.widget.inputs || {}),
-      enableCustomization: false,
-      configPersistenceStrategy: 'input-first',
-      componentInstanceId: `quickstart-${surface.id}-${resourceId}`,
-    };
-
-    this.open(payload, {
-      payload: { row: options.row },
-      runtime: { row: options.row },
-      meta: { actionId: surface.id, surface },
+    const ref = this.dialog.open(RelatedSurfaceDialogComponent, {
+      data: { state } satisfies RelatedSurfaceDialogData,
+      width: options.size?.width || '880px',
+      maxWidth: options.size?.maxWidth || 'calc(100vw - 32px)',
+      height: options.size?.height,
+      minWidth: options.size?.minWidth,
+      minHeight: options.size?.minHeight,
+      maxHeight: options.size?.maxHeight,
+      autoFocus: 'dialog',
+      restoreFocus: true,
+      panelClass: 'quickstart-related-surface-dialog',
     });
+
+    return { ref, state };
+  }
+
+  private async materializeIntoDialog(
+    pending: {
+      ref: MatDialogRef<RelatedSurfaceDialogComponent>;
+      state: WritableSignal<RelatedSurfaceDialogState>;
+    },
+    payload: SurfaceOpenPayload,
+    context: GlobalActionContext | undefined,
+    row: Record<string, unknown>,
+  ): Promise<void> {
+    try {
+      const materializedPayload = await this.surfaceMaterializer.materialize(payload, context);
+      if (pending.ref.getState() === MatDialogState.CLOSED) {
+        return;
+      }
+      pending.state.set({
+        status: 'ready',
+        title: materializedPayload.title || 'Surface relacionada',
+        subtitle: materializedPayload.subtitle || '',
+        icon: materializedPayload.icon || 'hub',
+        widget: materializedPayload.widget,
+        context: {
+          payload: context?.payload ?? {},
+          runtime: context?.runtime ?? {},
+          row,
+          meta: context?.meta ?? {},
+          surface: materializedPayload.context ?? {},
+        },
+      });
+    } catch (error) {
+      this.showDialogError(pending, error);
+    }
+  }
+
+  private showDialogError(
+    pending: {
+      ref: MatDialogRef<RelatedSurfaceDialogComponent>;
+      state: WritableSignal<RelatedSurfaceDialogState>;
+    },
+    error: unknown,
+  ): void {
+    if (pending.ref.getState() === MatDialogState.CLOSED) {
+      return;
+    }
+    pending.state.update((current) => ({
+      ...current,
+      status: 'error',
+      errorMessage: error instanceof Error && error.message
+        ? error.message
+        : String(error || 'Falha ao abrir a surface.'),
+    }));
   }
 }

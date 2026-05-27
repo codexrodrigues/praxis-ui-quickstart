@@ -996,7 +996,54 @@ export const CRUD_METADATA: CrudMetadata = {
     idField: 'id',
   },
   table: {
-    columns: [],
+    columns: [
+      {
+        field: 'fotoPerfilUrl',
+        header: 'Foto',
+        width: '72px',
+        align: 'center',
+        sortable: false,
+        filterable: false,
+        renderer: {
+          type: 'avatar',
+          avatar: {
+            srcField: 'fotoPerfilUrl',
+            altField: 'nomeCompleto',
+            initialsField: 'nomeCompleto',
+            shape: 'circle',
+            size: 40,
+          },
+        },
+      },
+      {
+        field: 'nomeCompleto',
+        header: 'Nome Completo',
+        width: '220px',
+        sortable: true,
+      },
+      {
+        field: 'dataAdmissao',
+        header: 'Data de Admissao',
+        type: 'date',
+        format: 'dd/MM/yyyy',
+        width: '150px',
+        sortable: true,
+      },
+      {
+        field: 'ativo',
+        header: 'Ativo',
+        type: 'boolean',
+        format: 'custom|Ativo|Inativo',
+        width: '120px',
+        sortable: true,
+      },
+      {
+        field: 'cargoNome',
+        header: 'Cargo',
+        width: '260px',
+        sortable: true,
+      },
+    ],
   } as unknown as CrudMetadata['table'],
   actions: [
     {

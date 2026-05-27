@@ -95,10 +95,11 @@ interface FormDemoModeOption {
     .stage-step { margin:0 0 4px; color:var(--qs-example-eyebrow); text-transform:uppercase; letter-spacing:.08em; font-size:.78rem; font-weight:700; }
     .stage-copy { margin:12px 0 0; color:var(--qs-example-muted); max-width:760px; line-height:1.55; }
     .mode-switcher { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; }
-    .mode-button { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:36px; padding:0 12px; border:1px solid var(--qs-example-panel-border); border-radius:999px; background:var(--qs-example-code-bg); color:var(--qs-example-title); font:inherit; font-weight:700; cursor:pointer; }
+    .mode-button { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:36px; padding:0 12px; border:1px solid var(--md-sys-color-outline-variant); border-radius:var(--qs-nav-pill-radius); background:var(--md-sys-color-surface-container-low); color:var(--md-sys-color-on-surface); box-shadow:var(--qs-nav-pill-shadow); font:inherit; font-weight:700; cursor:pointer; transition:background-color .18s ease, border-color .18s ease, color .18s ease, transform .18s ease; }
     .mode-button mat-icon { width:18px; height:18px; font-size:18px; }
-    .mode-button:hover { border-color:var(--qs-example-link); }
-    .mode-button.is-active { background:var(--qs-hero-chip-bg); color:var(--qs-hero-chip-text); border-color:transparent; }
+    .mode-button:hover { border-color:var(--md-sys-color-primary); transform:translateY(-1px); }
+    .mode-button:focus-visible { outline:2px solid var(--md-sys-color-primary); outline-offset:2px; }
+    .mode-button.is-active { background:linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary)); color:var(--md-sys-color-on-primary); border-color:transparent; }
     .runtime-panel { margin-top:12px; border-top:1px dashed var(--qs-example-divider); padding-top:14px; }
     @media (max-width: 720px) {
       .live-header { display:grid; }

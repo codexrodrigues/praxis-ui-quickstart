@@ -90,7 +90,7 @@ interface RelatedSurfaceDialogState {
   styles: [`
     .surface-modal {
       display:grid;
-      gap:16px;
+      gap:12px;
       color:var(--md-sys-color-on-surface, #1f2937);
       min-width:0;
     }
@@ -117,7 +117,12 @@ interface RelatedSurfaceDialogState {
       color:var(--md-sys-color-on-surface-variant, #475569);
       line-height:1.45;
     }
-    .surface-modal__content { display:grid; gap:16px; padding-top:0; }
+    .surface-modal__content {
+      display:grid;
+      flex:0 1 auto;
+      gap:16px;
+      padding-top:0;
+    }
     .surface-modal__loading,
     .surface-modal__error {
       display:flex;
@@ -145,6 +150,10 @@ interface RelatedSurfaceDialogState {
       background:var(--md-sys-color-error-container, #fff7f7);
     }
     .surface-modal__error mat-icon { color:var(--md-sys-color-error, #dc2626); }
+    mat-dialog-actions {
+      min-height:44px;
+      padding:8px 24px 14px;
+    }
     @media (max-width: 640px) {
       .surface-modal__header { display:grid; }
     }
@@ -235,9 +244,11 @@ export class QuickstartSurfaceOpenService implements GlobalSurfaceService {
           });
 
       payload.size = options.size ?? payload.size;
+      const isDynamicFormWidget = payload.widget.id === 'praxis-dynamic-form';
       payload.widget.inputs = {
         ...(payload.widget.inputs || {}),
         enableCustomization: false,
+        ...(isDynamicFormWidget ? { showAiAssistant: false } : {}),
       };
 
       await this.materializeIntoDialog(pending, payload, {

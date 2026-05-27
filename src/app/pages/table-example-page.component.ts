@@ -185,7 +185,7 @@ export class TableExamplePageComponent {
       title: `Perfil 360 de ${row['nomeCompleto'] || 'funcionario'}`,
       subtitle: 'Backend READ_PROJECTION opened through the Praxis surface adapter.',
       icon: 'person',
-      size: { width: '760px', maxWidth: 'calc(100vw - 32px)', height: '82vh' },
+      size: { width: '760px', maxWidth: 'calc(100vw - 32px)', maxHeight: 'calc(100vh - 48px)' },
     });
   }
 

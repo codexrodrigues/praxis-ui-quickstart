@@ -38,6 +38,7 @@ export const QUICKSTART_PAYROLL_RESOURCE_PATH = 'human-resources/folhas-pagament
 export const QUICKSTART_PAYROLL_ANALYTICS_RESOURCE_PATH = 'human-resources/vw-analytics-folha-pagamento';
 export const QUICKSTART_MISSION_PARTICIPANTS_RESOURCE_PATH = 'operations/missao-participantes';
 export const QUICKSTART_FORM_ID = 'quickstart-funcionarios';
+export const QUICKSTART_FORM_RESOURCE_ID = 1;
 export const QUICKSTART_CRUD_ID = 'quickstart-crud';
 export const QUICKSTART_LIST_ID = 'quickstart-list';
 export const QUICKSTART_MANUAL_FORM_ID = 'quickstart-manual-form';
@@ -76,7 +77,7 @@ export const CORE_CATALOG_LINKS: readonly CatalogLink[] = [
     title: 'Praxis Dynamic Form',
     route: '/examples/form',
     icon: 'edit_note',
-    description: 'Submit a remote form against the same resource and confirm metadata-driven behavior end to end.',
+    description: 'Open a real employee profile by resourceId and confirm metadata-driven form hydration end to end.',
   },
   {
     title: 'Praxis CRUD',
@@ -227,7 +228,8 @@ export const TEMPLATE_SNIPPET = `<praxis-table
 <praxis-dynamic-form
   [formId]="'${QUICKSTART_FORM_ID}'"
   [resourcePath]="'${QUICKSTART_RESOURCE_PATH}'"
-  [mode]="'create'">
+  [resourceId]="${QUICKSTART_FORM_RESOURCE_ID}"
+  [mode]="'view'">
 </praxis-dynamic-form>`;
 
 export const TABLE_SNIPPET = `<praxis-table
@@ -246,12 +248,11 @@ export const TABLE_ACTIONS_SNIPPET = `<praxis-table
   tableId="quickstart-table-surfaces-icons"
   [resourcePath]="'${QUICKSTART_RESOURCE_PATH}'"
   [config]="tableActionsConfig"
-  (rowAction)="openBackendSurface($event)">
+  (rowAction)="onRelatedSurfaceRowAction($event)">
 </praxis-table>
 
-// 1) The table only declares where row actions live.
-//    The backend-published "hero-profile" surface is opened by the host adapter
-//    so the example can show discovery from the selected row _links.
+// 1) The table only declares row actions. Each action id points to a backend
+//    surface discovered from the selected row capabilities.
 const tableActionsConfig = {
   actions: {
     row: {
@@ -272,30 +273,26 @@ const tableActionsConfig = {
           tooltip: 'Backend READ_PROJECTION discovered from row capabilities'
         },
         {
-          id: 'employee-payroll-surface',
+          id: 'payroll-history',
+          action: 'payroll-history',
           label: 'Folha',
           icon: 'payments',
-          globalAction: {
-            actionId: 'surface.open',
-            payload: payrollSurfacePayload
-          }
+          tooltip: 'Backend payroll-history READ_PROJECTION'
         },
         {
-          id: 'employee-missions-relation',
+          id: 'mission-participations',
+          action: 'mission-participations',
           label: 'Missoes',
           icon: 'flag',
-          globalAction: {
-            actionId: 'surface.open',
-            payload: missionsSurfacePayload
-          }
+          tooltip: 'Backend mission-participations READ_PROJECTION'
         }
       ]
     }
   }
 };
 
-// 2) A host-declared surface can still be configuration-first.
-//    The row id is bound into the widget input; no imperative if/else is needed.
+// 2) The host may still select a richer widget for a published surface.
+//    The backend owns the operation/schema; the host owns presentation policy.
 const payrollSurfacePayload = {
   presentation: 'modal',
   title: 'Folha',
@@ -322,7 +319,7 @@ const payrollSurfacePayload = {
   ]
 };
 
-// 3) The same surface.open action can render a related collection as a table.
+// 3) The same pattern renders a backend-published related collection as a table.
 const missionsSurfacePayload = {
   presentation: 'modal',
   title: 'Missoes',
@@ -336,6 +333,14 @@ const missionsSurfacePayload = {
       enableCustomization: false
     }
   },
+  context: {
+    surface: {
+      id: 'mission-participations',
+      kind: 'READ_PROJECTION',
+      scope: 'ITEM',
+      responseCardinality: 'COLLECTION'
+    }
+  },
   bindings: [
     { from: 'payload.row.id', to: 'widget.inputs.queryContext.filters.funcionarioId' },
     { mode: 'template', value: 'Missoes de \${payload.row.nomeCompleto}', to: 'title' }
@@ -345,7 +350,8 @@ const missionsSurfacePayload = {
 export const FORM_SNIPPET = `<praxis-dynamic-form
   [formId]="'${QUICKSTART_FORM_ID}'"
   [resourcePath]="'${QUICKSTART_RESOURCE_PATH}'"
-  [mode]="'create'">
+  [resourceId]="${QUICKSTART_FORM_RESOURCE_ID}"
+  [mode]="'view'">
 </praxis-dynamic-form>`;
 
 export const CRUD_SNIPPET = `<praxis-crud
@@ -709,7 +715,7 @@ const EMPLOYEE_PAYROLL_CHART_CONFIG: PraxisChartConfig = {
   },
 };
 
-const EMPLOYEE_PAYROLL_SURFACE_PAYLOAD: SurfaceOpenPayload = {
+export const EMPLOYEE_PAYROLL_SURFACE_PAYLOAD: SurfaceOpenPayload = {
   ...relatedSurfacePayloadBase,
   title: 'Analytics de folha',
   subtitle:
@@ -727,6 +733,14 @@ const EMPLOYEE_PAYROLL_SURFACE_PAYLOAD: SurfaceOpenPayload = {
         limit: 12,
       },
       enableCustomization: false,
+    },
+  },
+  context: {
+    surface: {
+      id: 'payroll-history',
+      kind: 'READ_PROJECTION',
+      scope: 'ITEM',
+      responseCardinality: 'COLLECTION',
     },
   },
   bindings: [
@@ -749,7 +763,7 @@ const EMPLOYEE_PAYROLL_SURFACE_PAYLOAD: SurfaceOpenPayload = {
   ],
 };
 
-const EMPLOYEE_MISSIONS_SURFACE_PAYLOAD: SurfaceOpenPayload = {
+export const EMPLOYEE_MISSIONS_SURFACE_PAYLOAD: SurfaceOpenPayload = {
   ...relatedSurfacePayloadBase,
   title: 'Missoes do funcionario',
   subtitle:
@@ -796,6 +810,14 @@ const EMPLOYEE_MISSIONS_SURFACE_PAYLOAD: SurfaceOpenPayload = {
         },
       },
       enableCustomization: false,
+    },
+  },
+  context: {
+    surface: {
+      id: 'mission-participations',
+      kind: 'READ_PROJECTION',
+      scope: 'ITEM',
+      responseCardinality: 'COLLECTION',
     },
   },
   bindings: [
@@ -940,26 +962,20 @@ export const TABLE_RELATED_SURFACES_CONFIG: TableConfig = {
           tooltip: 'Open the backend-published Perfil 360 surface',
         },
         {
-          id: 'employee-payroll-surface',
+          id: 'payroll-history',
+          action: 'payroll-history',
           label: 'Folha',
           icon: 'payments',
           color: 'accent',
-          tooltip: 'Open payroll analytics for the selected employee',
-          globalAction: {
-            actionId: 'surface.open',
-            payload: EMPLOYEE_PAYROLL_SURFACE_PAYLOAD,
-          },
+          tooltip: 'Open the backend-published payroll-history surface',
         },
         {
-          id: 'employee-missions-relation',
+          id: 'mission-participations',
+          action: 'mission-participations',
           label: 'Missoes',
           icon: 'flag',
           color: 'accent',
-          tooltip: 'Open mission participation filtered by the selected employee',
-          globalAction: {
-            actionId: 'surface.open',
-            payload: EMPLOYEE_MISSIONS_SURFACE_PAYLOAD,
-          },
+          tooltip: 'Open the backend-published mission-participations surface',
         },
       ],
     },

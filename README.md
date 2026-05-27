@@ -229,13 +229,17 @@ Use it first to prove the canonical runtime path against a real published collec
 
 ### Praxis Dynamic Form
 
-Use it to confirm metadata-driven create flows on the same resource.
+Use it to confirm metadata-driven hydration for an existing employee profile.
+The fixed `resourceId` below points to the seeded demo record used by the
+quickstart; replace it with the selected row, route param, or host state in a
+real application. For create flows, omit `resourceId` and use `mode="create"`.
 
 ```html
 <praxis-dynamic-form
   [formId]="'quickstart-funcionarios'"
   [resourcePath]="'human-resources/funcionarios'"
-  [mode]="'create'">
+  [resourceId]="1"
+  [mode]="'view'">
 </praxis-dynamic-form>
 ```
 

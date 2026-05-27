@@ -7,6 +7,7 @@ import { CustomizationModeService } from '../customization-mode.service';
 import {
   FORM_SNIPPET,
   QUICKSTART_FORM_ID,
+  QUICKSTART_FORM_RESOURCE_ID,
   QUICKSTART_RESOURCE_PATH,
 } from '../quickstart-content';
 
@@ -22,7 +23,7 @@ import {
       <header class="page-header">
         <div>
           <p class="eyebrow">Praxis Dynamic Form</p>
-          <h1>Remote form for create flows</h1>
+          <h1>Remote employee profile form</h1>
         </div>
         <mat-icon>edit_note</mat-icon>
       </header>
@@ -39,7 +40,8 @@ import {
             <praxis-dynamic-form
               [formId]="formId"
               [resourcePath]="resourcePath"
-              mode="create"
+              [resourceId]="resourceId"
+              mode="view"
               [enableCustomization]="customizationEnabled()"
             />
           </div>
@@ -66,5 +68,6 @@ export class FormExamplePageComponent {
   protected readonly snippet = FORM_SNIPPET;
   protected readonly formId = QUICKSTART_FORM_ID;
   protected readonly resourcePath = QUICKSTART_RESOURCE_PATH;
+  protected readonly resourceId = QUICKSTART_FORM_RESOURCE_ID;
   protected readonly customizationEnabled = this.customizationMode.customizationEnabled;
 }

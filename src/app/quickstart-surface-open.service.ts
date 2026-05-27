@@ -88,11 +88,35 @@ interface RelatedSurfaceDialogState {
     </section>
   `,
   styles: [`
-    .surface-modal { display:grid; gap:16px; color:#1f2937; min-width:0; }
+    .surface-modal {
+      display:grid;
+      gap:16px;
+      color:var(--md-sys-color-on-surface, #1f2937);
+      min-width:0;
+    }
     .surface-modal__header { display:flex; gap:14px; align-items:flex-start; padding:4px 0 0; }
-    .surface-modal__icon { display:inline-grid; place-items:center; width:44px; height:44px; border:1px solid #cbd5e1; background:#f8fafc; color:#2563eb; flex:0 0 auto; }
-    h2[mat-dialog-title] { margin:0; padding:0; font-size:1.35rem; font-weight:700; color:#111827; }
-    .surface-modal__subtitle { margin:6px 0 0; color:#475569; line-height:1.45; }
+    .surface-modal__icon {
+      display:inline-grid;
+      place-items:center;
+      width:44px;
+      height:44px;
+      border:1px solid var(--md-sys-color-outline-variant, #cbd5e1);
+      background:var(--md-sys-color-surface-container-low, #f8fafc);
+      color:var(--md-sys-color-primary, #2563eb);
+      flex:0 0 auto;
+    }
+    h2[mat-dialog-title] {
+      margin:0;
+      padding:0;
+      font-size:1.35rem;
+      font-weight:700;
+      color:var(--md-sys-color-on-surface, #111827);
+    }
+    .surface-modal__subtitle {
+      margin:6px 0 0;
+      color:var(--md-sys-color-on-surface-variant, #475569);
+      line-height:1.45;
+    }
     .surface-modal__content { display:grid; gap:16px; padding-top:0; }
     .surface-modal__loading,
     .surface-modal__error {
@@ -100,16 +124,27 @@ interface RelatedSurfaceDialogState {
       gap:14px;
       align-items:flex-start;
       padding:18px;
-      border:1px solid #dbe4f0;
-      background:#f8fafc;
+      border:1px solid var(--md-sys-color-outline-variant, #dbe4f0);
+      background:var(--md-sys-color-surface-container-low, #f8fafc);
       min-height:104px;
     }
     .surface-modal__loading strong,
-    .surface-modal__error strong { display:block; margin:0 0 4px; color:#111827; }
+    .surface-modal__error strong {
+      display:block;
+      margin:0 0 4px;
+      color:var(--md-sys-color-on-surface, #111827);
+    }
     .surface-modal__loading p,
-    .surface-modal__error p { margin:0; color:#475569; line-height:1.45; }
-    .surface-modal__error { border-color:#fecaca; background:#fff7f7; }
-    .surface-modal__error mat-icon { color:#dc2626; }
+    .surface-modal__error p {
+      margin:0;
+      color:var(--md-sys-color-on-surface-variant, #475569);
+      line-height:1.45;
+    }
+    .surface-modal__error {
+      border-color:var(--md-sys-color-error, #dc2626);
+      background:var(--md-sys-color-error-container, #fff7f7);
+    }
+    .surface-modal__error mat-icon { color:var(--md-sys-color-error, #dc2626); }
     @media (max-width: 640px) {
       .surface-modal__header { display:grid; }
     }
@@ -161,6 +196,7 @@ export class QuickstartSurfaceOpenService implements GlobalSurfaceService {
     subtitle?: string;
     icon?: string;
     size?: SurfaceOpenPayload['size'];
+    payload?: SurfaceOpenPayload;
   }): Promise<void> {
     const row = options.row;
     const pending = this.openPendingDialog({
@@ -187,21 +223,21 @@ export class QuickstartSurfaceOpenService implements GlobalSurfaceService {
       }
 
       const resourceId = catalog.resourceId ?? (options.row['id'] as string | number | null);
-      const payload = this.surfaceAdapter.toPayload(surface as ResourceSurfaceCatalogItem, {
-        resourcePath: options.resourcePath,
-        resourceId,
-        presentation: 'modal',
-        title: options.title || surface.title,
-        subtitle: options.subtitle || surface.description || undefined,
-        icon: options.icon,
-      });
+      const payload = options.payload
+        ? this.withDiscoveredSurfaceContext(this.clone(options.payload), surface as ResourceSurfaceCatalogItem, options.resourcePath, resourceId)
+        : this.surfaceAdapter.toPayload(surface as ResourceSurfaceCatalogItem, {
+            resourcePath: options.resourcePath,
+            resourceId,
+            presentation: 'modal',
+            title: options.title || surface.title,
+            subtitle: options.subtitle || surface.description || undefined,
+            icon: options.icon,
+          });
 
       payload.size = options.size ?? payload.size;
       payload.widget.inputs = {
         ...(payload.widget.inputs || {}),
         enableCustomization: false,
-        configPersistenceStrategy: 'input-first',
-        componentInstanceId: `quickstart-${surface.id}-${resourceId}`,
       };
 
       await this.materializeIntoDialog(pending, payload, {
@@ -212,6 +248,39 @@ export class QuickstartSurfaceOpenService implements GlobalSurfaceService {
     } catch (error) {
       this.showDialogError(pending, error);
     }
+  }
+
+  private withDiscoveredSurfaceContext(
+    payload: SurfaceOpenPayload,
+    surface: ResourceSurfaceCatalogItem,
+    resourcePath: string,
+    resourceId: string | number | null,
+  ): SurfaceOpenPayload {
+    return {
+      ...payload,
+      context: {
+        ...(payload.context || {}),
+        resource: {
+          resourceKey: surface.resourceKey,
+          resourcePath,
+          resourceId,
+        },
+        surface: {
+          id: surface.id,
+          kind: surface.kind,
+          scope: surface.scope,
+          intent: surface.intent ?? null,
+          operationId: surface.operationId,
+          path: surface.path,
+          method: surface.method,
+          schemaId: surface.schemaId,
+          schemaUrl: surface.schemaUrl,
+          responseCardinality: surface.responseCardinality ?? null,
+          availability: surface.availability,
+          tags: surface.tags,
+        },
+      },
+    };
   }
 
   private openPendingDialog(options: {
@@ -301,5 +370,9 @@ export class QuickstartSurfaceOpenService implements GlobalSurfaceService {
         ? error.message
         : String(error || 'Falha ao abrir a surface.'),
     }));
+  }
+
+  private clone<T>(value: T): T {
+    return value == null ? value : JSON.parse(JSON.stringify(value));
   }
 }

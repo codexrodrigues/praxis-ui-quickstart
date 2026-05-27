@@ -9,11 +9,20 @@ import {
   TABLE_CONFIG,
   TABLE_ACTIONS_SNIPPET,
   TABLE_DYNAMIC_FILTERS_CONFIG,
+  EMPLOYEE_MISSIONS_SURFACE_PAYLOAD,
+  EMPLOYEE_PAYROLL_SURFACE_PAYLOAD,
   TABLE_FILTERS_SNIPPET,
   TABLE_RELATED_SURFACES_CONFIG,
   TABLE_SNIPPET,
 } from '../quickstart-content';
 import { QuickstartSurfaceOpenService } from '../quickstart-surface-open.service';
+
+type RelatedSurfaceRowActionEvent = {
+  action?: string;
+  row?: Record<string, unknown>;
+};
+
+type RelatedSurfaceRowActionHandler = (row: Record<string, unknown>) => void;
 
 @Component({
   selector: 'app-table-example-page',
@@ -93,9 +102,8 @@ import { QuickstartSurfaceOpenService } from '../quickstart-surface-open.service
             </div>
           </div>
           <p class="stage-copy">
-            Row actions model three surface paths: a backend-published 360 profile opened by the
-            Praxis adapter, payroll analytics rendered from declarative chart config, and a mission
-            relation rendered with Praxis Table while the backend relation is not yet published.
+            Row actions discover backend-published surfaces from the selected row. The backend owns
+            the operation and schema; the host only selects the presentation widget for each surface.
           </p>
           <pre><code>{{ actionsSnippet }}</code></pre>
           <div class="runtime-panel runtime-panel--wide">
@@ -145,6 +153,11 @@ import { QuickstartSurfaceOpenService } from '../quickstart-surface-open.service
 export class TableExamplePageComponent {
   private readonly customizationMode = inject(CustomizationModeService);
   private readonly surfaceOpen = inject(QuickstartSurfaceOpenService);
+  private readonly relatedSurfaceRowActionHandlers: Record<string, RelatedSurfaceRowActionHandler> = {
+    'hero-profile': (row) => this.openHeroProfileSurface(row),
+    'payroll-history': (row) => this.openPayrollHistorySurface(row),
+    'mission-participations': (row) => this.openMissionParticipationsSurface(row),
+  };
 
   protected readonly snippet = TABLE_SNIPPET;
   protected readonly filtersSnippet = TABLE_FILTERS_SNIPPET;
@@ -155,19 +168,49 @@ export class TableExamplePageComponent {
   protected readonly tableActionsConfig = TABLE_RELATED_SURFACES_CONFIG;
   protected readonly customizationEnabled = this.customizationMode.customizationEnabled;
 
-  protected onRelatedSurfaceRowAction(event: { action?: string; row?: Record<string, unknown> }): void {
-    if (event.action !== 'hero-profile' || !event.row) {
+  protected onRelatedSurfaceRowAction(event: RelatedSurfaceRowActionEvent): void {
+    const handler = event.action ? this.relatedSurfaceRowActionHandlers[event.action] : undefined;
+    if (!handler || !event.row) {
       return;
     }
 
+    handler(event.row);
+  }
+
+  private openHeroProfileSurface(row: Record<string, unknown>): void {
     void this.surfaceOpen.openBackendSurfaceFromRow({
-      row: event.row,
+      row,
       resourcePath: QUICKSTART_RESOURCE_PATH,
       surfaceId: 'hero-profile',
-      title: `Perfil 360 de ${event.row['nomeCompleto'] || 'funcionario'}`,
+      title: `Perfil 360 de ${row['nomeCompleto'] || 'funcionario'}`,
       subtitle: 'Backend READ_PROJECTION opened through the Praxis surface adapter.',
       icon: 'person',
       size: { width: '760px', maxWidth: 'calc(100vw - 32px)', height: '82vh' },
+    });
+  }
+
+  private openPayrollHistorySurface(row: Record<string, unknown>): void {
+    void this.surfaceOpen.openBackendSurfaceFromRow({
+      row,
+      resourcePath: QUICKSTART_RESOURCE_PATH,
+      surfaceId: 'payroll-history',
+      title: `Folha de ${row['nomeCompleto'] || 'funcionario'}`,
+      subtitle: 'Backend READ_PROJECTION rendered with a host-selected Praxis Chart.',
+      icon: 'payments',
+      payload: EMPLOYEE_PAYROLL_SURFACE_PAYLOAD,
+    });
+  }
+
+  private openMissionParticipationsSurface(row: Record<string, unknown>): void {
+    void this.surfaceOpen.openBackendSurfaceFromRow({
+      row,
+      resourcePath: QUICKSTART_RESOURCE_PATH,
+      surfaceId: 'mission-participations',
+      title: `Missoes de ${row['nomeCompleto'] || 'funcionario'}`,
+      subtitle: 'Backend READ_PROJECTION rendered as a related Praxis Table.',
+      icon: 'flag',
+      size: { width: '960px', maxWidth: 'calc(100vw - 32px)', maxHeight: 'calc(100vh - 48px)' },
+      payload: EMPLOYEE_MISSIONS_SURFACE_PAYLOAD,
     });
   }
 }

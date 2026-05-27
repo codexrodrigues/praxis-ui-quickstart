@@ -134,6 +134,25 @@ body[data-theme='corporate'],
   --md-sys-color-on-surface-variant: #9eb0cf;
   --md-sys-color-outline: #43567c;
   --md-sys-color-outline-variant: #263553;
+  --mat-sys-primary: var(--md-sys-color-primary);
+  --mat-sys-on-primary: var(--md-sys-color-on-primary);
+  --mat-sys-primary-container: var(--md-sys-color-primary-container);
+  --mat-sys-on-primary-container: var(--md-sys-color-on-primary-container);
+  --mat-sys-secondary: var(--md-sys-color-secondary);
+  --mat-sys-on-secondary: var(--md-sys-color-on-secondary);
+  --mat-sys-secondary-container: var(--md-sys-color-secondary-container);
+  --mat-sys-on-secondary-container: var(--md-sys-color-on-secondary-container);
+  --mat-sys-surface: var(--md-sys-color-surface);
+  --mat-sys-surface-variant: var(--md-sys-color-surface-variant);
+  --mat-sys-surface-container: var(--md-sys-color-surface-container);
+  --mat-sys-surface-container-low: var(--md-sys-color-surface-container-low);
+  --mat-sys-surface-container-lowest: var(--md-sys-color-surface-container-lowest);
+  --mat-sys-surface-container-high: var(--md-sys-color-surface-container-high);
+  --mat-sys-surface-container-highest: var(--md-sys-color-surface-container-highest);
+  --mat-sys-on-surface: var(--md-sys-color-on-surface);
+  --mat-sys-on-surface-variant: var(--md-sys-color-on-surface-variant);
+  --mat-sys-outline: var(--md-sys-color-outline);
+  --mat-sys-outline-variant: var(--md-sys-color-outline-variant);
   --qs-page-text: #eef4ff;
   --qs-page-background:
     radial-gradient(circle at 18% 18%, rgba(89, 199, 255, 0.2), transparent 22%),
@@ -228,6 +247,25 @@ body[data-theme='high-contrast'],
   --md-sys-color-on-surface-variant: #223245;
   --md-sys-color-outline: #0b1320;
   --md-sys-color-outline-variant: #6d7d92;
+  --mat-sys-primary: var(--md-sys-color-primary);
+  --mat-sys-on-primary: var(--md-sys-color-on-primary);
+  --mat-sys-primary-container: var(--md-sys-color-primary-container);
+  --mat-sys-on-primary-container: var(--md-sys-color-on-primary-container);
+  --mat-sys-secondary: var(--md-sys-color-secondary);
+  --mat-sys-on-secondary: var(--md-sys-color-on-secondary);
+  --mat-sys-secondary-container: var(--md-sys-color-secondary-container);
+  --mat-sys-on-secondary-container: var(--md-sys-color-on-secondary-container);
+  --mat-sys-surface: var(--md-sys-color-surface);
+  --mat-sys-surface-variant: var(--md-sys-color-surface-variant);
+  --mat-sys-surface-container: var(--md-sys-color-surface-container);
+  --mat-sys-surface-container-low: var(--md-sys-color-surface-container-low);
+  --mat-sys-surface-container-lowest: var(--md-sys-color-surface-container-lowest);
+  --mat-sys-surface-container-high: var(--md-sys-color-surface-container-high);
+  --mat-sys-surface-container-highest: var(--md-sys-color-surface-container-highest);
+  --mat-sys-on-surface: var(--md-sys-color-on-surface);
+  --mat-sys-on-surface-variant: var(--md-sys-color-on-surface-variant);
+  --mat-sys-outline: var(--md-sys-color-outline);
+  --mat-sys-outline-variant: var(--md-sys-color-outline-variant);
   --qs-page-text: #081018;
   --qs-page-background:
     radial-gradient(circle at top left, rgba(0, 63, 239, 0.12), transparent 26%),
@@ -633,4 +671,22 @@ body[data-theme='high-contrast'] .mdc-button--raised,
 body[data-theme='high-contrast'] .mdc-button--unelevated {
   background: linear-gradient(135deg, #003fef 0%, #005b2e 100%) !important;
   color: #ffffff !important;
+}
+
+.quickstart-related-surface-dialog .mat-mdc-dialog-surface {
+  --mat-dialog-container-color: var(--md-sys-color-surface-container-lowest);
+  --mat-dialog-subhead-color: var(--md-sys-color-on-surface);
+  --mat-dialog-supporting-text-color: var(--md-sys-color-on-surface);
+  --mdc-dialog-container-color: var(--md-sys-color-surface-container-lowest);
+  background: var(--md-sys-color-surface-container-lowest) !important;
+  color: var(--md-sys-color-on-surface) !important;
+}
+
+.quickstart-related-surface-dialog .mat-mdc-dialog-content {
+  color: var(--md-sys-color-on-surface) !important;
+}
+
+.quickstart-related-surface-dialog .mat-mdc-dialog-surface [mat-dialog-title] {
+  border-bottom: 0 !important;
+  background: transparent !important;
 }

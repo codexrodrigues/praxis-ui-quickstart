@@ -29,7 +29,7 @@ import { QuickstartSurfaceOpenService } from '../quickstart-surface-open.service
           <p class="eyebrow">Praxis Table</p>
           <h1>Metadata-driven table with a remote contract</h1>
         </div>
-        <mat-icon>table_rows</mat-icon>
+        <mat-icon>table_chart</mat-icon>
       </header>
 
       <div class="page-grid">
@@ -44,7 +44,6 @@ import { QuickstartSurfaceOpenService } from '../quickstart-surface-open.service
               <p class="stage-step">Baseline</p>
               <h2>Live example</h2>
             </div>
-            <span>resourcePath + tableConfig</span>
           </div>
           <p class="stage-copy">
             A small host config selects the core business columns, avatar renderer, date formatting, and
@@ -68,7 +67,6 @@ import { QuickstartSurfaceOpenService } from '../quickstart-surface-open.service
               <p class="stage-step">Evolution 1</p>
               <h2>Dynamic filters</h2>
             </div>
-            <span>FilterDTO + server strategy</span>
           </div>
           <p class="stage-copy">
             The table keeps the same resource contract and promotes dynamic filter UI from the
@@ -78,7 +76,7 @@ import { QuickstartSurfaceOpenService } from '../quickstart-surface-open.service
           <div class="runtime-panel runtime-panel--wide">
             <div class="runtime-shell runtime-shell--table">
               <praxis-table
-                tableId="quickstart-table-filters"
+                tableId="quickstart-table-workforce-filters"
                 [resourcePath]="resourcePath"
                 [config]="tableFiltersConfig"
                 [enableCustomization]="customizationEnabled()"
@@ -93,7 +91,6 @@ import { QuickstartSurfaceOpenService } from '../quickstart-surface-open.service
               <p class="stage-step">Evolution 2</p>
               <h2>Related surfaces and row actions</h2>
             </div>
-            <span>surfaces + actions + capabilities</span>
           </div>
           <p class="stage-copy">
             Row actions model three surface paths: a backend-published 360 profile opened by the
@@ -126,10 +123,9 @@ import { QuickstartSurfaceOpenService } from '../quickstart-surface-open.service
     .page-header h1, .panel h2 { font-family:var(--font-display); color:var(--qs-example-title); }
     .page-grid { display:grid; gap:20px; min-width:0; }
     .panel { border:1px solid var(--qs-example-panel-border); padding:18px; background:var(--qs-example-panel-bg); box-shadow:var(--qs-example-panel-shadow); min-width:0; overflow:hidden; }
-    .panel--snippet { max-width:920px; }
+    .panel--snippet { width:100%; }
     .example-stage { display:grid; gap:14px; }
     .stage-header { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
-    .stage-header span { border:1px solid var(--qs-example-panel-border); color:var(--qs-example-muted); padding:5px 8px; font-size:.78rem; white-space:nowrap; }
     .stage-step { margin:0 0 4px; color:var(--qs-example-eyebrow); text-transform:uppercase; letter-spacing:.08em; font-size:.78rem; font-weight:700; }
     .stage-copy { margin:0; color:var(--qs-example-muted); max-width:820px; line-height:1.55; }
     pre { margin:12px 0 0; padding:16px; overflow:auto; background:var(--qs-example-code-bg); color:var(--qs-example-code-text); }
@@ -139,10 +135,8 @@ import { QuickstartSurfaceOpenService } from '../quickstart-surface-open.service
     .runtime-shell--table { min-width:980px; }
     .runtime-shell--table-compact { min-width:540px; }
     .runtime-shell > praxis-table { display:block; }
-
     @media (max-width: 720px) {
       .stage-header { display:grid; }
-      .stage-header span { white-space:normal; width:max-content; max-width:100%; }
       .runtime-shell--table { min-width:820px; }
       .runtime-shell--table-compact { min-width:540px; }
     }

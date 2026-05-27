@@ -237,7 +237,7 @@ export const TABLE_SNIPPET = `<praxis-table
 </praxis-table>`;
 
 export const TABLE_FILTERS_SNIPPET = `<praxis-table
-  tableId="quickstart-table-filters"
+  tableId="quickstart-table-workforce-filters"
   [resourcePath]="'${QUICKSTART_RESOURCE_PATH}'"
   [config]="tableFiltersConfig">
 </praxis-table>`;
@@ -559,8 +559,8 @@ export const TABLE_DYNAMIC_FILTERS_CONFIG: TableConfig = {
         queryBuilder: false,
         savePresets: true,
         settings: {
-          alwaysVisibleFields: ['nomeCompleto', 'ativo', 'cpf', 'email'],
-          selectedFieldIds: ['telefone'],
+          alwaysVisibleFields: ['nomeCompleto', 'departamentoIdsIn', 'cargoIdsIn', 'ativo'],
+          selectedFieldIds: ['dataAdmissaoRange', 'salarioBetween'],
           changeDebounceMs: 300,
           mode: 'filter',
           placeBooleansInActions: true,

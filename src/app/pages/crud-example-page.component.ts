@@ -58,14 +58,14 @@ import {
     .page-grid { display:grid; gap:20px; min-width:0; }
     .panel { border:1px solid var(--qs-example-panel-border); padding:18px; background:var(--qs-example-panel-bg); box-shadow:var(--qs-example-panel-shadow); min-width:0; overflow:hidden; }
     pre { margin:12px 0 0; padding:16px; overflow:auto; background:var(--qs-example-code-bg); color:var(--qs-example-code-text); }
-    .runtime-panel { margin-top:12px; max-width:100%; overflow-x:auto; overflow-y:hidden; }
+    .runtime-panel { margin-top:12px; max-width:100%; overflow:hidden; }
     .runtime-panel--wide { border-top:1px dashed var(--qs-example-divider); padding-top:14px; }
-    .runtime-shell { min-width:max-content; }
-    .runtime-shell--crud { min-width:980px; }
+    .runtime-shell { width:100%; min-width:0; }
+    .runtime-shell--crud { min-width:0; }
     .runtime-shell > praxis-crud { display:block; }
 
     @media (max-width: 720px) {
-      .runtime-shell--crud { min-width:820px; }
+      .runtime-shell--crud { min-width:0; }
     }
   `],
 })

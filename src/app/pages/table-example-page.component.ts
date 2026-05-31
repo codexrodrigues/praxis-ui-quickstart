@@ -137,16 +137,16 @@ type RelatedSurfaceRowActionHandler = (row: Record<string, unknown>) => void;
     .stage-step { margin:0 0 4px; color:var(--qs-example-eyebrow); text-transform:uppercase; letter-spacing:.08em; font-size:.78rem; font-weight:700; }
     .stage-copy { margin:0; color:var(--qs-example-muted); max-width:820px; line-height:1.55; }
     pre { margin:12px 0 0; padding:16px; overflow:auto; background:var(--qs-example-code-bg); color:var(--qs-example-code-text); }
-    .runtime-panel { margin-top:12px; max-width:100%; overflow-x:auto; overflow-y:hidden; }
+    .runtime-panel { margin-top:12px; max-width:100%; overflow:hidden; }
     .runtime-panel--wide { border-top:1px dashed var(--qs-example-divider); padding-top:14px; }
-    .runtime-shell { min-width:max-content; }
-    .runtime-shell--table { min-width:980px; }
-    .runtime-shell--table-compact { min-width:540px; }
+    .runtime-shell { width:100%; min-width:0; }
+    .runtime-shell--table,
+    .runtime-shell--table-compact { min-width:0; }
     .runtime-shell > praxis-table { display:block; }
     @media (max-width: 720px) {
       .stage-header { display:grid; }
-      .runtime-shell--table { min-width:820px; }
-      .runtime-shell--table-compact { min-width:540px; }
+      .runtime-shell--table,
+      .runtime-shell--table-compact { min-width:0; }
     }
   `],
 })

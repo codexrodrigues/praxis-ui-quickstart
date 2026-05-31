@@ -704,10 +704,10 @@ app-tabs-example-page .runtime-panel,
 app-stepper-example-page .runtime-panel,
 app-expansion-example-page .runtime-panel {
   border-radius: calc(var(--qs-card-radius) - 6px) !important;
-  padding: 14px !important;
-  background: var(--md-sys-color-surface-container-lowest, #ffffff) !important;
-  border: 1px solid var(--qs-example-panel-border) !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.36) !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 
 app-table-example-page .runtime-shell,
@@ -718,27 +718,8 @@ app-crud-example-page .runtime-shell {
 app-table-example-page .runtime-shell--table,
 app-crud-example-page .runtime-shell--crud {
   overflow: hidden !important;
-  border: 1px solid var(--qs-example-divider) !important;
-  background: var(--md-sys-color-surface-container-lowest, #ffffff) !important;
-}
-
-app-table-example-page .runtime-shell--table .mat-mdc-table,
-app-crud-example-page .runtime-shell--crud .mat-mdc-table {
-  border-radius: 0 !important;
   border: 0 !important;
-  box-shadow: none !important;
-}
-
-app-table-example-page .runtime-shell--table .mat-mdc-paginator,
-app-crud-example-page .runtime-shell--crud .mat-mdc-paginator {
-  border-radius: 0 !important;
-  border-top: 1px solid var(--qs-example-divider) !important;
-  box-shadow: none !important;
-}
-
-app-table-example-page .runtime-shell--table .praxis-table-header,
-app-crud-example-page .runtime-shell--crud .praxis-table-header {
-  border-radius: 0 !important;
+  background: transparent !important;
 }
 
 .quickstart-related-surface-dialog .mat-mdc-dialog-surface {

@@ -47,14 +47,14 @@ export const QUICKSTART_STEPPER_ID = 'quickstart-stepper';
 export const QUICKSTART_EXPANSION_ID = 'quickstart-expansion';
 
 export const HERO_PILLS = [
-  'Angular 20 standalone',
+  'Angular 21 standalone',
   'Public PraxisUI beta',
   'Published API on Render',
   'Metadata-driven examples',
 ] as const;
 
 export const HERO_FACTS = [
-  'Angular 20 host pinned to the compatible PraxisUI beta train',
+  'Angular 21 host pinned to the compatible PraxisUI beta train',
   '4 core runtimes proving one published resource contract',
   'Composition examples for guided flows, charts, and editorial blocks',
   'Runtime customization toggle owned by the host shell',
@@ -122,9 +122,9 @@ export const ADVANCED_CATALOG_LINKS: readonly CatalogLink[] = [
 
 export const SETUP_STEPS: readonly SetupStep[] = [
   {
-    title: 'Install the Angular 20 beta train',
+    title: 'Install the Angular 21 beta train',
     detail:
-      'Use the pinned @praxisui/* 8.0.0-beta.28 packages so npm does not resolve peers from the Angular 21 train.',
+      'Use the pinned @praxisui/* 9.0.0-beta.0 packages so npm resolves the current public beta train consistently.',
   },
   {
     title: 'Configure the host correctly',
@@ -194,15 +194,15 @@ export const POSITIONING_PANELS: readonly PositioningPanel[] = [
 ] as const;
 
 export const INSTALL_COMMAND = `npm install \\
-  @angular/animations@^20.3.18 @angular/cdk@^20.1.4 @angular/material@^20.1.4 \\
-  @angular/platform-browser-dynamic@^20.3.0 \\
-  @praxisui/ai@8.0.0-beta.28 @praxisui/core@8.0.0-beta.28 \\
-  @praxisui/charts@8.0.0-beta.28 @praxisui/crud@8.0.0-beta.28 \\
-  @praxisui/dynamic-fields@8.0.0-beta.28 @praxisui/dynamic-form@8.0.0-beta.28 \\
-  @praxisui/editorial-forms@8.0.0-beta.28 @praxisui/list@8.0.0-beta.28 \\
-  @praxisui/manual-form@8.0.0-beta.28 @praxisui/table@8.0.0-beta.28 \\
-  @praxisui/tabs@8.0.0-beta.28 @praxisui/stepper@8.0.0-beta.28 \\
-  @praxisui/expansion@8.0.0-beta.28`;
+  @angular/animations@^21.2.14 @angular/cdk@^21.2.12 @angular/material@^21.2.12 \\
+  @angular/platform-browser-dynamic@^21.2.14 \\
+  @praxisui/ai@9.0.0-beta.0 @praxisui/core@9.0.0-beta.0 \\
+  @praxisui/charts@9.0.0-beta.0 @praxisui/crud@9.0.0-beta.0 \\
+  @praxisui/dynamic-fields@9.0.0-beta.0 @praxisui/dynamic-form@9.0.0-beta.0 \\
+  @praxisui/editorial-forms@9.0.0-beta.0 @praxisui/list@9.0.0-beta.0 \\
+  @praxisui/manual-form@9.0.0-beta.0 @praxisui/table@9.0.0-beta.0 \\
+  @praxisui/tabs@9.0.0-beta.0 @praxisui/stepper@9.0.0-beta.0 \\
+  @praxisui/expansion@9.0.0-beta.0`;
 
 export const BOOTSTRAP_SNIPPET = `const API_URL_VALUE = {
   default: { baseUrl: '${PRAXIS_API_BASE_URL}' },

@@ -2,7 +2,7 @@
 
 Canonical Angular host for a first adoption path with PraxisUI.
 
-[![Angular 20](https://img.shields.io/badge/Angular-20-DD0031?logo=angular&logoColor=white)](https://angular.dev/)
+[![Angular 21](https://img.shields.io/badge/Angular-21-DD0031?logo=angular&logoColor=white)](https://angular.dev/)
 [![PraxisUI Beta](https://img.shields.io/badge/PraxisUI-Beta-0F766E)](https://praxisui.dev)
 [![Firebase Hosting](https://img.shields.io/badge/Hosting-Firebase-FFCA28?logo=firebase&logoColor=black)](https://praxis-ui-4e602.web.app)
 [![Smoke tests](https://img.shields.io/badge/Smoke%20tests-passing-16A34A)](./package.json)
@@ -67,7 +67,7 @@ The published backend behind this host already exposes broader public domains su
 - Angular standalone host bootstrap
 - `API_URL` pointing to the published `praxis-api-quickstart`
 - `PAX_FETCH_HEADERS` carrying tenant and locale
-- Angular 20 compatible PraxisUI package train pinned to `8.0.0-beta.28`
+- Angular 21 compatible PraxisUI package train pinned to `9.0.0-beta.0`
 - four core runtimes proving the same remote resource in real flows
 - four expansion examples for manual layout, tabs, stepper, and expansion panels
 - charts and editorial runtime embedded inside composition examples
@@ -122,12 +122,12 @@ Open:
 
 ### Dependency train
 
-This project is intentionally pinned to the Angular 20 compatible PraxisUI train:
+This project is intentionally pinned to the Angular 21 compatible PraxisUI train:
 
-- Angular packages: `^20.x`
-- PraxisUI packages: `8.0.0-beta.28`
+- Angular packages: `^21.x`
+- PraxisUI packages: `9.0.0-beta.0`
 
-Do not replace these with the npm `latest` tag without migrating the host to the matching Angular peer range. Some newer PraxisUI package tags already target Angular 21, and `@praxisui/ai` currently has a non-representative `latest` tag. The pinned dependency graph keeps a clean public install without `--force` or `--legacy-peer-deps`.
+Do not replace these with the npm `latest` tag without migrating the host to the matching Angular peer range. Some the npm `latest` tag is not the canonical beta channel for PraxisUI. Use the pinned package train or the npm `beta` tag so the host stays aligned with the published Angular peer range.
 
 ## Validate against local Praxis libs
 
@@ -185,7 +185,7 @@ flowchart LR
 
 This quickstart consumes published `@praxisui/*` packages from npm. You do not need access to the PraxisUI source workspace or any internal library build orchestration to get started with this host.
 
-The package list is broader than the first screen because several runtimes expose peer packages for authoring, settings panels, metadata editing, rich content, dialogs, files upload, and visual builder integration. They are pinned in `package.json` so a fresh install resolves the Angular 20 compatible graph deterministically.
+The package list is broader than the first screen because several runtimes expose peer packages for authoring, settings panels, metadata editing, rich content, dialogs, files upload, and visual builder integration. They are pinned in `package.json` so a fresh install resolves the Angular 21 compatible graph deterministically.
 
 ## Canonical host decisions
 

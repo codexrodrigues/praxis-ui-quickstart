@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/cor
 import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { CustomizationModeService } from './customization-mode.service';
+import { SiteAnalyticsService } from './site-analytics.service';
 import { ThemeModeService } from './theme-mode.service';
 
 @Component({
@@ -16,6 +17,7 @@ export class App {
   private readonly customizationMode = inject(CustomizationModeService);
   private readonly themeMode = inject(ThemeModeService);
   private readonly document = inject(DOCUMENT);
+  protected readonly analytics = inject(SiteAnalyticsService);
 
   protected readonly customizationEnabled = this.customizationMode.customizationEnabled;
   protected readonly activeTheme = this.themeMode.activeTheme;

@@ -1,5 +1,6 @@
 import {
   ApplicationConfig,
+  inject,
   provideBrowserGlobalErrorListeners,
   provideEnvironmentInitializer,
   provideZoneChangeDetection,
@@ -32,6 +33,7 @@ import { providePraxisDynamicFormMetadata } from '@praxisui/dynamic-form';
 import { routes } from './app.routes';
 import { GLOBAL_CONFIG_SEED, PRAXIS_API_BASE_URL } from './quickstart-platform-config';
 import { QuickstartSurfaceOpenService } from './quickstart-surface-open.service';
+import { SiteAnalyticsService } from './site-analytics.service';
 
 const API_URL_VALUE: ApiUrlConfig = {
   default: { baseUrl: PRAXIS_API_BASE_URL },
@@ -81,6 +83,7 @@ export const appConfig: ApplicationConfig = {
 
         return headers;
       };
+      inject(SiteAnalyticsService).initialize();
     }),
   ]
 };

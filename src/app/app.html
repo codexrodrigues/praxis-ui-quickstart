@@ -51,4 +51,21 @@
   <main class="shell-content">
     <router-outlet />
   </main>
+
+  @if (analytics.shouldShowConsentPrompt()) {
+    <section class="site-consent-banner" aria-label="Analytics preference">
+      <p>
+        Praxis UI Quickstart uses Firebase Analytics to understand visits and improve the public example host. We do
+        not use these metrics for advertising.
+      </p>
+      <div class="site-consent-actions">
+        <button type="button" class="site-consent-secondary" (click)="analytics.declineAnalytics()">
+          Decline
+        </button>
+        <button type="button" class="site-consent-primary" (click)="analytics.acceptAnalytics()">
+          Allow metrics
+        </button>
+      </div>
+    </section>
+  }
 </div>

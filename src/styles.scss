@@ -94,6 +94,17 @@
     radial-gradient(circle at top right, rgba(23, 62, 165, 0.12), transparent 30%),
     #ffffff;
   --qs-manual-kicker: #173ea5;
+
+  /* Praxis semantic theme bridge: component runtimes consume roles, not MDC selectors. */
+  --praxis-theme-surface: var(--qs-surface-card);
+  --praxis-theme-surface-raised: var(--qs-surface-card);
+  --praxis-theme-surface-overlay: var(--qs-topbar-bg);
+  --praxis-theme-on-surface: var(--qs-page-text);
+  --praxis-theme-on-surface-muted: var(--qs-shell-muted);
+  --praxis-theme-outline: var(--qs-surface-card-border);
+  --praxis-theme-outline-strong: var(--qs-topbar-border);
+  --praxis-theme-focus-outline: var(--qs-shell-accent);
+  --praxis-theme-elevation: var(--qs-shell-overlay-shadow);
 }
 
 html {

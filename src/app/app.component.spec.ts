@@ -32,6 +32,7 @@ describe('App shell', () => {
     expect(text).toContain('Default');
     expect(text).toContain('Corporate');
     expect(text).toContain('High contrast');
+    expect(text).toContain('Not now');
     expect(document.body.getAttribute('data-theme')).toBe('default');
   });
 });

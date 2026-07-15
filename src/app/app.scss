@@ -245,15 +245,12 @@
 }
 
 .site-consent-banner {
-  position: fixed;
-  right: clamp(16px, 3vw, 32px);
-  bottom: clamp(16px, 3vw, 32px);
-  z-index: 1000;
+  width: min(1040px, calc(100% - 32px));
+  margin: 16px auto 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 16px;
-  width: min(720px, calc(100vw - 32px));
   padding: 14px 16px;
   color: var(--md-sys-color-on-surface);
   background: color-mix(in srgb, var(--md-sys-color-surface-container-low) 94%, var(--md-sys-color-surface) 6%);
@@ -332,8 +329,7 @@
   }
 
   .site-consent-banner {
-    left: 16px;
-    right: 16px;
+    width: min(100% - 20px, 1040px);
     grid-template-columns: 1fr;
   }
 

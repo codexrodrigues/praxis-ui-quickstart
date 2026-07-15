@@ -31,12 +31,15 @@ export class SiteAnalyticsService {
   private readonly destroyRef = inject(DestroyRef);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
   private readonly consent = signal<AnalyticsConsent>(this.readStoredConsent());
+  private readonly consentPromptDismissed = signal(false);
 
   private runtimePromise: Promise<AnalyticsRuntime | null> | null = null;
   private started = false;
   private lastTrackedPath: string | null = null;
 
-  readonly shouldShowConsentPrompt = computed(() => this.consent() === 'unknown');
+  readonly shouldShowConsentPrompt = computed(
+    () => this.consent() === 'unknown' && !this.consentPromptDismissed(),
+  );
 
   initialize(): void {
     if (!this.isBrowser || this.consent() !== 'granted') {
@@ -53,6 +56,10 @@ export class SiteAnalyticsService {
 
   declineAnalytics(): void {
     this.storeConsent('denied');
+  }
+
+  dismissConsentPrompt(): void {
+    this.consentPromptDismissed.set(true);
   }
 
   private async startTracking(): Promise<void> {

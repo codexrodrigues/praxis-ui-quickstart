@@ -124,7 +124,7 @@ export const SETUP_STEPS: readonly SetupStep[] = [
   {
     title: 'Install the Angular 21 beta train',
     detail:
-      'Use the pinned @praxisui/* 9.0.0-beta.0 packages so npm resolves the current public beta train consistently.',
+      'Use the pinned @praxisui/* 9.0.0-beta.14 packages so npm resolves the current public beta train consistently.',
   },
   {
     title: 'Configure the host correctly',
@@ -196,13 +196,13 @@ export const POSITIONING_PANELS: readonly PositioningPanel[] = [
 export const INSTALL_COMMAND = `npm install \\
   @angular/animations@^21.2.14 @angular/cdk@^21.2.12 @angular/material@^21.2.12 \\
   @angular/platform-browser-dynamic@^21.2.14 \\
-  @praxisui/ai@9.0.0-beta.0 @praxisui/core@9.0.0-beta.0 \\
-  @praxisui/charts@9.0.0-beta.0 @praxisui/crud@9.0.0-beta.0 \\
-  @praxisui/dynamic-fields@9.0.0-beta.0 @praxisui/dynamic-form@9.0.0-beta.0 \\
-  @praxisui/editorial-forms@9.0.0-beta.0 @praxisui/list@9.0.0-beta.0 \\
-  @praxisui/manual-form@9.0.0-beta.0 @praxisui/table@9.0.0-beta.0 \\
-  @praxisui/tabs@9.0.0-beta.0 @praxisui/stepper@9.0.0-beta.0 \\
-  @praxisui/expansion@9.0.0-beta.0`;
+  @praxisui/ai@9.0.0-beta.14 @praxisui/core@9.0.0-beta.14 \\
+  @praxisui/charts@9.0.0-beta.14 @praxisui/crud@9.0.0-beta.14 \\
+  @praxisui/dynamic-fields@9.0.0-beta.14 @praxisui/dynamic-form@9.0.0-beta.14 \\
+  @praxisui/editorial-forms@9.0.0-beta.14 @praxisui/list@9.0.0-beta.14 \\
+  @praxisui/manual-form@9.0.0-beta.14 @praxisui/table@9.0.0-beta.14 \\
+  @praxisui/tabs@9.0.0-beta.14 @praxisui/stepper@9.0.0-beta.14 \\
+  @praxisui/expansion@9.0.0-beta.14`;
 
 export const BOOTSTRAP_SNIPPET = `const API_URL_VALUE = {
   default: { baseUrl: '${PRAXIS_API_BASE_URL}' },
@@ -1523,9 +1523,10 @@ export const STEPPER_PROFESSIONAL_FORM_CONFIG: FormConfig = {
       label: 'Department',
       controlType: 'select',
       required: true,
-      endpoint: '/api/human-resources/departamentos/options/filter',
-      valueField: 'id',
-      displayField: 'label',
+      resourcePath: 'human-resources/departamentos',
+      optionsEndpoint: 'filter',
+      optionValueKey: 'id',
+      optionLabelKey: 'label',
       group: 'Professional',
     } as any,
     {
@@ -1533,9 +1534,10 @@ export const STEPPER_PROFESSIONAL_FORM_CONFIG: FormConfig = {
       label: 'Role',
       controlType: 'select',
       required: true,
-      endpoint: '/api/human-resources/cargos/options/filter',
-      valueField: 'id',
-      displayField: 'label',
+      resourcePath: 'human-resources/cargos',
+      optionsEndpoint: 'filter',
+      optionValueKey: 'id',
+      optionLabelKey: 'label',
       group: 'Professional',
     } as any,
     {

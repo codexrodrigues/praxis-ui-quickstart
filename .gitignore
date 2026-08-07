@@ -29,6 +29,10 @@ yarn-error.log
 .history/*
 .codex/
 *.iml
+/.codex-worktrees/
+
+# Runtime/dev artifacts
+.codex-quickstart-serve.*.log
 
 # Miscellaneous
 /.angular/cache

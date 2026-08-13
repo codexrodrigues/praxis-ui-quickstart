@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: quickstart-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22.x
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --no-audit --fund=false
+
+      - name: Validate official host contract
+        run: npm run validate:official-host
+
+      - name: Verify published PraxisUI dependency train
+        run: npm ls @praxisui/core @praxisui/dynamic-form @praxisui/table @praxisui/crud --depth=0
+
+      - name: Run smoke tests
+        run: npm run test:smoke
+
+      - name: Build production bundle
+        run: npm run build

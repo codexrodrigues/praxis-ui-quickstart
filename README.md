@@ -17,6 +17,8 @@ It is not the full component catalog and it is not the source of platform semant
 - [Published quickstart API](https://praxis-api-quickstart.onrender.com/api)
 - [Quickstart repository](https://github.com/codexrodrigues/praxis-ui-quickstart)
 - [Live quickstart](https://praxis-ui-4e602.web.app)
+- [Official host contract](./docs/official-host-contract.md)
+- [Machine-readable example inventory](./public/examples.manifest.json)
 
 ## Canonical platform sources
 
@@ -67,7 +69,7 @@ The published backend behind this host already exposes broader public domains su
 - Angular standalone host bootstrap
 - `API_URL` pointing to the published `praxis-api-quickstart`
 - `PAX_FETCH_HEADERS` carrying tenant and locale
-- Angular 21 compatible PraxisUI package train pinned to `9.0.0-beta.14`
+- Angular 21 compatible PraxisUI package train pinned to `9.0.5-rc.10`
 - four core runtimes proving the same remote resource in real flows
 - four expansion examples for manual layout, tabs, stepper, and expansion panels
 - charts and editorial runtime embedded inside composition examples
@@ -125,7 +127,7 @@ Open:
 This project is intentionally pinned to the Angular 21 compatible PraxisUI train:
 
 - Angular packages: `^21.x`
-- PraxisUI packages: `9.0.0-beta.14`
+- PraxisUI packages: `9.0.5-rc.10`
 
 Do not replace these with the npm `latest` tag without migrating the host to the matching Angular peer range. Some the npm `latest` tag is not the canonical beta channel for PraxisUI. Use the pinned package train or the npm `beta` tag so the host stays aligned with the published Angular peer range.
 

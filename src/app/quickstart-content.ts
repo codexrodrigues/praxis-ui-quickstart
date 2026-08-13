@@ -48,13 +48,13 @@ export const QUICKSTART_EXPANSION_ID = 'quickstart-expansion';
 
 export const HERO_PILLS = [
   'Angular 21 standalone',
-  'Public PraxisUI beta',
+  'Public PraxisUI release candidate',
   'Published API on Render',
   'Metadata-driven examples',
 ] as const;
 
 export const HERO_FACTS = [
-  'Angular 21 host pinned to the compatible PraxisUI beta train',
+  'Angular 21 host pinned to the compatible PraxisUI release-candidate train',
   '4 core runtimes proving one published resource contract',
   'Composition examples for guided flows, charts, and editorial blocks',
   'Runtime customization toggle owned by the host shell',
@@ -122,9 +122,9 @@ export const ADVANCED_CATALOG_LINKS: readonly CatalogLink[] = [
 
 export const SETUP_STEPS: readonly SetupStep[] = [
   {
-    title: 'Install the Angular 21 beta train',
+    title: 'Install the governed Angular 21 train',
     detail:
-      'Use the pinned @praxisui/* 9.0.0-beta.14 packages so npm resolves the current public beta train consistently.',
+      'Use the pinned @praxisui/* 9.0.5-rc.10 packages so npm resolves the validated public train consistently.',
   },
   {
     title: 'Configure the host correctly',

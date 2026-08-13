@@ -18,6 +18,7 @@ It is not the full component catalog and it is not the source of platform semant
 - [Quickstart repository](https://github.com/codexrodrigues/praxis-ui-quickstart)
 - [Live quickstart](https://praxis-ui-4e602.web.app)
 - [Official host contract](./docs/official-host-contract.md)
+- [Production host provisioning](./docs/production-host-provisioning.md)
 - [Machine-readable example inventory](./public/examples.manifest.json)
 
 ## Canonical platform sources
@@ -340,12 +341,13 @@ The repository already contains Firebase Hosting configuration:
 - hosting config in `firebase.json`
 - publish target: `dist/praxis-ui-quickstart/browser`
 
-Typical release flow:
+Production releases are executed only by the official GitHub Actions workflow after CI validates `main`:
 
 ```bash
-npm run build
-firebase deploy --only hosting
+gh workflow run "Deploy Production" --repo codexrodrigues/praxis-ui-quickstart --ref main
 ```
+
+The workflow authenticates through Google Workload Identity Federation, deploys the validated revision and verifies the public example manifest. It fails closed when the required repository variables are absent. Do not use local `firebase deploy` or long-lived service-account keys as a release path. Administrators should follow the [production host provisioning runbook](./docs/production-host-provisioning.md).
 
 ## Troubleshooting
 

@@ -82,14 +82,15 @@ interface FormDemoModeOption {
     </section>
   `,
   styles: [`
-    .example-page { display:grid; gap:20px; }
+    .example-page { display:grid; gap:20px; min-width:0; }
     .back-link { color:var(--qs-example-link); text-decoration:underline; width:max-content; }
     .eyebrow { margin:0 0 8px; color:var(--qs-example-eyebrow); text-transform:uppercase; letter-spacing:.08em; font-size:.85rem; }
-    .page-header { display:flex; justify-content:space-between; gap:18px; align-items:flex-start; }
+    .page-header { display:flex; justify-content:space-between; gap:18px; align-items:flex-start; min-width:0; }
+    .page-header > div { min-width:0; }
     .page-header h1, .panel h2 { margin:0; }
     .page-header h1, .panel h2 { font-family:var(--font-display); color:var(--qs-example-title); }
-    .page-grid { display:grid; gap:20px; }
-    .panel { border:1px solid var(--qs-example-panel-border); padding:18px; background:var(--qs-example-panel-bg); box-shadow:var(--qs-example-panel-shadow); }
+    .page-grid { display:grid; gap:20px; min-width:0; }
+    .panel { border:1px solid var(--qs-example-panel-border); padding:18px; background:var(--qs-example-panel-bg); box-shadow:var(--qs-example-panel-shadow); min-width:0; overflow:hidden; }
     pre { margin:12px 0 0; padding:16px; overflow:auto; background:var(--qs-example-code-bg); color:var(--qs-example-code-text); }
     .live-header { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
     .stage-step { margin:0 0 4px; color:var(--qs-example-eyebrow); text-transform:uppercase; letter-spacing:.08em; font-size:.78rem; font-weight:700; }
@@ -100,7 +101,7 @@ interface FormDemoModeOption {
     .mode-button:hover { border-color:var(--md-sys-color-primary); transform:translateY(-1px); }
     .mode-button:focus-visible { outline:2px solid var(--md-sys-color-primary); outline-offset:2px; }
     .mode-button.is-active { background:linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary)); color:var(--md-sys-color-on-primary); border-color:transparent; }
-    .runtime-panel { margin-top:12px; border-top:1px dashed var(--qs-example-divider); padding-top:14px; }
+    .runtime-panel { margin-top:12px; border-top:1px dashed var(--qs-example-divider); padding-top:14px; min-width:0; max-width:100%; overflow:hidden; }
     @media (max-width: 720px) {
       .live-header { display:grid; }
       .mode-switcher { justify-content:flex-start; }

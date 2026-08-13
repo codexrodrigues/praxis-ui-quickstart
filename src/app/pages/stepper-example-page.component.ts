@@ -56,6 +56,7 @@ import {
     </section>
   `,
   styles: [`
+    :host { display:block; min-width:0; max-width:100%; overflow:hidden; }
     .example-page { display:grid; gap:20px; min-width:0; }
     .back-link { color:var(--qs-example-link); text-decoration:underline; width:max-content; }
     .eyebrow { margin:0 0 8px; color:var(--qs-example-eyebrow); text-transform:uppercase; letter-spacing:.08em; font-size:.85rem; }

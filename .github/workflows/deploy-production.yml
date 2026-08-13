@@ -93,7 +93,9 @@ jobs:
       - name: Resolve expected Praxis UI train
         id: expected-train
         shell: bash
-        run: echo "value=$(node -p \"require('./public/examples.manifest.json').packageTrain\")" >> "$GITHUB_OUTPUT"
+        run: |
+          train=$(node -p "require('./public/examples.manifest.json').packageTrain")
+          echo "value=$train" >> "$GITHUB_OUTPUT"
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v3

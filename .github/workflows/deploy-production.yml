@@ -95,7 +95,10 @@ jobs:
           service_account: ${{ vars.GCP_FIREBASE_DEPLOY_SERVICE_ACCOUNT }}
 
       - name: Deploy Firebase Hosting
-        run: npx --yes firebase-tools@15.25.1 deploy --only hosting --project praxis-ui-4e602 --non-interactive
+        # firebase-tools v15 currently times out while resolving ADC backed by
+        # Workload Identity Federation (firebase/firebase-tools#10726).
+        # Keep this keyless-compatible pin until the upstream fix is released.
+        run: npx --yes firebase-tools@14.27.0 deploy --only hosting --project praxis-ui-4e602 --non-interactive
 
       - name: Validate published example inventory
         env:

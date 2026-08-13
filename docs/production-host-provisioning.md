@@ -88,6 +88,7 @@ The `production` environment already restricts deployment to protected branches.
 
 1. Dispatch `Deploy Production` on `main` in GitHub Actions.
 2. Confirm that authentication uses OIDC/WIF and that no credential file or long-lived key is introduced.
+   The workflow temporarily pins `firebase-tools@14.27.0` because v15 has a confirmed ADC/WIF timeout regression ([firebase/firebase-tools#10726](https://github.com/firebase/firebase-tools/issues/10726)). Remove the pin only after an upstream-fixed version passes this same keyless deployment proof.
 3. Confirm that the deployed SHA is the validated `main` revision.
 4. Require the workflow's post-deploy `validate:hosted-manifest` step to pass.
 5. Independently confirm that `https://praxis-ui-4e602.web.app/examples.manifest.json` returns `application/json` and package train `9.0.5-rc.10`.

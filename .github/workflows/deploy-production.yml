@@ -87,6 +87,9 @@ jobs:
       - name: Validate official host contract
         run: npm run validate:official-host
 
+      - name: Build production host
+        run: npm run build
+
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v3
         with:

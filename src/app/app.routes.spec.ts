@@ -2,7 +2,14 @@ import { routes } from './app.routes';
 
 describe('routes', () => {
   it('lazy-loads the home and core path pages', () => {
-    const corePaths = ['', 'examples/table', 'examples/form', 'examples/crud', 'examples/list'];
+    const corePaths = [
+      '',
+      'examples/table',
+      'examples/form',
+      'examples/reactive-determinations',
+      'examples/crud',
+      'examples/list',
+    ];
 
     for (const path of corePaths) {
       const route = routes.find((candidate) => candidate.path === path);

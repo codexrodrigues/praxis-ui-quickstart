@@ -102,6 +102,40 @@ The second layer shows where the current libraries go next:
 
 Use this layer after the core path is clear. It is the expansion path, not a replacement for the first proof.
 
+## Reactive Determinations: the complete form decision example
+
+Open `/examples/reactive-determinations` after the basic Dynamic Form example.
+It demonstrates two backend-owned decisions without placing business rules in
+Angular:
+
+- postal code determines address fields;
+- gross pay and discounts determine net pay, then the authoritative net pay
+  participates in determining the payment date.
+
+The request schema publishes `x-ui.reactiveDeterminations`. It contains stable
+operation IDs, trigger sources, input/output bindings, scope and provenance. It
+does not publish executable formulas, arbitrary URLs, headers, callbacks or
+frontend patch policies.
+
+The example deliberately displays three different responsibilities:
+
+1. `PraxisDynamicForm` executes the Metadata-compiled capability and owns the
+   transient derived-field lifecycle.
+2. The host observes `reactiveDeterminationExecuted` and
+   `reactiveDeterminationPendingChange` only for UX and safe diagnostics.
+3. `ReactiveDeterminationDiagnosticsComponent` explains the exact request
+   schema and metadata-only events. It is read-only; changing a business
+   decision belongs to governed Praxis Config authoring.
+
+Submit remains blocked while a determination is pending or when its latest
+generation did not produce an authoritative draft. Composed hosts such as
+Stepper and CRUD must consume their aggregate stability outputs and must never
+interpret “settled” alone as success.
+
+The page fails closed if the published schema cannot be loaded. It never
+installs a local fallback rule, which is the essential boundary for a reusable
+enterprise host.
+
 ## First 10 minutes
 
 1. Install dependencies.

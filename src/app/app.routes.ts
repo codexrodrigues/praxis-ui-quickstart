@@ -31,6 +31,15 @@ export const routes: Routes = [
     providers: [GenericCrudService, providePraxisDynamicFormMetadata()],
   },
   {
+    path: 'examples/reactive-determinations',
+    loadComponent: () =>
+      import('./pages/reactive-determinations-example-page.component').then(
+        (m) => m.ReactiveDeterminationsExamplePageComponent,
+      ),
+    title: 'Praxis UI Quickstart | Reactive Determinations',
+    providers: [GenericCrudService, providePraxisDynamicFormMetadata()],
+  },
+  {
     path: 'examples/crud',
     loadComponent: () => import('./pages/crud-example-page.component').then((m) => m.CrudExamplePageComponent),
     title: 'Praxis UI Quickstart | CRUD',

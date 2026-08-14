@@ -91,6 +91,13 @@ export const CORE_CATALOG_LINKS: readonly CatalogLink[] = [
     icon: 'view_stream',
     description: 'Render the same resource in a list-oriented runtime to prove reuse of the published backend surface.',
   },
+  {
+    title: 'Reactive Determinations',
+    route: '/examples/reactive-determinations',
+    icon: 'account_tree',
+    description:
+      'See backend-owned decisions derive address and payroll fields while the host observes safe stability and diagnostic events.',
+  },
 ] as const;
 
 export const ADVANCED_CATALOG_LINKS: readonly CatalogLink[] = [
@@ -1690,4 +1697,3 @@ export function buildExpansionShowcaseConfig(): ExpansionMetadata {
 }
 
 export const EXPANSION_CONFIG: ExpansionMetadata = buildExpansionShowcaseConfig();
-

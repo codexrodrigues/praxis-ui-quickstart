@@ -40,6 +40,16 @@
       "status": "executable"
     },
     {
+      "key": "reactive-determinations",
+      "title": "Reactive Determinations",
+      "category": "core",
+      "route": "/examples/reactive-determinations",
+      "sourcePath": "src/app/pages/reactive-determinations-example-page.component.ts",
+      "resourcePaths": ["human-resources/enderecos", "human-resources/folhas-pagamento"],
+      "runtimePackages": ["@praxisui/dynamic-form", "@praxisui/metadata-editor", "@praxisui/core"],
+      "status": "executable"
+    },
+    {
       "key": "resource-list",
       "title": "Praxis List",
       "category": "core",

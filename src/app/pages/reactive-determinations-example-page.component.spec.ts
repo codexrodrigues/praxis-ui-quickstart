@@ -27,12 +27,12 @@ describe('ReactiveDeterminationsExamplePageComponent', () => {
 
     http
       .expectOne(
-        '/schemas/filtered?path=/api/human-resources/enderecos&operation=post&schemaType=request',
+        'http://localhost/schemas/filtered?path=/api/human-resources/enderecos&operation=post&schemaType=request',
       )
       .flush({ 'x-ui': { reactiveDeterminations: [{ id: 'address' }] } });
     http
       .expectOne(
-        '/schemas/filtered?path=/api/human-resources/folhas-pagamento&operation=post&schemaType=request',
+        'http://localhost/schemas/filtered?path=/api/human-resources/folhas-pagamento&operation=post&schemaType=request',
       )
       .flush({ 'x-ui': { reactiveDeterminations: [{ id: 'payroll' }] } });
     fixture.detectChanges();
@@ -46,6 +46,43 @@ describe('ReactiveDeterminationsExamplePageComponent', () => {
     expect(
       fixture.debugElement.queryAll(By.directive(ReactiveDeterminationDiagnosticsComponent)).length,
     ).toBe(2);
+    expect(
+      fixture.debugElement.queryAll(By.css('.state')).map((node) => node.nativeElement.textContent.trim()),
+    ).toEqual(['ready', 'ready']);
+
+    http.verify();
+  });
+
+  it('does not report determinations as satisfied when schema evidence is unavailable', () => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule, ReactiveDeterminationsExamplePageComponent],
+      providers: [
+        provideRouter([]),
+        GenericCrudService,
+        providePraxisDynamicFormMetadata(),
+        { provide: API_URL, useValue: { default: { baseUrl: 'http://localhost/api' } } },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(ReactiveDeterminationsExamplePageComponent);
+    const http = TestBed.inject(HttpTestingController);
+
+    http
+      .expectOne(
+        'http://localhost/schemas/filtered?path=/api/human-resources/folhas-pagamento&operation=post&schemaType=request',
+      )
+      .flush({});
+    http
+      .expectOne(
+        'http://localhost/schemas/filtered?path=/api/human-resources/enderecos&operation=post&schemaType=request',
+      )
+      .flush({ message: 'unavailable' }, { status: 503, statusText: 'Unavailable' });
+    fixture.detectChanges();
+
+    expect(
+      fixture.debugElement.queryAll(By.css('.state')).map((node) => node.nativeElement.textContent.trim()),
+    ).toEqual(['unavailable', 'unavailable']);
+    expect(fixture.debugElement.query(By.css('[role="alert"]'))).toBeTruthy();
 
     http.verify();
   });

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import type { ReactiveDeterminationExecutionEvent } from '@praxisui/core';
+import { API_URL, type ReactiveDeterminationExecutionEvent } from '@praxisui/core';
 import { PraxisDynamicForm } from '@praxisui/dynamic-form';
 import { ReactiveDeterminationDiagnosticsComponent } from '@praxisui/metadata-editor';
 import { forkJoin } from 'rxjs';
@@ -163,17 +163,19 @@ interface SafeExecutionEntry {
     .example-grid,.diagnostics-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; align-items:start; }
     .panel-heading { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
     .state { border-radius:999px; padding:6px 10px; background:var(--md-sys-color-surface-container); font-size:.8rem; font-weight:700; }
-    .state[data-state='pending'] { background:var(--md-sys-color-secondary-container); }
-    .state[data-state='unsatisfied'] { background:var(--md-sys-color-error-container); }
+    .state[data-state='loading'],.state[data-state='pending'] { background:var(--md-sys-color-secondary-container); }
+    .state[data-state='unavailable'],.state[data-state='unsatisfied'] { background:var(--md-sys-color-error-container); }
     .notice { padding:14px 16px; border-radius:10px; }
     .notice--error { color:var(--md-sys-color-on-error-container); background:var(--md-sys-color-error-container); }
     .event-ledger { display:grid; gap:8px; padding-left:22px; }
     .event-ledger li { display:flex; flex-wrap:wrap; gap:8px 12px; }
     @media (max-width:900px) { .example-grid,.diagnostics-grid { grid-template-columns:1fr; } }
+    @media (max-width:600px) { .page-header > mat-icon { display:none; } }
   `],
 })
 export class ReactiveDeterminationsExamplePageComponent {
   private readonly http = inject(HttpClient);
+  private readonly apiUrl = inject(API_URL);
 
   protected readonly addressResource = ADDRESS_RESOURCE;
   protected readonly payrollResource = PAYROLL_RESOURCE;
@@ -189,9 +191,14 @@ export class ReactiveDeterminationsExamplePageComponent {
   protected readonly recentEvents = computed(() => this.entries().slice(-10).reverse());
 
   constructor() {
+    const apiOrigin = new URL(
+      this.apiUrl['default']?.baseUrl ?? '/',
+      globalThis.location.origin,
+    ).origin;
+
     forkJoin({
-      address: this.http.get<unknown>(ADDRESS_SCHEMA),
-      payroll: this.http.get<unknown>(PAYROLL_SCHEMA),
+      address: this.http.get<unknown>(new URL(ADDRESS_SCHEMA, apiOrigin).toString()),
+      payroll: this.http.get<unknown>(new URL(PAYROLL_SCHEMA, apiOrigin).toString()),
     }).subscribe({
       next: ({ address, payroll }) => {
         this.addressSchema.set(address);
@@ -210,10 +217,15 @@ export class ReactiveDeterminationsExamplePageComponent {
     this.pending.update((state) => ({ ...state, [surface]: pending }));
   }
 
-  protected stateFor(surface: ExampleSurface): 'pending' | 'satisfied' | 'unsatisfied' {
+  protected stateFor(
+    surface: ExampleSurface,
+  ): 'loading' | 'unavailable' | 'ready' | 'pending' | 'satisfied' | 'unsatisfied' {
+    if (this.schemaState() === 'loading') return 'loading';
+    if (this.schemaState() === 'error') return 'unavailable';
     if (this.pending()[surface]) return 'pending';
     const latest = [...this.eventsFor(surface)].reverse().find((event) => event.status !== 'pending');
-    return latest && latest.status !== 'success' ? 'unsatisfied' : 'satisfied';
+    if (!latest) return 'ready';
+    return latest.status === 'success' ? 'satisfied' : 'unsatisfied';
   }
 
   private eventsFor(surface: ExampleSurface): readonly ReactiveDeterminationExecutionEvent[] {

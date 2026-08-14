@@ -127,6 +127,18 @@ The example deliberately displays three different responsibilities:
    schema and metadata-only events. It is read-only; changing a business
    decision belongs to governed Praxis Config authoring.
 
+The live capability path is authenticated. The page probes `/auth/session`,
+keeps both forms disabled while no business principal is present, and offers a
+minimal Quickstart login that sends an HttpOnly session only to the configured
+Praxis API origin. The public deployment does not publish credentials. In a
+downloaded Quickstart, use the `admin` principal configured by the local API;
+in a corporate host, replace the demo login with the organization's IdP/BFF.
+
+The reference interceptor in `praxis-api-credentials.interceptor.ts` sets
+`withCredentials` only when a request resolves to the `API_URL` origin. It does
+not forward the session to third-party origins and it does not expose the JWT to
+Angular code.
+
 Submit remains blocked while a determination is pending or when its latest
 generation did not produce an authoritative draft. Composed hosts such as
 Stepper and CRUD must consume their aggregate stability outputs and must never
@@ -135,6 +147,12 @@ interpret “settled” alone as success.
 The page fails closed if the published schema cannot be loaded. It never
 installs a local fallback rule, which is the essential boundary for a reusable
 enterprise host.
+
+The page also separates the negative paths instead of presenting every failure
+as a broken calculation: `401/403` means the host principal is missing or not
+authorized, `422` means the backend could not determine the supplied source,
+and `503` means the governed decision/snapshot is unavailable. These are
+diagnostics; Angular still must not install a local formula as fallback.
 
 ## First 10 minutes
 

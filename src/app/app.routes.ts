@@ -1,10 +1,6 @@
 import { Routes } from '@angular/router';
-import { providePraxisCharts, providePraxisChartsI18n } from '@praxisui/charts';
 import { GenericCrudService } from '@praxisui/core';
 import { providePraxisDynamicFormMetadata } from '@praxisui/dynamic-form';
-import { providePraxisEditorialForms, providePraxisEditorialFormsI18n } from '@praxisui/editorial-forms';
-import { providePraxisTableMetadata } from '@praxisui/table';
-import { provideQuickstartEditorialWidgetMetadata } from './quickstart-editorial-widget.metadata';
 
 export const routes: Routes = [
   {
@@ -14,19 +10,13 @@ export const routes: Routes = [
   },
   {
     path: 'examples/table',
-    loadComponent: () => import('./pages/table-example-page.component').then((m) => m.TableExamplePageComponent),
+    loadChildren: () => import('./routes/table.routes').then((m) => m.TABLE_ROUTES),
     title: 'Praxis UI Quickstart | Table',
-    providers: [
-      GenericCrudService,
-      providePraxisDynamicFormMetadata(),
-      providePraxisTableMetadata(),
-      ...providePraxisCharts(),
-      ...providePraxisChartsI18n({ locale: 'en-US', fallbackLocale: 'en-US' }),
-    ],
   },
   {
     path: 'examples/form',
-    loadComponent: () => import('./pages/form-example-page.component').then((m) => m.FormExamplePageComponent),
+    loadComponent: () =>
+      import('./pages/form-example-page.component').then((m) => m.FormExamplePageComponent),
     title: 'Praxis UI Quickstart | Form',
     providers: [GenericCrudService, providePraxisDynamicFormMetadata()],
   },
@@ -41,50 +31,42 @@ export const routes: Routes = [
   },
   {
     path: 'examples/crud',
-    loadComponent: () => import('./pages/crud-example-page.component').then((m) => m.CrudExamplePageComponent),
+    loadComponent: () =>
+      import('./pages/crud-example-page.component').then((m) => m.CrudExamplePageComponent),
     title: 'Praxis UI Quickstart | CRUD',
     providers: [GenericCrudService, providePraxisDynamicFormMetadata()],
   },
   {
     path: 'examples/list',
-    loadComponent: () => import('./pages/list-example-page.component').then((m) => m.ListExamplePageComponent),
+    loadComponent: () =>
+      import('./pages/list-example-page.component').then((m) => m.ListExamplePageComponent),
     title: 'Praxis UI Quickstart | List',
   },
   {
     path: 'examples/manual-form',
-    loadComponent: () => import('./pages/manual-form-example-page.component').then((m) => m.ManualFormExamplePageComponent),
+    loadComponent: () =>
+      import('./pages/manual-form-example-page.component').then(
+        (m) => m.ManualFormExamplePageComponent,
+      ),
     title: 'Praxis UI Quickstart | Manual Form',
     providers: [GenericCrudService, providePraxisDynamicFormMetadata()],
   },
   {
     path: 'examples/tabs',
-    loadComponent: () => import('./pages/tabs-example-page.component').then((m) => m.TabsExamplePageComponent),
+    loadChildren: () => import('./routes/tabs.routes').then((m) => m.TABS_ROUTES),
     title: 'Praxis UI Quickstart | Tabs',
-    providers: [
-      ...providePraxisCharts(),
-      ...providePraxisChartsI18n({ locale: 'en-US', fallbackLocale: 'en-US' }),
-      providePraxisEditorialForms(),
-      providePraxisEditorialFormsI18n({ locale: 'en-US', fallbackLocale: 'en-US' }),
-      provideQuickstartEditorialWidgetMetadata(),
-    ],
   },
   {
     path: 'examples/stepper',
-    loadComponent: () => import('./pages/stepper-example-page.component').then((m) => m.StepperExamplePageComponent),
+    loadComponent: () =>
+      import('./pages/stepper-example-page.component').then((m) => m.StepperExamplePageComponent),
     title: 'Praxis UI Quickstart | Stepper',
     providers: [GenericCrudService, providePraxisDynamicFormMetadata()],
   },
   {
     path: 'examples/expansion',
-    loadComponent: () => import('./pages/expansion-example-page.component').then((m) => m.ExpansionExamplePageComponent),
+    loadChildren: () => import('./routes/expansion.routes').then((m) => m.EXPANSION_ROUTES),
     title: 'Praxis UI Quickstart | Expansion',
-    providers: [
-      ...providePraxisCharts(),
-      ...providePraxisChartsI18n({ locale: 'en-US', fallbackLocale: 'en-US' }),
-      providePraxisEditorialForms(),
-      providePraxisEditorialFormsI18n({ locale: 'en-US', fallbackLocale: 'en-US' }),
-      provideQuickstartEditorialWidgetMetadata(),
-    ],
   },
   { path: '**', redirectTo: '' },
 ];

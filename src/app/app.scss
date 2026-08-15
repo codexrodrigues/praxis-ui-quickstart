@@ -299,6 +299,8 @@
   .topbar {
     width: min(100% - 20px, 1040px);
     flex-direction: column;
+    gap: 12px;
+    padding: 12px;
   }
 
   .topbar-actions {
@@ -312,6 +314,10 @@
 
   .topnav {
     justify-content: flex-start;
+    flex-wrap: nowrap;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 2px;
   }
 
   .advanced-menu-panel {
@@ -320,12 +326,18 @@
   }
 
   .customization-toggle {
-    width: 100%;
+    flex: 1 1 180px;
     justify-content: space-between;
   }
 
   .theme-switcher {
-    width: 100%;
+    flex: 1 1 100%;
+    flex-wrap: nowrap;
+  }
+
+  .theme-switcher button {
+    flex: 1 1 0;
+    padding-inline: 8px;
   }
 
   .site-consent-banner {

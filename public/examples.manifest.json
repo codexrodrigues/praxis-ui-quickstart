@@ -7,7 +7,7 @@
     "sourceUrl": "https://github.com/codexrodrigues/praxis-ui-quickstart",
     "apiBaseUrl": "https://praxis-api-quickstart.onrender.com/api"
   },
-  "packageTrain": "9.0.5-rc.22",
+  "packageTrain": "9.0.5-rc.24",
   "examples": [
     {
       "key": "resource-table",

@@ -25,6 +25,8 @@ describe('ReactiveDeterminationsExamplePageComponent', () => {
     const fixture = TestBed.createComponent(ReactiveDeterminationsExamplePageComponent);
     const http = TestBed.inject(HttpTestingController);
 
+    http.expectOne('http://localhost/auth/session').flush({ authenticated: true });
+
     http
       .expectOne(
         'http://localhost/schemas/filtered?path=/api/human-resources/enderecos&operation=post&schemaType=request',
@@ -67,6 +69,11 @@ describe('ReactiveDeterminationsExamplePageComponent', () => {
     const fixture = TestBed.createComponent(ReactiveDeterminationsExamplePageComponent);
     const http = TestBed.inject(HttpTestingController);
 
+    http.expectOne('http://localhost/auth/session').flush(
+      { message: 'authentication required' },
+      { status: 401, statusText: 'Unauthorized' },
+    );
+
     http
       .expectOne(
         'http://localhost/schemas/filtered?path=/api/human-resources/folhas-pagamento&operation=post&schemaType=request',
@@ -84,6 +91,45 @@ describe('ReactiveDeterminationsExamplePageComponent', () => {
     ).toEqual(['unavailable', 'unavailable']);
     expect(fixture.debugElement.query(By.css('[role="alert"]'))).toBeTruthy();
 
+    http.verify();
+  });
+
+  it('keeps live forms disabled until the host establishes a business session', () => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule, ReactiveDeterminationsExamplePageComponent],
+      providers: [
+        provideRouter([]),
+        GenericCrudService,
+        providePraxisDynamicFormMetadata(),
+        { provide: API_URL, useValue: { default: { baseUrl: 'http://localhost/api' } } },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(ReactiveDeterminationsExamplePageComponent);
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('http://localhost/auth/session').flush(
+      {},
+      { status: 401, statusText: 'Unauthorized' },
+    );
+    http.expectOne(
+      'http://localhost/schemas/filtered?path=/api/human-resources/enderecos&operation=post&schemaType=request',
+    ).flush({ 'x-ui': { reactiveDeterminations: [{ id: 'address' }] } });
+    http.expectOne(
+      'http://localhost/schemas/filtered?path=/api/human-resources/folhas-pagamento&operation=post&schemaType=request',
+    ).flush({ 'x-ui': { reactiveDeterminations: [{ id: 'payroll' }] } });
+    fixture.detectChanges();
+
+    const forms = fixture.debugElement.queryAll(By.directive(PraxisDynamicForm));
+    expect(forms.every((node) => node.componentInstance.disabledModeGlobal === true)).toBeTrue();
+    expect(
+      fixture.debugElement
+        .queryAll(By.css('fieldset.form-auth-boundary'))
+        .every((node) => node.nativeElement.disabled === true),
+    ).toBeTrue();
+    expect(fixture.nativeElement.textContent).toContain('Authentication required for live determinations');
+    expect(
+      fixture.debugElement.queryAll(By.css('.state')).map((node) => node.nativeElement.textContent.trim()),
+    ).toEqual(['unavailable', 'unavailable']);
     http.verify();
   });
 });

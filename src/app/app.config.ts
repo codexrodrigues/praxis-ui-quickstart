@@ -5,7 +5,7 @@ import {
   provideEnvironmentInitializer,
   provideZoneChangeDetection,
 } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
   CurrencyPipe,
   DatePipe,
@@ -34,6 +34,7 @@ import { routes } from './app.routes';
 import { GLOBAL_CONFIG_SEED, PRAXIS_API_BASE_URL } from './quickstart-platform-config';
 import { QuickstartSurfaceOpenService } from './quickstart-surface-open.service';
 import { SiteAnalyticsService } from './site-analytics.service';
+import { praxisApiCredentialsInterceptor } from './praxis-api-credentials.interceptor';
 
 const API_URL_VALUE: ApiUrlConfig = {
   default: { baseUrl: PRAXIS_API_BASE_URL },
@@ -45,7 +46,10 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideAnimations(),
     provideRouter(routes),
-    provideHttpClient(withPraxisHttpLoading()),
+    provideHttpClient(
+      withPraxisHttpLoading(),
+      withInterceptors([praxisApiCredentialsInterceptor]),
+    ),
     ...providePraxisDynamicFieldsCore(),
     providePraxisDynamicFormMetadata(),
     ...providePraxisLoadingDefaults(),

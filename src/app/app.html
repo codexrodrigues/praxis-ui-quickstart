@@ -27,9 +27,9 @@
       </nav>
 
       <div class="theme-switcher" role="group" aria-label="Host theme switcher">
-        <button type="button" [class.is-active]="activeTheme() === 'default'" (click)="setTheme('default')">Default</button>
-        <button type="button" [class.is-active]="activeTheme() === 'corporate'" (click)="setTheme('corporate')">Corporate</button>
-        <button type="button" [class.is-active]="activeTheme() === 'high-contrast'" (click)="setTheme('high-contrast')">High contrast</button>
+        <button type="button" [class.is-active]="activeTheme() === 'default'" [attr.aria-pressed]="activeTheme() === 'default'" (click)="setTheme('default')">Default</button>
+        <button type="button" [class.is-active]="activeTheme() === 'corporate'" [attr.aria-pressed]="activeTheme() === 'corporate'" (click)="setTheme('corporate')">Corporate</button>
+        <button type="button" [class.is-active]="activeTheme() === 'high-contrast'" [attr.aria-pressed]="activeTheme() === 'high-contrast'" (click)="setTheme('high-contrast')">High contrast</button>
       </div>
 
       <label class="customization-toggle">

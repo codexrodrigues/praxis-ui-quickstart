@@ -34,5 +34,14 @@ describe('App shell', () => {
     expect(text).toContain('High contrast');
     expect(text).toContain('Not now');
     expect(document.body.getAttribute('data-theme')).toBe('default');
+
+    const themeButtons = Array.from(
+      fixture.nativeElement.querySelectorAll('.theme-switcher button'),
+    ) as HTMLButtonElement[];
+    expect(themeButtons.map((button) => button.getAttribute('aria-pressed'))).toEqual([
+      'true',
+      'false',
+      'false',
+    ]);
   });
 });

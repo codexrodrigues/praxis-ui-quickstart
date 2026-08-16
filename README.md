@@ -136,6 +136,17 @@ The page fails closed if the published schema cannot be loaded. It never
 installs a local fallback rule, which is the essential boundary for a reusable
 enterprise host.
 
+The governed implementation panel separates structural metadata from provider
+selection. Its v1/v2 table is a reference catalog, not telemetry for the active
+tenant. The capability response exposes an auditable `decisionVersion`, while
+safe frontend events remain metadata-only.
+
+The two preview capabilities are separate HTTP requests. A rollout may occur
+between them, so preview stability does not claim snapshot atomicity. The final
+create/update command resolves one governed aggregate for the whole chain and
+rejects stale derived values with `409`; the host should retain user-entered
+facts, request fresh determinations, and present the updated draft for review.
+
 ## First 10 minutes
 
 1. Install dependencies.

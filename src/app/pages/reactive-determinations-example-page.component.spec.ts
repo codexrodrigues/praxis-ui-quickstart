@@ -49,6 +49,17 @@ describe('ReactiveDeterminationsExamplePageComponent', () => {
     expect(
       fixture.debugElement.queryAll(By.css('.state')).map((node) => node.nativeElement.textContent.trim()),
     ).toEqual(['ready', 'ready']);
+    const providerHandoff = fixture.debugElement.query(
+      By.css('[data-testid="governed-provider-handoff"]'),
+    ).nativeElement as HTMLElement;
+    expect(providerHandoff.textContent).toContain('rule key + version + operation');
+    expect(providerHandoff.textContent).toContain('HALF_EVEN rounding');
+    expect(providerHandoff.textContent).toContain('Seventh weekday');
+    expect(providerHandoff.textContent).toContain('Reference catalog · not active-state telemetry');
+    expect(providerHandoff.textContent).toContain('What happens when a policy changes while a form is open?');
+    expect(providerHandoff.textContent).toContain('A stale derived value is rejected with 409');
+    expect(providerHandoff.textContent).toContain('Preview capabilities are separate HTTP requests');
+    expect(providerHandoff.textContent).toContain('final create/update command guarantees one aggregate');
 
     http.verify();
   });

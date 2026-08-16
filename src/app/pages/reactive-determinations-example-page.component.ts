@@ -61,6 +61,50 @@ interface SafeExecutionEntry {
         </ol>
       </article>
 
+      <article class="panel provider-panel" data-testid="governed-provider-handoff">
+        <div class="provider-panel__heading">
+          <div>
+            <p class="stage-step">Governed implementation handoff</p>
+            <h2>The snapshot selects executable host code</h2>
+          </div>
+          <span class="catalog-badge">Reference catalog · not active-state telemetry</span>
+        </div>
+        <p>
+          Metadata publishes only the field graph. Config selects an immutable source version, and
+          the backend resolves that exact identity to a registered provider. An unknown version or
+          operation fails closed with <code>503</code>; it never falls back to a local formula.
+        </p>
+        <ol class="decision-trail" aria-label="Governed provider resolution flow">
+          <li><span class="decision-trail__index">1</span><div><strong>Config head</strong><span>tenant, environment, source version</span></div></li>
+          <li><span class="decision-trail__index">2</span><div><strong>Host registry</strong><span>rule key + version + operation</span></div></li>
+          <li><span class="decision-trail__index">3</span><div><strong>Capability response</strong><span>result + auditable decisionVersion</span></div></li>
+        </ol>
+        <div class="policy-table-wrap">
+          <table class="policy-table">
+            <caption>Providers registered by this reference host</caption>
+            <thead><tr><th scope="col">Determination</th><th scope="col">Version 1</th><th scope="col">Version 2</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Net salary</th><td>HALF_EVEN rounding</td><td>HALF_UP rounding</td></tr>
+              <tr><th scope="row">Payment date</th><td>Fifth weekday</td><td>Seventh weekday</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <section class="upgrade-scenario" aria-labelledby="upgrade-scenario-title">
+          <h3 id="upgrade-scenario-title">What happens when a policy changes while a form is open?</h3>
+          <ol>
+            <li><strong>Preview under v1</strong><span>The form receives derived values and an auditable version.</span></li>
+            <li><strong>Config activates v2</strong><span>The structural schema remains stable; the governed provider changes.</span></li>
+            <li><strong>Submit revalidates</strong><span>A stale derived value is rejected with 409 so the host can refresh it safely.</span></li>
+          </ol>
+        </section>
+        <p class="provider-note">
+          The safe event ledger below contains correlation metadata only. Inspect the capability
+          response to audit <code>decisionVersion</code>; business values are deliberately excluded
+          from frontend observability events. Preview capabilities are separate HTTP requests, so
+          only the final create/update command guarantees one aggregate for the complete chain.
+        </p>
+      </article>
+
       @if (schemaState() === 'error') {
         <p class="notice notice--error" role="alert">
           The published request schemas could not be loaded. The forms remain fail-closed and no
@@ -160,6 +204,27 @@ interface SafeExecutionEntry {
     .page-header p,.panel p,.panel li { color:var(--qs-example-body); line-height:1.55; }
     .panel { border:1px solid var(--qs-example-panel-border); padding:18px; background:var(--qs-example-panel-bg); box-shadow:var(--qs-example-panel-shadow); min-width:0; overflow:hidden; }
     .contract-panel ol { margin:12px 0 0; padding-left:22px; display:grid; gap:8px; }
+    .provider-panel { display:grid; gap:16px; }
+    .provider-panel > p { margin:0; }
+    .provider-panel__heading { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+    .catalog-badge { padding:6px 10px; border-radius:999px; background:var(--md-sys-color-surface-container-high); color:var(--md-sys-color-on-surface-variant); font-size:.76rem; font-weight:700; white-space:nowrap; }
+    .decision-trail { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; padding:0; margin:0; list-style:none; }
+    .decision-trail li { display:flex; gap:10px; align-items:flex-start; padding:12px; background:var(--md-sys-color-surface-container-low); border-inline-start:3px solid var(--md-sys-color-primary); }
+    .decision-trail__index { display:grid; place-items:center; flex:0 0 24px; min-height:24px; border-radius:50%; color:var(--md-sys-color-on-primary); background:var(--md-sys-color-primary); font-size:.75rem; font-weight:800; }
+    .decision-trail div { display:grid; gap:3px; min-width:0; }
+    .decision-trail span:not(.decision-trail__index) { color:var(--md-sys-color-on-surface-variant); font-size:.82rem; overflow-wrap:anywhere; }
+    .policy-table-wrap { overflow-x:auto; }
+    .policy-table { width:100%; border-collapse:collapse; color:var(--qs-example-body); }
+    .policy-table caption { text-align:start; padding-block-end:8px; color:var(--qs-example-title); font-weight:700; }
+    .policy-table th,.policy-table td { padding:10px 12px; text-align:start; border-block-end:1px solid var(--qs-example-panel-border); }
+    .policy-table thead th { color:var(--md-sys-color-on-surface-variant); font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; }
+    .upgrade-scenario { display:grid; gap:10px; padding:14px; border:1px solid var(--qs-example-panel-border); background:var(--md-sys-color-surface-container-lowest); }
+    .upgrade-scenario h3 { margin:0; color:var(--qs-example-title); font-family:var(--font-display); font-size:1rem; }
+    .upgrade-scenario ol { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:0; padding:0; list-style:none; counter-reset:upgrade-step; }
+    .upgrade-scenario li { display:grid; gap:4px; min-width:0; counter-increment:upgrade-step; }
+    .upgrade-scenario li::before { content:counter(upgrade-step); color:var(--md-sys-color-primary); font-size:.75rem; font-weight:800; }
+    .upgrade-scenario span { color:var(--md-sys-color-on-surface-variant); font-size:.84rem; overflow-wrap:anywhere; }
+    .panel .provider-note { padding:12px 14px; background:var(--md-sys-color-secondary-container); color:var(--md-sys-color-on-secondary-container); }
     .example-grid,.diagnostics-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; align-items:start; }
     .panel-heading { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
     .state { border-radius:999px; padding:6px 10px; background:var(--md-sys-color-surface-container); font-size:.8rem; font-weight:700; }
@@ -170,6 +235,11 @@ interface SafeExecutionEntry {
     .event-ledger { display:grid; gap:8px; padding-left:22px; }
     .event-ledger li { display:flex; flex-wrap:wrap; gap:8px 12px; }
     @media (max-width:900px) { .example-grid,.diagnostics-grid { grid-template-columns:1fr; } }
+    @media (max-width:700px) {
+      .provider-panel__heading { display:grid; }
+      .catalog-badge { width:fit-content; white-space:normal; }
+      .decision-trail,.upgrade-scenario ol { grid-template-columns:1fr; }
+    }
     @media (max-width:600px) { .page-header > mat-icon { display:none; } }
   `],
 })

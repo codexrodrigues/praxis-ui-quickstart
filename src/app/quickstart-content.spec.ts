@@ -1,4 +1,19 @@
-import { STEPPER_PROFESSIONAL_FORM_CONFIG } from './quickstart-content';
+import {
+  INSTALL_COMMAND,
+  SETUP_STEPS,
+  STEPPER_PROFESSIONAL_FORM_CONFIG,
+} from './quickstart-content';
+
+describe('Quickstart installation guidance', () => {
+  it('publishes the stable Praxis train with exact Angular peer versions', () => {
+    expect(SETUP_STEPS[0].detail).toContain('@praxisui/* 9.0.5 packages');
+    expect(SETUP_STEPS[0].detail).not.toContain('-rc.');
+    expect(INSTALL_COMMAND).toContain('@angular/animations@21.2.20');
+    expect(INSTALL_COMMAND).toContain('@angular/cdk@21.2.14');
+    expect(INSTALL_COMMAND).toContain('@angular/material@21.2.14');
+    expect(INSTALL_COMMAND).not.toContain('@^');
+  });
+});
 
 describe('Quickstart stepper option sources', () => {
   it('uses canonical option-source metadata so the runtime resolves the options filter route once', () => {

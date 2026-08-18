@@ -131,7 +131,7 @@ export const SETUP_STEPS: readonly SetupStep[] = [
   {
     title: 'Install the governed Angular 21 train',
     detail:
-      'Use the pinned @praxisui/* 9.0.5-rc.10 packages so npm resolves the validated public train consistently.',
+      'Use the pinned @praxisui/* 9.0.5 packages so npm resolves the validated public train consistently.',
   },
   {
     title: 'Configure the host correctly',
@@ -201,7 +201,7 @@ export const POSITIONING_PANELS: readonly PositioningPanel[] = [
 ] as const;
 
 export const INSTALL_COMMAND = `npm install \\
-  @angular/animations@^21.2.20 @angular/cdk@^21.2.14 @angular/material@^21.2.14 \\
+  @angular/animations@21.2.20 @angular/cdk@21.2.14 @angular/material@21.2.14 \\
   @praxisui/ai@9.0.5 @praxisui/core@9.0.5 \\
   @praxisui/charts@9.0.5 @praxisui/crud@9.0.5 \\
   @praxisui/dynamic-fields@9.0.5 @praxisui/dynamic-form@9.0.5 \\

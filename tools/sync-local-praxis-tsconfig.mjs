@@ -50,8 +50,6 @@ function appendSharedConsumerPaths(paths) {
     '@angular/material/*': ['./node_modules/@angular/material/*'],
     '@angular/platform-browser': ['./node_modules/@angular/platform-browser'],
     '@angular/platform-browser/*': ['./node_modules/@angular/platform-browser/*'],
-    '@angular/platform-browser-dynamic': ['./node_modules/@angular/platform-browser-dynamic'],
-    '@angular/platform-browser-dynamic/*': ['./node_modules/@angular/platform-browser-dynamic/*'],
     '@angular/router': ['./node_modules/@angular/router'],
     '@angular/router/*': ['./node_modules/@angular/router/*'],
     rxjs: ['./node_modules/rxjs'],

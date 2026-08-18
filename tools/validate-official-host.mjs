@@ -52,9 +52,34 @@ const angularDependencies = Object.entries({
   ...(packageJson.devDependencies ?? {}),
 })
   .filter(([name]) => name.startsWith('@angular/'));
-const angularVersions = new Set(angularDependencies.map(([, version]) => version));
-assert(angularVersions.size === 1, `All Angular runtime dependencies must use one exact patch; found ${[...angularVersions].join(', ')}.`);
-assert([...angularVersions].every((version) => /^\d+\.\d+\.\d+$/.test(version)), 'Angular dependencies must use exact versions.');
+const angularVersionByPackage = new Map(angularDependencies);
+const angularVersions = [...angularVersionByPackage.values()];
+assert(angularVersions.every((version) => /^\d+\.\d+\.\d+$/.test(version)), 'Angular dependencies must use exact versions.');
+
+const angularReleaseLines = new Set(angularVersions.map((version) => version.split('.').slice(0, 2).join('.')));
+assert(angularReleaseLines.size === 1, `All Angular dependencies must use one major/minor line; found ${[...angularReleaseLines].join(', ')}.`);
+
+const angularCohorts = {
+  framework: [
+    '@angular/animations',
+    '@angular/common',
+    '@angular/compiler',
+    '@angular/compiler-cli',
+    '@angular/core',
+    '@angular/forms',
+    '@angular/platform-browser',
+    '@angular/router',
+  ],
+  material: ['@angular/cdk', '@angular/material'],
+  toolchain: ['@angular/build', '@angular/cli'],
+};
+
+const angularCohortVersions = {};
+for (const [cohort, packages] of Object.entries(angularCohorts)) {
+  const versions = new Set(packages.map((name) => angularVersionByPackage.get(name)).filter(Boolean));
+  assert(versions.size === 1, `Angular ${cohort} packages must use one exact patch; found ${[...versions].join(', ')}.`);
+  angularCohortVersions[cohort] = [...versions][0];
+}
 
 const keys = new Set();
 const routes = new Set();
@@ -78,4 +103,9 @@ for (const example of manifest.examples) {
   await assertFile(example.sourcePath);
 }
 
-console.log(`[official-host] OK: ${manifest.examples.length} examples, PraxisUI ${manifest.packageTrain}, Angular ${[...angularVersions][0]}.`);
+console.log(
+  `[official-host] OK: ${manifest.examples.length} examples, PraxisUI ${manifest.packageTrain}, ` +
+  `Angular ${[...angularReleaseLines][0]} ` +
+  `(framework ${angularCohortVersions.framework}, material ${angularCohortVersions.material}, ` +
+  `toolchain ${angularCohortVersions.toolchain}).`,
+);

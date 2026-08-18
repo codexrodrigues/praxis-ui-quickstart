@@ -201,15 +201,14 @@ export const POSITIONING_PANELS: readonly PositioningPanel[] = [
 ] as const;
 
 export const INSTALL_COMMAND = `npm install \\
-  @angular/animations@^21.2.14 @angular/cdk@^21.2.12 @angular/material@^21.2.12 \\
-  @angular/platform-browser-dynamic@^21.2.14 \\
-  @praxisui/ai@9.0.0-beta.14 @praxisui/core@9.0.0-beta.14 \\
-  @praxisui/charts@9.0.0-beta.14 @praxisui/crud@9.0.0-beta.14 \\
-  @praxisui/dynamic-fields@9.0.0-beta.14 @praxisui/dynamic-form@9.0.0-beta.14 \\
-  @praxisui/editorial-forms@9.0.0-beta.14 @praxisui/list@9.0.0-beta.14 \\
-  @praxisui/manual-form@9.0.0-beta.14 @praxisui/table@9.0.0-beta.14 \\
-  @praxisui/tabs@9.0.0-beta.14 @praxisui/stepper@9.0.0-beta.14 \\
-  @praxisui/expansion@9.0.0-beta.14`;
+  @angular/animations@^21.2.20 @angular/cdk@^21.2.14 @angular/material@^21.2.14 \\
+  @praxisui/ai@9.0.5 @praxisui/core@9.0.5 \\
+  @praxisui/charts@9.0.5 @praxisui/crud@9.0.5 \\
+  @praxisui/dynamic-fields@9.0.5 @praxisui/dynamic-form@9.0.5 \\
+  @praxisui/editorial-forms@9.0.5 @praxisui/list@9.0.5 \\
+  @praxisui/manual-form@9.0.5 @praxisui/table@9.0.5 \\
+  @praxisui/tabs@9.0.5 @praxisui/stepper@9.0.5 \\
+  @praxisui/expansion@9.0.5`;
 
 export const BOOTSTRAP_SNIPPET = `const API_URL_VALUE = {
   default: { baseUrl: '${PRAXIS_API_BASE_URL}' },

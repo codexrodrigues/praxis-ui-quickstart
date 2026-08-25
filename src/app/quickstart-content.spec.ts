@@ -6,7 +6,7 @@ import {
 
 describe('Quickstart installation guidance', () => {
   it('publishes the stable Praxis train with exact Angular peer versions', () => {
-    expect(SETUP_STEPS[0].detail).toContain('@praxisui/* 9.0.5 packages');
+    expect(SETUP_STEPS[0].detail).toContain('@praxisui/* 9.0.19 packages');
     expect(SETUP_STEPS[0].detail).not.toContain('-rc.');
     expect(INSTALL_COMMAND).toContain('@angular/animations@21.2.20');
     expect(INSTALL_COMMAND).toContain('@angular/cdk@21.2.14');

@@ -131,7 +131,7 @@ export const SETUP_STEPS: readonly SetupStep[] = [
   {
     title: 'Install the governed Angular 21 train',
     detail:
-      'Use the pinned @praxisui/* 9.0.19 packages so npm resolves the validated public train consistently.',
+      'Use the pinned @praxisui/* 9.0.30 packages so npm resolves the validated public train consistently.',
   },
   {
     title: 'Configure the host correctly',
@@ -202,13 +202,13 @@ export const POSITIONING_PANELS: readonly PositioningPanel[] = [
 
 export const INSTALL_COMMAND = `npm install \\
   @angular/animations@21.2.20 @angular/cdk@21.2.14 @angular/material@21.2.14 \\
-  @praxisui/ai@9.0.19 @praxisui/core@9.0.19 \\
-  @praxisui/charts@9.0.19 @praxisui/crud@9.0.19 \\
-  @praxisui/dynamic-fields@9.0.19 @praxisui/dynamic-form@9.0.19 \\
-  @praxisui/editorial-forms@9.0.19 @praxisui/list@9.0.19 \\
-  @praxisui/manual-form@9.0.19 @praxisui/table@9.0.19 \\
-  @praxisui/tabs@9.0.19 @praxisui/stepper@9.0.19 \\
-  @praxisui/expansion@9.0.19`;
+  @praxisui/ai@9.0.30 @praxisui/core@9.0.30 \\
+  @praxisui/charts@9.0.30 @praxisui/crud@9.0.30 \\
+  @praxisui/dynamic-fields@9.0.30 @praxisui/dynamic-form@9.0.30 \\
+  @praxisui/editorial-forms@9.0.30 @praxisui/list@9.0.30 \\
+  @praxisui/manual-form@9.0.30 @praxisui/table@9.0.30 \\
+  @praxisui/tabs@9.0.30 @praxisui/stepper@9.0.30 \\
+  @praxisui/expansion@9.0.30`;
 
 export const BOOTSTRAP_SNIPPET = `const API_URL_VALUE = {
   default: { baseUrl: '${PRAXIS_API_BASE_URL}' },

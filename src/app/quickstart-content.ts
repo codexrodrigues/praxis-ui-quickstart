@@ -48,13 +48,13 @@ export const QUICKSTART_EXPANSION_ID = 'quickstart-expansion';
 
 export const HERO_PILLS = [
   'Angular 21 standalone',
-  'Public PraxisUI release candidate',
+  'Public stable PraxisUI train',
   'Published API on Render',
   'Metadata-driven examples',
 ] as const;
 
 export const HERO_FACTS = [
-  'Angular 21 host pinned to the compatible PraxisUI release-candidate train',
+  'Angular 21 host pinned to the compatible stable PraxisUI train',
   '4 core runtimes proving one published resource contract',
   'Composition examples for guided flows, charts, and editorial blocks',
   'Runtime customization toggle owned by the host shell',
@@ -131,7 +131,7 @@ export const SETUP_STEPS: readonly SetupStep[] = [
   {
     title: 'Install the governed Angular 21 train',
     detail:
-      'Use the pinned @praxisui/* 9.0.30 packages so npm resolves the validated public train consistently.',
+      'Use the pinned @praxisui/* 9.0.53 packages so npm resolves the validated public train consistently.',
   },
   {
     title: 'Configure the host correctly',
@@ -202,13 +202,13 @@ export const POSITIONING_PANELS: readonly PositioningPanel[] = [
 
 export const INSTALL_COMMAND = `npm install \\
   @angular/animations@21.2.20 @angular/cdk@21.2.14 @angular/material@21.2.14 \\
-  @praxisui/ai@9.0.30 @praxisui/core@9.0.30 \\
-  @praxisui/charts@9.0.30 @praxisui/crud@9.0.30 \\
-  @praxisui/dynamic-fields@9.0.30 @praxisui/dynamic-form@9.0.30 \\
-  @praxisui/editorial-forms@9.0.30 @praxisui/list@9.0.30 \\
-  @praxisui/manual-form@9.0.30 @praxisui/table@9.0.30 \\
-  @praxisui/tabs@9.0.30 @praxisui/stepper@9.0.30 \\
-  @praxisui/expansion@9.0.30`;
+  @praxisui/ai@9.0.53 @praxisui/core@9.0.53 \\
+  @praxisui/charts@9.0.53 @praxisui/crud@9.0.53 \\
+  @praxisui/dynamic-fields@9.0.53 @praxisui/dynamic-form@9.0.53 \\
+  @praxisui/editorial-forms@9.0.53 @praxisui/list@9.0.53 \\
+  @praxisui/manual-form@9.0.53 @praxisui/table@9.0.53 \\
+  @praxisui/tabs@9.0.53 @praxisui/stepper@9.0.53 \\
+  @praxisui/expansion@9.0.53`;
 
 export const BOOTSTRAP_SNIPPET = `const API_URL_VALUE = {
   default: { baseUrl: '${PRAXIS_API_BASE_URL}' },

@@ -49,3 +49,6 @@ tsconfig.local-praxis.json
 # System files
 .DS_Store
 Thumbs.db
+
+# Generated only after release artifact verification
+.firebase.release.json

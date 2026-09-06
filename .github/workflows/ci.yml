@@ -1,14 +1,6 @@
 name: CI
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-
-concurrency:
-  group: quickstart-ci-${{ github.ref }}
-  cancel-in-progress: true
-
+'on':
+  workflow_call: {}
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -16,25 +8,39 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-
+      - name: Require the release branch
+        run: test "$GITHUB_REF" = refs/heads/main
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
           node-version: 22.x
           cache: npm
           cache-dependency-path: package-lock.json
-
+      - name: Test release artifact integrity
+        run: node --test tools/release-artifact.test.mjs
       - name: Install dependencies
         run: npm ci --no-audit --fund=false
-
       - name: Validate official host contract
         run: npm run validate:official-host
-
       - name: Verify published PraxisUI dependency train
         run: npm ls @praxisui/core @praxisui/dynamic-form @praxisui/table @praxisui/crud --depth=0
-
       - name: Run smoke tests
         run: npm run test:smoke
-
       - name: Build production bundle
         run: npm run build
+      - name: Seal production artifact
+        run: node tools/release-artifact.mjs seal
+      - name: Verify tested production artifact
+        run: node tools/release-artifact.mjs verify
+      - name: Upload validated production artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: production-${{ github.sha }}
+          path: dist/praxis-ui-quickstart/browser
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+    env:
+      PRAXIS_E2E_PREBUILT: '1'
+permissions:
+  contents: read

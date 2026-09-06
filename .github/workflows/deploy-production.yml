@@ -1,19 +1,11 @@
 name: Deploy Production
-
-on:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
-    branches: [main]
-  workflow_dispatch:
-
+'on':
+  workflow_dispatch: {}
 permissions:
   contents: read
-
 concurrency:
   group: quickstart-production
   cancel-in-progress: false
-
 jobs:
   configuration:
     name: Check deployment configuration
@@ -21,32 +13,30 @@ jobs:
     outputs:
       ready: ${{ steps.configuration.outputs.ready }}
     steps:
+      - name: Require the release branch
+        run: test "$GITHUB_REF" = refs/heads/main
       - id: configuration
         name: Verify Workload Identity Federation variables
         env:
-          EVENT_NAME: ${{ github.event_name }}
           WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           DEPLOY_SERVICE_ACCOUNT: ${{ vars.GCP_FIREBASE_DEPLOY_SERVICE_ACCOUNT }}
         run: |
-          if [[ -n "$WORKLOAD_IDENTITY_PROVIDER" && -n "$DEPLOY_SERVICE_ACCOUNT" ]]; then
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          echo "ready=false" >> "$GITHUB_OUTPUT"
-          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
-            echo "::error::Configure GCP_WORKLOAD_IDENTITY_PROVIDER and GCP_FIREBASE_DEPLOY_SERVICE_ACCOUNT before deploying."
+          set -euo pipefail
+          if [[ -z "$WORKLOAD_IDENTITY_PROVIDER" || -z "$DEPLOY_SERVICE_ACCOUNT" ]]; then
+            echo "::error::Configure GCP_WORKLOAD_IDENTITY_PROVIDER and GCP_FIREBASE_DEPLOY_SERVICE_ACCOUNT before releasing."
             exit 1
           fi
-
-          echo "::notice::Production deploy skipped until Workload Identity Federation variables are configured."
-
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+    timeout-minutes: 3
+  validate:
+    needs: configuration
+    uses: ./.github/workflows/ci.yml
   deploy:
     name: Deploy Firebase Hosting and validate the public manifest
-    needs: configuration
-    if: >-
-      needs.configuration.outputs.ready == 'true' &&
-      (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
+    needs:
+      - configuration
+      - validate
+    if: needs.configuration.outputs.ready == 'true' && needs.validate.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment:
@@ -56,60 +46,42 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - name: Resolve deploy revision
-        id: revision
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          WORKFLOW_RUN_SHA: ${{ github.event.workflow_run.head_sha }}
-          CURRENT_SHA: ${{ github.sha }}
-        run: |
-          if [[ "$EVENT_NAME" == "workflow_run" ]]; then
-            echo "sha=$WORKFLOW_RUN_SHA" >> "$GITHUB_OUTPUT"
-          else
-            echo "sha=$CURRENT_SHA" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Checkout validated revision
         uses: actions/checkout@v5
         with:
-          ref: ${{ steps.revision.outputs.sha }}
-
+          ref: ${{ github.sha }}
+      - name: Download validated production artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: production-${{ github.sha }}
+          path: dist/praxis-ui-quickstart/browser
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
           node-version: 22.x
           cache: npm
           cache-dependency-path: package-lock.json
-
       - name: Install dependencies
         run: npm ci --no-audit --fund=false
-
       - name: Validate official host contract
         run: npm run validate:official-host
-
-      - name: Build production host
-        run: npm run build
-
       - name: Resolve expected Praxis UI train
         id: expected-train
         shell: bash
         run: |
           train=$(node -p "require('./public/examples.manifest.json').packageTrain")
           echo "value=$train" >> "$GITHUB_OUTPUT"
-
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v3
         with:
           project_id: praxis-ui-4e602
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GCP_FIREBASE_DEPLOY_SERVICE_ACCOUNT }}
-
+      - name: Verify and prepare artifact-only Firebase deployment
+        run: node tools/release-artifact.mjs firebase-config
       - name: Deploy Firebase Hosting
-        # firebase-tools v15 currently times out while resolving ADC backed by
-        # Workload Identity Federation (firebase/firebase-tools#10726).
-        # Keep this keyless-compatible pin until the upstream fix is released.
-        run: npx --yes firebase-tools@14.27.0 deploy --only hosting --project praxis-ui-4e602 --non-interactive
-
+        run: npx --yes firebase-tools@14.27.0 deploy --config .firebase.release.json --only hosting --project praxis-ui-4e602
+          --non-interactive
       - name: Validate published example inventory
         env:
           HOSTED_QUICKSTART_URL: https://praxis-ui-4e602.web.app

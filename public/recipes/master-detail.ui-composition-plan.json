@@ -1,0 +1,475 @@
+{
+  "version": "1.0",
+  "kind": "praxis.ui-composition-plan",
+  "layoutPreset": "resource-master-detail",
+  "layoutPresetOptions": {
+    "presetFamily": "master-detail-dashboard"
+  },
+  "themePreset": "workspace-balanced",
+  "state": {
+    "values": {
+      "employeeFilter": {},
+      "selectedEmployee": null,
+      "selectedEmployeeId": null,
+      "selectedEmployeeIdentity": null
+    },
+    "derived": {
+      "detailTitle": {
+        "dependsOn": [
+          "selectedEmployeeIdentity",
+          "selectedEmployee"
+        ],
+        "compute": {
+          "kind": "operator",
+          "operator": "coalesce",
+          "options": {
+            "paths": [
+              "selectedEmployeeIdentity.displayLabel",
+              "selectedEmployeeIdentity.title.value",
+              "selectedEmployee.nomeCompleto"
+            ],
+            "fallback": "Nenhum funcionário selecionado"
+          }
+        }
+      },
+      "detailSubtitle": {
+        "dependsOn": [
+          "selectedEmployee"
+        ],
+        "compute": {
+          "kind": "operator",
+          "operator": "select-case",
+          "options": {
+            "cases": [
+              {
+                "when": {
+                  "!!": {
+                    "var": "state.selectedEmployee"
+                  }
+                },
+                "template": "${state.selectedEmployee.cargoNome} · ${state.selectedEmployee.departamentoNome} · Código ${state.selectedEmployee.id}"
+              }
+            ],
+            "defaultValue": "Selecione um registro na tabela para consultar o detalhe publicado pelo Quick Start."
+          }
+        }
+      }
+    }
+  },
+  "widgets": [
+    {
+      "key": "filters",
+      "componentId": "praxis-filter",
+      "role": "filters",
+      "shell": {
+        "kind": "dashboard-card",
+        "preset": "frameless",
+        "icon": "filter_alt",
+        "title": "Localizar funcionários",
+        "subtitle": "Filtros inline derivados do DTO de filtro real do Quick Start",
+        "bodyLayout": "fill",
+        "windowActions": {
+          "fullscreen": true,
+          "collapsible": true
+        }
+      },
+      "bindingOrder": [
+        "resourcePath",
+        "componentInstanceId",
+        "alwaysVisibleFields",
+        "value",
+        "disablePersistence",
+        "enableCustomization",
+        "showFilterSettings",
+        "showAdvancedButton",
+        "showAddButton",
+        "showClearButton",
+        "showSearchButton",
+        "placeBooleansInActions",
+        "changeDebounceMs"
+      ],
+      "inputs": {
+        "resourcePath": "human-resources/funcionarios",
+        "componentInstanceId": "quickstart-employee-master-detail-filter",
+        "alwaysVisibleFields": [
+          "nomeCompleto",
+          "departamentoIdsIn",
+          "ativo"
+        ],
+        "value": {},
+        "disablePersistence": true,
+        "enableCustomization": false,
+        "showFilterSettings": false,
+        "showAdvancedButton": true,
+        "showAddButton": true,
+        "showClearButton": true,
+        "showSearchButton": false,
+        "placeBooleansInActions": true,
+        "changeDebounceMs": 300
+      },
+      "outputs": {
+        "change": "emit",
+        "requestSearch": "emit",
+        "clear": "emit",
+        "contextChange": "emit"
+      }
+    },
+    {
+      "key": "master",
+      "componentId": "praxis-table",
+      "role": "master",
+      "shell": {
+        "kind": "dashboard-card",
+        "icon": "groups",
+        "title": "Funcionários",
+        "subtitle": "Coleção paginada pelo Quick Start; seleção única governa o detalhe",
+        "bodyLayout": "fill",
+        "windowActions": {
+          "fullscreen": true,
+          "collapsible": true
+        }
+      },
+      "bindingOrder": [
+        "tableId",
+        "config",
+        "configPersistenceStrategy",
+        "enableCustomization",
+        "queryContext",
+        "resourcePath"
+      ],
+      "inputs": {
+        "tableId": "quickstart-employee-master",
+        "resourcePath": "human-resources/funcionarios",
+        "queryContext": {
+          "filters": {}
+        },
+        "configPersistenceStrategy": "volatile",
+        "enableCustomization": false,
+        "config": {
+          "columns": [],
+          "columnProjection": {
+            "source": "schema",
+            "include": [
+              "avatarUrl",
+              "nomeCompleto",
+              "ativo",
+              "cargoNome",
+              "departamentoNome",
+              "dataAdmissao"
+            ]
+          },
+          "behavior": {
+            "pagination": {
+              "enabled": true,
+              "strategy": "server",
+              "pageSize": 8,
+              "pageSizeOptions": [
+                8,
+                16,
+                32
+              ],
+              "showFirstLastButtons": true
+            },
+            "sorting": {
+              "enabled": true,
+              "strategy": "server",
+              "defaultSort": {
+                "column": "id",
+                "direction": "asc"
+              }
+            },
+            "filtering": {
+              "enabled": false,
+              "strategy": "server"
+            },
+            "selection": {
+              "enabled": true,
+              "type": "single",
+              "mode": "both",
+              "allowSelectAll": false,
+              "persistSelection": false,
+              "persistOnDataUpdate": false
+            },
+            "interaction": {
+              "rowClick": {
+                "enabled": true,
+                "action": "select"
+              }
+            }
+          },
+          "toolbar": {
+            "visible": false
+          },
+          "appearance": {
+            "density": "compact",
+            "stickyHeader": true,
+            "hoverHighlight": true,
+            "responsive": {
+              "breakpoints": {
+                "mobile": 640
+              },
+              "mobile": {
+                "horizontalScroll": false,
+                "cardMode": true,
+                "priorityColumns": [
+                  "nomeCompleto",
+                  "ativo",
+                  "cargoNome"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "outputs": {
+        "selectionChange": "emit"
+      }
+    },
+    {
+      "key": "detail",
+      "componentId": "praxis-dynamic-form",
+      "role": "detail",
+      "shell": {
+        "kind": "dashboard-card",
+        "icon": "badge",
+        "title": "${state.detailTitle}",
+        "subtitle": "${state.detailSubtitle}",
+        "bodyLayout": "fill",
+        "windowActions": {
+          "fullscreen": true,
+          "collapsible": true
+        }
+      },
+      "bindingOrder": [
+        "formId",
+        "componentInstanceId",
+        "resourcePath",
+        "resourceId",
+        "emptyState",
+        "mode",
+        "schemaSource",
+        "layoutPolicy",
+        "configPersistenceStrategy",
+        "enableCustomization",
+        "showAiAssistant",
+        "readonlyModeGlobal",
+        "presentationModeGlobal",
+        "fieldIconPolicy"
+      ],
+      "inputs": {
+        "formId": "quickstart-employee-detail",
+        "componentInstanceId": "quickstart-employee-detail",
+        "resourcePath": "human-resources/funcionarios",
+        "resourceId": null,
+        "emptyState": {
+          "icon": "touch_app",
+          "title": "Selecione um funcionário",
+          "description": "Escolha um registro na tabela para carregar, pela API real, o detalhe em modo de apresentação.",
+          "tone": "primary",
+          "variant": "transparent",
+          "alignment": "center",
+          "density": "compact",
+          "iconContainer": "circle"
+        },
+        "mode": "view",
+        "schemaSource": "resource",
+        "layoutPolicy": {
+          "source": "schema",
+          "intent": "detail",
+          "preset": "compactPresentation",
+          "lifecycle": "live",
+          "persistence": "transient",
+          "schemaOperation": "detail",
+          "schemaType": "response",
+          "detailSummary": {
+            "includeFields": [
+              "avatarUrl",
+              "nomeCompleto",
+              "ativo",
+              "cargoNome",
+              "departamentoNome",
+              "dataAdmissao",
+              "email",
+              "telefone"
+            ],
+            "columns": 3,
+            "responsiveColumns": {
+              "lg": 3,
+              "md": 2,
+              "sm": 1,
+              "xs": 1
+            },
+            "widthPrecedence": "summary"
+          }
+        },
+        "configPersistenceStrategy": "input-first",
+        "enableCustomization": false,
+        "showAiAssistant": false,
+        "readonlyModeGlobal": true,
+        "presentationModeGlobal": true,
+        "fieldIconPolicy": "presentation-only"
+      },
+      "outputs": {
+        "initializationError": "emit"
+      }
+    }
+  ],
+  "bindings": [
+    {
+      "id": "filters.change->state.employeeFilter",
+      "intent": "state-write",
+      "from": {
+        "kind": "component-port",
+        "widget": "filters",
+        "port": "change",
+        "direction": "output"
+      },
+      "to": {
+        "kind": "state",
+        "path": "employeeFilter"
+      },
+      "transform": {
+        "kind": "pick-path",
+        "id": "filters.change->state.employeeFilter:pick",
+        "path": "payload",
+        "inputSource": "event",
+        "fallbackValue": {}
+      },
+      "metadata": {
+        "source": "quickstart-real-http"
+      }
+    },
+    {
+      "id": "state.employeeFilter->master.queryContext",
+      "intent": "state-read",
+      "from": {
+        "kind": "state",
+        "path": "employeeFilter"
+      },
+      "to": {
+        "kind": "component-port",
+        "widget": "master",
+        "port": "queryContext",
+        "direction": "input"
+      },
+      "transform": {
+        "kind": "template",
+        "id": "state.employeeFilter->master.queryContext:template",
+        "template": {
+          "filters": "${source}"
+        },
+        "inputSource": "payload",
+        "output": {
+          "semanticKind": "query-context",
+          "stableShape": true
+        }
+      },
+      "metadata": {
+        "source": "quickstart-real-http"
+      }
+    },
+    {
+      "id": "master.selectionChange->state.selectedEmployee",
+      "intent": "state-write",
+      "from": {
+        "kind": "component-port",
+        "widget": "master",
+        "port": "selectionChange",
+        "direction": "output"
+      },
+      "to": {
+        "kind": "state",
+        "path": "selectedEmployee"
+      },
+      "transform": {
+        "kind": "pick-path",
+        "id": "master.selectionChange->state.selectedEmployee:pick",
+        "path": "payload.selectedRows.0",
+        "inputSource": "event",
+        "fallbackValue": null
+      },
+      "metadata": {
+        "source": "quickstart-real-http"
+      }
+    },
+    {
+      "id": "master.selectionChange->state.selectedEmployeeId",
+      "intent": "state-write",
+      "from": {
+        "kind": "component-port",
+        "widget": "master",
+        "port": "selectionChange",
+        "direction": "output"
+      },
+      "to": {
+        "kind": "state",
+        "path": "selectedEmployeeId"
+      },
+      "transform": {
+        "kind": "pick-path",
+        "id": "master.selectionChange->state.selectedEmployeeId:pick",
+        "path": "payload.selectedRows.0.id",
+        "inputSource": "event",
+        "fallbackValue": null
+      },
+      "metadata": {
+        "source": "quickstart-real-http"
+      }
+    },
+    {
+      "id": "master.selectionChange->state.selectedEmployeeIdentity",
+      "intent": "state-write",
+      "from": {
+        "kind": "component-port",
+        "widget": "master",
+        "port": "selectionChange",
+        "direction": "output"
+      },
+      "to": {
+        "kind": "state",
+        "path": "selectedEmployeeIdentity"
+      },
+      "transform": {
+        "kind": "pick-path",
+        "id": "master.selectionChange->state.selectedEmployeeIdentity:pick",
+        "path": "payload.resourceIdentity",
+        "inputSource": "event",
+        "fallbackValue": null
+      },
+      "metadata": {
+        "source": "quickstart-real-http"
+      }
+    },
+    {
+      "id": "state.selectedEmployeeId->detail.resourceId",
+      "intent": "state-read",
+      "from": {
+        "kind": "state",
+        "path": "selectedEmployeeId"
+      },
+      "to": {
+        "kind": "component-port",
+        "widget": "detail",
+        "port": "resourceId",
+        "direction": "input"
+      },
+      "policy": {
+        "missingValuePolicy": "propagate-undefined",
+        "distinct": true
+      },
+      "metadata": {
+        "source": "quickstart-real-http"
+      }
+    }
+  ],
+  "diagnostics": {
+    "evidence": "quickstart-real-http",
+    "canonicalResource": "human-resources.funcionarios",
+    "requiredSurfaces": [
+      "POST /api/human-resources/funcionarios/filter",
+      "GET /api/human-resources/funcionarios/{id}",
+      "GET /schemas/filtered"
+    ],
+    "localDataAllowed": false
+  }
+}

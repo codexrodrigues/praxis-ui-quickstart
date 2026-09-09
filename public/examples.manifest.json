@@ -7,7 +7,7 @@
     "sourceUrl": "https://github.com/codexrodrigues/praxis-ui-quickstart",
     "apiBaseUrl": "https://praxis-api-quickstart.onrender.com/api"
   },
-  "packageTrain": "9.0.27",
+  "packageTrain": "9.0.68-rc.1",
   "examples": [
     {
       "key": "resource-table",
@@ -15,8 +15,13 @@
       "category": "core",
       "route": "/examples/table",
       "sourcePath": "src/app/pages/table-example-page.component.ts",
-      "resourcePaths": ["human-resources/funcionarios"],
-      "runtimePackages": ["@praxisui/table", "@praxisui/core"],
+      "resourcePaths": [
+        "human-resources/funcionarios"
+      ],
+      "runtimePackages": [
+        "@praxisui/table",
+        "@praxisui/core"
+      ],
       "status": "executable"
     },
     {
@@ -25,8 +30,13 @@
       "category": "core",
       "route": "/examples/form",
       "sourcePath": "src/app/pages/form-example-page.component.ts",
-      "resourcePaths": ["human-resources/funcionarios"],
-      "runtimePackages": ["@praxisui/dynamic-form", "@praxisui/core"],
+      "resourcePaths": [
+        "human-resources/funcionarios"
+      ],
+      "runtimePackages": [
+        "@praxisui/dynamic-form",
+        "@praxisui/core"
+      ],
       "status": "executable"
     },
     {
@@ -35,8 +45,14 @@
       "category": "core",
       "route": "/examples/crud",
       "sourcePath": "src/app/pages/crud-example-page.component.ts",
-      "resourcePaths": ["human-resources/funcionarios"],
-      "runtimePackages": ["@praxisui/crud", "@praxisui/dynamic-form", "@praxisui/table"],
+      "resourcePaths": [
+        "human-resources/funcionarios"
+      ],
+      "runtimePackages": [
+        "@praxisui/crud",
+        "@praxisui/dynamic-form",
+        "@praxisui/table"
+      ],
       "status": "executable"
     },
     {
@@ -45,8 +61,15 @@
       "category": "core",
       "route": "/examples/reactive-determinations",
       "sourcePath": "src/app/pages/reactive-determinations-example-page.component.ts",
-      "resourcePaths": ["human-resources/enderecos", "human-resources/folhas-pagamento"],
-      "runtimePackages": ["@praxisui/dynamic-form", "@praxisui/metadata-editor", "@praxisui/core"],
+      "resourcePaths": [
+        "human-resources/enderecos",
+        "human-resources/folhas-pagamento"
+      ],
+      "runtimePackages": [
+        "@praxisui/dynamic-form",
+        "@praxisui/metadata-editor",
+        "@praxisui/core"
+      ],
       "status": "executable"
     },
     {
@@ -55,8 +78,13 @@
       "category": "core",
       "route": "/examples/list",
       "sourcePath": "src/app/pages/list-example-page.component.ts",
-      "resourcePaths": ["human-resources/funcionarios"],
-      "runtimePackages": ["@praxisui/list", "@praxisui/core"],
+      "resourcePaths": [
+        "human-resources/funcionarios"
+      ],
+      "runtimePackages": [
+        "@praxisui/list",
+        "@praxisui/core"
+      ],
       "status": "executable"
     },
     {
@@ -65,8 +93,13 @@
       "category": "composition",
       "route": "/examples/manual-form",
       "sourcePath": "src/app/pages/manual-form-example-page.component.ts",
-      "resourcePaths": ["human-resources/funcionarios"],
-      "runtimePackages": ["@praxisui/manual-form", "@praxisui/dynamic-fields"],
+      "resourcePaths": [
+        "human-resources/funcionarios"
+      ],
+      "runtimePackages": [
+        "@praxisui/manual-form",
+        "@praxisui/dynamic-fields"
+      ],
       "status": "executable"
     },
     {
@@ -75,8 +108,14 @@
       "category": "composition",
       "route": "/examples/tabs",
       "sourcePath": "src/app/pages/tabs-example-page.component.ts",
-      "resourcePaths": ["human-resources/folhas-pagamento"],
-      "runtimePackages": ["@praxisui/tabs", "@praxisui/charts", "@praxisui/editorial-forms"],
+      "resourcePaths": [
+        "human-resources/folhas-pagamento"
+      ],
+      "runtimePackages": [
+        "@praxisui/tabs",
+        "@praxisui/charts",
+        "@praxisui/editorial-forms"
+      ],
       "status": "executable"
     },
     {
@@ -85,8 +124,13 @@
       "category": "composition",
       "route": "/examples/stepper",
       "sourcePath": "src/app/pages/stepper-example-page.component.ts",
-      "resourcePaths": ["human-resources/funcionarios"],
-      "runtimePackages": ["@praxisui/stepper", "@praxisui/dynamic-form"],
+      "resourcePaths": [
+        "human-resources/funcionarios"
+      ],
+      "runtimePackages": [
+        "@praxisui/stepper",
+        "@praxisui/dynamic-form"
+      ],
       "status": "executable"
     },
     {
@@ -95,8 +139,31 @@
       "category": "composition",
       "route": "/examples/expansion",
       "sourcePath": "src/app/pages/expansion-example-page.component.ts",
-      "resourcePaths": ["human-resources/folhas-pagamento"],
-      "runtimePackages": ["@praxisui/expansion", "@praxisui/charts", "@praxisui/editorial-forms"],
+      "resourcePaths": [
+        "human-resources/folhas-pagamento"
+      ],
+      "runtimePackages": [
+        "@praxisui/expansion",
+        "@praxisui/charts",
+        "@praxisui/editorial-forms"
+      ],
+      "status": "executable"
+    },
+    {
+      "key": "master-detail",
+      "title": "Master-detail",
+      "category": "composition",
+      "route": "/examples/master-detail",
+      "sourcePath": "src/app/pages/master-detail-example-page.component.ts",
+      "resourcePaths": [
+        "human-resources/funcionarios"
+      ],
+      "runtimePackages": [
+        "@praxisui/core",
+        "@praxisui/page-builder",
+        "@praxisui/table",
+        "@praxisui/dynamic-form"
+      ],
       "status": "executable"
     }
   ]

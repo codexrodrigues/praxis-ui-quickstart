@@ -68,5 +68,10 @@ export const routes: Routes = [
     loadChildren: () => import('./routes/expansion.routes').then((m) => m.EXPANSION_ROUTES),
     title: 'Praxis UI Quickstart | Expansion',
   },
+  {
+    path: 'examples/master-detail',
+    loadChildren: () => import('./routes/master-detail.routes').then(m => m.MASTER_DETAIL_ROUTES),
+    title: 'Praxis UI Quickstart | Master-detail',
+  },
   { path: '**', redirectTo: '' },
 ];

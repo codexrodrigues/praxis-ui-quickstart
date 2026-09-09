@@ -393,7 +393,7 @@ The repository already contains Firebase Hosting configuration:
 - hosting config in `firebase.json`
 - publish target: `dist/praxis-ui-quickstart/browser`
 
-Production releases are executed only by the official GitHub Actions workflow after CI validates `main`:
+Production releases are executed only by the official GitHub Actions workflow by explicit dispatch on `main`. That run invokes CI before deploying its validated artifact without rebuilding:
 
 ```bash
 gh workflow run "Deploy Production" --repo codexrodrigues/praxis-ui-quickstart --ref main
@@ -422,3 +422,7 @@ That is normal for the current PraxisUI beta graph. Start with the core path and
 ## Positioning
 
 PraxisUI is not presented here as a generic widget library. This quickstart demonstrates a governed metadata-driven UI runtime for enterprise applications, hosted by Angular and aligned with a real backend surface.
+
+## Política de CI e publicação
+
+Validação local durante desenvolvimento; Actions apenas no fechamento necessário de versões. Consulte [ACTIONS-RELEASE-POLICY.md](ACTIONS-RELEASE-POLICY.md) para gatilhos, gates e recuperação.

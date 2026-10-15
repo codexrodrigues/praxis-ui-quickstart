@@ -70,7 +70,7 @@ The published backend behind this host already exposes broader public domains su
 - Angular standalone host bootstrap
 - `API_URL` pointing to the published `praxis-api-quickstart`
 - `PAX_FETCH_HEADERS` carrying tenant and locale
-- Angular 21 compatible PraxisUI package train pinned to `9.0.19`
+- Angular 21 compatible PraxisUI package train pinned to `10.0.0-rc.19`
 - four core runtimes proving the same remote resource in real flows
 - four expansion examples for manual layout, tabs, stepper, and expansion panels
 - charts and editorial runtime embedded inside composition examples

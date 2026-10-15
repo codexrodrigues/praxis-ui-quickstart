@@ -70,7 +70,7 @@ The published backend behind this host already exposes broader public domains su
 - Angular standalone host bootstrap
 - `API_URL` pointing to the published `praxis-api-quickstart`
 - `PAX_FETCH_HEADERS` carrying tenant and locale
-- Angular 21 compatible PraxisUI package train pinned to `10.0.0-rc.26`
+- Angular 21 compatible PraxisUI package train pinned to `10.0.0-rc.27`
 - four core runtimes proving the same remote resource in real flows
 - four expansion examples for manual layout, tabs, stepper, and expansion panels
 - charts and editorial runtime embedded inside composition examples
@@ -182,7 +182,7 @@ This project is intentionally pinned to the Angular 21 compatible PraxisUI train
 - Angular framework/compiler packages: `21.2.20`
 - Angular Material/CDK: `21.2.14`
 - Angular CLI/build: `21.2.21`
-- PraxisUI packages: `10.0.0-rc.26`
+- PraxisUI packages: `10.0.0-rc.27`
 
 Keep the exact package train instead of replacing it with dist-tags or version ranges. Promote the host deliberately, validating the matching Angular peer range and the complete `@praxisui/*` dependency closure in the same change.
 

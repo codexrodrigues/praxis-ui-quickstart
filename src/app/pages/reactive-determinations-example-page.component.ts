@@ -1,12 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, ViewChild, computed, inject, signal } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { API_URL, type ReactiveDeterminationExecutionEvent } from '@praxisui/core';
+import { API_URL, readStrongResourceEtag, type FormReadyEvent, type FormSubmitEvent, type ReactiveDeterminationExecutionEvent } from '@praxisui/core';
 import { PraxisDynamicForm } from '@praxisui/dynamic-form';
 import { ReactiveDeterminationDiagnosticsComponent } from '@praxisui/metadata-editor';
-import { forkJoin } from 'rxjs';
+import { Subscription, forkJoin } from 'rxjs';
+import { PayrollEventFormHostComponent } from '../features/payroll-events/payroll-event-form-host.component';
+import { PayrollEventReader, type PayrollSnapshot } from '../features/payroll-events/payroll-event-reader.service';
 
 const ADDRESS_RESOURCE = 'human-resources/enderecos';
 const PAYROLL_RESOURCE = 'human-resources/folhas-pagamento';
@@ -32,8 +35,10 @@ interface SafeExecutionEntry {
     MatIconModule,
     PraxisDynamicForm,
     ReactiveDeterminationDiagnosticsComponent,
+    PayrollEventFormHostComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [PayrollEventReader],
   template: `
     <section class="example-page">
       <a class="back-link" routerLink="/">Back to home</a>
@@ -110,7 +115,8 @@ interface SafeExecutionEntry {
           <p>Change the postal code. The server determines the owned address fields.</p>
           <fieldset class="form-auth-boundary" [disabled]="authenticationState() !== 'authenticated'">
             <legend class="visually-hidden">Authenticated address form</legend>
-            <praxis-dynamic-form
+            @if (authenticationState() === 'authenticated') {
+            <praxis-dynamic-form #addressForm
               formId="quickstart-reactive-address"
               [resourcePath]="addressResource"
               [schemaUrl]="addressSchemaUrl"
@@ -122,6 +128,7 @@ interface SafeExecutionEntry {
               (reactiveDeterminationExecuted)="record('address', $event)"
               (reactiveDeterminationPendingChange)="setPending('address', $event)"
             />
+            }
           </fieldset>
         </article>
 
@@ -129,40 +136,105 @@ interface SafeExecutionEntry {
           <div class="panel-heading">
             <div>
               <p class="stage-step">Chained determinations</p>
-              <h2>Gross pay → net pay → payment date</h2>
+              <h2>BRL facts → net pay → forecast payment date</h2>
             </div>
             <span class="state" [attr.data-state]="stateFor('payroll')">
               {{ stateFor('payroll') }}
             </span>
           </div>
-          <p>The second determination waits for the authoritative output of the first.</p>
+          <p>Base discounts and approved events determine net pay and the forecast date. Each preview evaluates the governed chain; scheduling and confirmed payment are separate actions.</p>
+          @if (authenticationState() === 'authenticated') {
+            <label for="payroll-id">Identidade da folha (vazia para criar)</label>
+            <input #payrollIdentity id="payroll-id" type="number" min="1" step="1" />
+            <button type="button" (click)="openPayrollEditor(payrollIdentity.value)">Abrir folha para revisão</button>
+            <p role="status" aria-live="polite">{{ payrollMessage() }}</p>
+            @if (payrollConflict()) {
+              <button type="button" (click)="reloadPayrollForReview()">Recarregar folha explicitamente para comparar</button>
+            }
+            @if (payrollPreservedDraft(); as draft) {
+              <details><summary>Rascunho anterior (BRL)</summary>
+                <dl><dt>Competência</dt><dd>{{ draft['mes'] }}/{{ draft['ano'] }}</dd>
+                  <dt>Funcionário</dt><dd>{{ draft['funcionarioId'] }}</dd>
+                  <dt>Salário bruto</dt><dd>{{ draft['salarioBruto'] }}</dd>
+                  <dt>Descontos-base</dt><dd>{{ draft['descontosBase'] }}</dd>
+                  <dt>Total de descontos</dt><dd>{{ draft['totalDescontos'] }}</dd>
+                  <dt>Salário líquido</dt><dd>{{ draft['salarioLiquido'] }}</dd>
+                  <dt>Previsão</dt><dd>{{ draft['dataPagamentoPrevista'] }}</dd></dl>
+              </details>
+            }
+            @if (payrollSnapshot(); as snapshot) {
+              <dl aria-label="Datas da folha no snapshot capturado">
+                <dt>Previsão calculada</dt><dd>{{ snapshot.dataPagamentoPrevista || 'Não definida' }}</dd>
+                <dt>Pagamento agendado</dt><dd>{{ snapshot.dataPagamentoAgendada || 'Não agendado' }}</dd>
+                <dt>Pagamento confirmado</dt><dd>{{ snapshot.dataPagamentoEfetiva || 'Não confirmado' }}</dd>
+              </dl>
+            }
+          }
           <fieldset class="form-auth-boundary" [disabled]="authenticationState() !== 'authenticated'">
             <legend class="visually-hidden">Authenticated payroll form</legend>
-            <praxis-dynamic-form
-              formId="quickstart-reactive-payroll"
-              [resourcePath]="payrollResource"
+            @if (authenticationState() === 'authenticated' && payrollMounted()) {
+            <praxis-dynamic-form #payrollForm
+              [formId]="'quickstart-reactive-payroll-' + payrollCycle"
+              [resourcePath]="selectedPayrollId() == null ? payrollResource : undefined"
+              [resourceId]="selectedPayrollId() ?? undefined"
+              [initialValue]="payrollInitialValue"
               [schemaUrl]="payrollSchemaUrl"
-              submitUrl="/api/human-resources/folhas-pagamento"
-              submitMethod="POST"
-              mode="create"
+              [submitUrl]="payrollSubmitUrl"
+              [submitMethod]="selectedPayrollId() == null ? 'POST' : 'PUT'"
+              [submitResourceVersion]="payrollEtag"
+              [mode]="selectedPayrollId() == null ? 'create' : 'edit'"
               configPersistenceStrategy="input-first"
+              [enableCustomization]="false" [showAiAssistant]="false"
               [disabledModeGlobal]="authenticationState() !== 'authenticated'"
+              (formReady)="onPayrollReady($event)" (formSubmit)="onPayrollSubmit($event)"
               (reactiveDeterminationExecuted)="record('payroll', $event)"
               (reactiveDeterminationPendingChange)="setPending('payroll', $event)"
             />
+            }
           </fieldset>
         </article>
       </div>
 
+      <article class="panel">
+        <h2>Eventos pendentes: criar, editar e mover</h2>
+        <p>Escolha um evento existente para editar ou deixe a identidade vazia para criar. Aprovação e pagamento são ações próprias; somente eventos aprovados compõem os valores da folha.</p>
+        @if (authenticationState() === 'authenticated') {
+          <label for="payroll-event-id">Identidade do evento pendente (opcional)</label>
+          <input #eventIdentity id="payroll-event-id" type="number" min="1" step="1" />
+          <button type="button" (click)="openEventEditor(eventIdentity.value)">Abrir formulário do evento</button>
+          @if (eventIdentityError()) { <p role="alert">Informe uma identidade inteira positiva ou deixe o campo vazio.</p> }
+          @if (eventEditorOpen()) {
+            <app-payroll-event-form-host [eventId]="selectedEventId()"
+              [operationalContext]="'session-' + sessionRevision()" />
+          }
+        } @else {
+          <p>Autentique-se para carregar um snapshot financeiro.</p>
+        }
+      </article>
+
       <section class="diagnostics-grid" aria-label="Read-only determination diagnostics">
+        @if (addressSchema() != null) {
         <praxis-reactive-determination-diagnostics
           [schema]="addressSchema()"
           [executionEvents]="addressEvents()"
         />
+        } @else {
+          <article class="panel" role="status" aria-label="Address determination diagnostics status">
+            <h2>{{ schemaState() === 'loading' ? 'Loading determination diagnostics' : 'Determination diagnostics unavailable' }}</h2>
+            <p>The address request schema is not available. Its determination metadata cannot be verified.</p>
+          </article>
+        }
+        @if (payrollSchema() != null) {
         <praxis-reactive-determination-diagnostics
           [schema]="payrollSchema()"
           [executionEvents]="payrollEvents()"
         />
+        } @else {
+          <article class="panel" role="status" aria-label="Payroll determination diagnostics status">
+            <h2>{{ schemaState() === 'loading' ? 'Loading determination diagnostics' : 'Determination diagnostics unavailable' }}</h2>
+            <p>The payroll request schema is not available. Its determination metadata cannot be verified.</p>
+          </article>
+        }
       </section>
 
       <article class="panel">
@@ -238,19 +310,43 @@ interface SafeExecutionEntry {
     @media (max-width:600px) { .page-header > mat-icon { display:none; } }
   `],
 })
-export class ReactiveDeterminationsExamplePageComponent {
+export class ReactiveDeterminationsExamplePageComponent implements OnDestroy {
+  @ViewChild('addressForm') private addressForm?: PraxisDynamicForm;
+  @ViewChild('payrollForm') private payrollForm?: PraxisDynamicForm;
   private readonly http = inject(HttpClient);
   private readonly apiUrl = inject(API_URL);
+  private readonly payrollReader = inject(PayrollEventReader);
+  private initialSchemaRead?: Subscription;
+  private payrollRead?: Subscription;
+  private payrollSchemaRead?: Subscription;
+  private payrollCreateSchema: unknown = null;
+  private payrollCreateCycle = 0;
+  private destroyed = false;
+  private payrollRoot?: FormGroup;
+  protected payrollCycle = 0;
+  protected payrollEtag?: string;
+  protected payrollInitialValue: Record<string, unknown> = {};
+  protected payrollSubmitUrl = '/api/human-resources/folhas-pagamento';
+  protected readonly selectedPayrollId = signal<number | null>(null);
+  protected readonly payrollMounted = signal(true);
+  protected readonly payrollConflict = signal(false);
+  protected readonly payrollMessage = signal('Nova folha: informe os fatos-base e aguarde a previsão governada.');
+  protected readonly payrollSnapshot = signal<PayrollSnapshot | null>(null);
+  protected readonly payrollPreservedDraft = signal<Record<string, unknown> | null>(null);
 
   protected readonly addressResource = ADDRESS_RESOURCE;
   protected readonly payrollResource = PAYROLL_RESOURCE;
   protected readonly addressSchemaUrl = ADDRESS_SCHEMA;
-  protected readonly payrollSchemaUrl = PAYROLL_SCHEMA;
+  protected payrollSchemaUrl = PAYROLL_SCHEMA;
   protected readonly addressSchema = signal<unknown>(null);
   protected readonly payrollSchema = signal<unknown>(null);
   protected readonly schemaState = signal<'loading' | 'ready' | 'error'>('loading');
   protected readonly authenticationState = signal<AuthenticationState>('checking');
   protected readonly authenticationPending = signal(false);
+  protected readonly sessionRevision = signal(0);
+  protected readonly eventEditorOpen = signal(false);
+  protected readonly selectedEventId = signal<number | null>(null);
+  protected readonly eventIdentityError = signal(false);
   protected readonly pending = signal<Record<ExampleSurface, boolean>>({ address: false, payroll: false });
   protected readonly entries = signal<readonly SafeExecutionEntry[]>([]);
   protected readonly addressEvents = computed(() => this.eventsFor('address'));
@@ -258,16 +354,19 @@ export class ReactiveDeterminationsExamplePageComponent {
   protected readonly recentEvents = computed(() => this.entries().slice(-10).reverse());
 
   constructor() {
-    forkJoin({
+    this.initialSchemaRead = forkJoin({
       address: this.http.get<unknown>(new URL(ADDRESS_SCHEMA, this.apiOrigin).toString()),
       payroll: this.http.get<unknown>(new URL(PAYROLL_SCHEMA, this.apiOrigin).toString()),
     }).subscribe({
       next: ({ address, payroll }) => {
+        if (this.destroyed) return;
         this.addressSchema.set(address);
-        this.payrollSchema.set(payroll);
+        this.payrollCreateSchema = payroll;
+        if (this.payrollCreateCycle === this.payrollCycle && this.selectedPayrollId() == null
+          && this.payrollSchemaUrl === PAYROLL_SCHEMA) this.payrollSchema.set(payroll);
         this.schemaState.set('ready');
       },
-      error: () => this.schemaState.set('error'),
+      error: () => { if (!this.destroyed) this.schemaState.set('error'); },
     });
     this.probeSession();
   }
@@ -297,6 +396,8 @@ export class ReactiveDeterminationsExamplePageComponent {
       next: () => {
         this.authenticationPending.set(false);
         this.authenticationState.set('authenticated');
+        this.sessionRevision.update((revision) => revision + 1);
+        this.openPayrollEditor('');
       },
       error: () => {
         this.authenticationPending.set(false);
@@ -321,6 +422,110 @@ export class ReactiveDeterminationsExamplePageComponent {
     this.pending.update((state) => ({ ...state, [surface]: pending }));
   }
 
+  ngOnDestroy(): void {
+    this.destroyed = true;
+    this.initialSchemaRead?.unsubscribe();
+    this.discardPayroll();
+  }
+
+  protected openPayrollEditor(value: string, preserve = false): void {
+    const id = value.trim() ? Number(value) : null;
+    if (id != null && (!Number.isSafeInteger(id) || id < 1)) {
+      this.payrollMessage.set('Informe uma identidade inteira positiva ou deixe o campo vazio.'); return;
+    }
+    if (preserve && !this.payrollPreservedDraft())
+      this.payrollPreservedDraft.set(this.payrollRoot?.getRawValue() ?? null);
+    if (!preserve) this.payrollPreservedDraft.set(null);
+    this.discardPayroll();
+    this.selectedPayrollId.set(id);
+    this.payrollConflict.set(false);
+    this.payrollInitialValue = {}; this.payrollEtag = undefined;
+    this.payrollSnapshot.set(null);
+    this.entries.update((entries) => entries.filter((entry) => entry.surface !== 'payroll'));
+    this.pending.update((state) => ({ ...state, payroll: false }));
+    this.payrollSchemaUrl = id == null ? PAYROLL_SCHEMA
+      : '/schemas/filtered?path=/api/human-resources/folhas-pagamento/{id}&operation=put&schemaType=request';
+    this.payrollSubmitUrl = `/api/human-resources/folhas-pagamento${id == null ? '' : '/' + id}`;
+    if (id == null) {
+      this.payrollCreateCycle = this.payrollCycle;
+      this.payrollSchema.set(this.payrollCreateSchema);
+      this.payrollMessage.set('Nova folha: informe os fatos-base e aguarde a previsão governada.');
+      this.payrollMounted.set(true); return;
+    }
+    const cycle = this.payrollCycle;
+    this.payrollSchema.set(null);
+    this.payrollSchemaRead = this.http.get<unknown>(new URL(this.payrollSchemaUrl, this.apiOrigin).toString()).subscribe({
+      next: (schema) => { if (cycle === this.payrollCycle) this.payrollSchema.set(schema); },
+      error: () => { if (cycle === this.payrollCycle) this.payrollSchema.set(null); },
+    });
+    this.payrollMessage.set('Carregando a folha e sua revisão antes de abrir o formulário.');
+    this.payrollRead = this.payrollReader.payrolls.getByIdHttpResponse(id).subscribe({
+      next: (response) => {
+        if (cycle !== this.payrollCycle || id !== this.selectedPayrollId()) return;
+        const body = response.body?.data;
+        const etag = readStrongResourceEtag(response.headers.get('ETag'));
+        if (!body || body.id !== id || !etag || body.reconciliacao !== 'CONFIRMADA'
+          || body.estado === 'PAGA' || body.dataPagamentoEfetiva != null
+          || body.salarioBruto == null || body.descontosBase == null) {
+          this.payrollMessage.set('Snapshot sem revisão forte ou origem financeira reconciliada; edição bloqueada.'); return;
+        }
+        this.payrollEtag = etag;
+        this.payrollInitialValue = { ...body };
+        this.payrollSnapshot.set({ ...body });
+        this.payrollMessage.set('Snapshot capturado. A previsão do rascunho depende das determinações atuais; agendamento e pagamento exigem ações próprias.');
+        this.payrollMounted.set(true);
+      },
+      error: () => {
+        if (cycle === this.payrollCycle) this.payrollMessage.set('Não foi possível ler a folha autorizada. Abra novamente para uma revisão explícita.');
+      },
+    });
+  }
+
+  protected reloadPayrollForReview(): void {
+    this.openPayrollEditor(String(this.selectedPayrollId() ?? ''), true);
+  }
+
+  protected onPayrollReady(event: FormReadyEvent): void {
+    const previous = this.payrollRoot;
+    const cycle = this.payrollCycle, etag = this.payrollEtag, id = this.selectedPayrollId();
+    this.payrollRoot = event.formGroup;
+    previous?.updateValueAndValidity({ emitEvent: false });
+    event.formGroup.addValidators((control) => this.payrollRoot === control && cycle === this.payrollCycle
+      && !this.payrollConflict() && (id == null || etag === this.payrollEtag && !!etag)
+      ? null : { payrollSnapshot: true });
+    event.formGroup.updateValueAndValidity({ emitEvent: false });
+  }
+
+  protected onPayrollSubmit(event: FormSubmitEvent): void {
+    if (event.stage === 'before') return;
+    if (event.stage === 'after') {
+      this.discardPayroll();
+      this.payrollMessage.set('Folha confirmada. Abra uma nova revisão para editar novamente.'); return;
+    }
+    this.payrollPreservedDraft.set(this.payrollRoot?.getRawValue() ?? null);
+    this.payrollConflict.set(true);
+    this.payrollRoot?.updateValueAndValidity({ emitEvent: false });
+    this.payrollMessage.set('Confirmação recusada ou indisponível. Rascunho preservado; recarregue e compare explicitamente. Reset não renova a revisão.');
+  }
+
+  private discardPayroll(): void {
+    this.payrollRead?.unsubscribe(); this.payrollRead = undefined;
+    this.payrollSchemaRead?.unsubscribe(); this.payrollSchemaRead = undefined;
+    const previous = this.payrollRoot;
+    this.payrollRoot = undefined; this.payrollCycle++;
+    previous?.updateValueAndValidity({ emitEvent: false });
+    this.payrollMounted.set(false);
+  }
+
+  protected openEventEditor(value: string): void {
+    const id = value.trim() ? Number(value) : null;
+    this.eventIdentityError.set(id != null && (!Number.isSafeInteger(id) || id < 1));
+    if (this.eventIdentityError()) return;
+    this.selectedEventId.set(id);
+    this.sessionRevision.update((revision) => revision + 1);
+    this.eventEditorOpen.set(true);
+  }
+
   protected stateFor(
     surface: ExampleSurface,
   ): 'loading' | 'unavailable' | 'ready' | 'pending' | 'satisfied' | 'unsatisfied' {
@@ -328,9 +533,12 @@ export class ReactiveDeterminationsExamplePageComponent {
     if (this.schemaState() === 'error') return 'unavailable';
     if (this.authenticationState() !== 'authenticated') return 'unavailable';
     if (this.pending()[surface]) return 'pending';
+    const form = surface === 'address' ? this.addressForm : this.payrollForm;
+    if (surface === 'payroll' && (this.payrollConflict() || !this.payrollMounted())) return 'unavailable';
+    if (form?.hasUnsatisfiedReactiveDeterminations()) return 'unsatisfied';
     const latest = [...this.eventsFor(surface)].reverse().find((event) => event.status !== 'pending');
-    if (!latest) return 'ready';
-    return latest.status === 'success' ? 'satisfied' : 'unsatisfied';
+    if (!latest || latest.status === 'skipped') return 'ready';
+    return form && latest.status === 'success' ? 'satisfied' : 'unsatisfied';
   }
 
   private eventsFor(surface: ExampleSurface): readonly ReactiveDeterminationExecutionEvent[] {
@@ -344,7 +552,10 @@ export class ReactiveDeterminationsExamplePageComponent {
 
   private probeSession(): void {
     this.http.get(`${this.apiOrigin}/auth/session`, { withCredentials: true }).subscribe({
-      next: () => this.authenticationState.set('authenticated'),
+      next: () => {
+        this.authenticationState.set('authenticated');
+        this.sessionRevision.update((revision) => revision + 1);
+      },
       error: (error: { status?: number }) => this.authenticationState.set(
         error?.status === 401 ? 'authentication-required' : 'error',
       ),
@@ -352,7 +563,14 @@ export class ReactiveDeterminationsExamplePageComponent {
   }
 
   private finishLogout(): void {
+    this.discardPayroll();
+    this.payrollInitialValue = {}; this.payrollEtag = undefined;
+    this.payrollSnapshot.set(null); this.payrollPreservedDraft.set(null);
     this.authenticationPending.set(false);
     this.authenticationState.set('authentication-required');
+    this.eventEditorOpen.set(false);
+    this.entries.set([]);
+    this.pending.set({ address: false, payroll: false });
+    this.sessionRevision.update((revision) => revision + 1);
   }
 }

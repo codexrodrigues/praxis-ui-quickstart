@@ -63,7 +63,8 @@
       "sourcePath": "src/app/pages/reactive-determinations-example-page.component.ts",
       "resourcePaths": [
         "human-resources/enderecos",
-        "human-resources/folhas-pagamento"
+        "human-resources/folhas-pagamento",
+        "human-resources/eventos-folha"
       ],
       "runtimePackages": [
         "@praxisui/dynamic-form",

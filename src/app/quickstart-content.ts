@@ -645,7 +645,7 @@ const EMPLOYEE_PAYROLL_CHART_DOCUMENT: PraxisXUiChartContract = {
       label: 'Salario liquido',
       aggregation: 'sum',
       seriesKind: 'line',
-      format: 'USD|symbol|0|compact',
+      format: 'BRL|symbol|2|compact',
       color: '#1f6feb',
     },
   ],
@@ -688,7 +688,7 @@ const EMPLOYEE_PAYROLL_CHART_CONFIG: PraxisChartConfig = {
       label: 'Salario liquido',
       type: 'value',
       labels: {
-        format: 'USD|symbol|0|compact',
+        format: 'BRL|symbol|2|compact',
       },
     },
   },
@@ -705,7 +705,7 @@ const EMPLOYEE_PAYROLL_CHART_CONFIG: PraxisChartConfig = {
       smooth: true,
       labels: {
         visible: false,
-        format: 'USD|symbol|0|compact',
+        format: 'BRL|symbol|2|compact',
       },
     },
   ],

@@ -205,6 +205,7 @@ interface SafeExecutionEntry {
           @if (eventIdentityError()) { <p role="alert">Informe uma identidade inteira positiva ou deixe o campo vazio.</p> }
           @if (eventEditorOpen()) {
             <app-payroll-event-form-host [eventId]="selectedEventId()"
+              [initialParentId]="selectedEventInitialParentId()"
               [operationalContext]="'session-' + sessionRevision()" />
           }
         } @else {
@@ -302,9 +303,12 @@ interface SafeExecutionEntry {
     .notice--error { color:var(--md-sys-color-on-error-container); background:var(--md-sys-color-error-container); }
     .event-ledger { display:grid; gap:8px; padding-left:22px; }
     .event-ledger li { display:flex; flex-wrap:wrap; gap:8px 12px; }
-    .troubleshooting-panel dl { display:grid; grid-template-columns:auto minmax(0,1fr); gap:8px 14px; }
-    .troubleshooting-panel dt { font-weight:700; }
-    .troubleshooting-panel dd { margin:0; color:var(--qs-example-body); }
+    .troubleshooting-panel dl, dl[aria-label='Datas da folha no snapshot capturado'], details dl { display:grid; grid-template-columns:auto minmax(0,1fr); gap:8px 14px; margin:12px 0; }
+    .troubleshooting-panel dt, dl[aria-label='Datas da folha no snapshot capturado'] dt, details dt { font-weight:700; color:var(--qs-example-title); }
+    .troubleshooting-panel dd, dl[aria-label='Datas da folha no snapshot capturado'] dd, details dd { margin:0; color:var(--qs-example-body); }
+    label[for='payroll-id'], label[for='payroll-event-id'] { display:block; margin:10px 0 6px; color:var(--qs-example-body); font-weight:600; font-size:.92rem; }
+    #payroll-id, #payroll-event-id { min-height:38px; padding:6px 10px; margin-right:8px; border:1px solid var(--qs-example-panel-border); background:var(--qs-example-panel-bg); color:var(--qs-example-title); }
+    #payroll-id + button, #payroll-event-id + button { min-height:38px; padding:6px 14px; }
     @media (max-width:900px) { .example-grid,.diagnostics-grid { grid-template-columns:1fr; } }
     @media (max-width:700px) { .authentication-form { grid-template-columns:1fr; } }
     @media (max-width:600px) { .page-header > mat-icon { display:none; } }
@@ -346,6 +350,7 @@ export class ReactiveDeterminationsExamplePageComponent implements OnDestroy {
   protected readonly sessionRevision = signal(0);
   protected readonly eventEditorOpen = signal(false);
   protected readonly selectedEventId = signal<number | null>(null);
+  protected readonly selectedEventInitialParentId = signal<number | null>(null);
   protected readonly eventIdentityError = signal(false);
   protected readonly pending = signal<Record<ExampleSurface, boolean>>({ address: false, payroll: false });
   protected readonly entries = signal<readonly SafeExecutionEntry[]>([]);
@@ -522,6 +527,7 @@ export class ReactiveDeterminationsExamplePageComponent implements OnDestroy {
     this.eventIdentityError.set(id != null && (!Number.isSafeInteger(id) || id < 1));
     if (this.eventIdentityError()) return;
     this.selectedEventId.set(id);
+    this.selectedEventInitialParentId.set(id == null ? this.selectedPayrollId() : null);
     this.sessionRevision.update((revision) => revision + 1);
     this.eventEditorOpen.set(true);
   }
@@ -569,6 +575,8 @@ export class ReactiveDeterminationsExamplePageComponent implements OnDestroy {
     this.authenticationPending.set(false);
     this.authenticationState.set('authentication-required');
     this.eventEditorOpen.set(false);
+    this.selectedEventId.set(null);
+    this.selectedEventInitialParentId.set(null);
     this.entries.set([]);
     this.pending.set({ address: false, payroll: false });
     this.sessionRevision.update((revision) => revision + 1);

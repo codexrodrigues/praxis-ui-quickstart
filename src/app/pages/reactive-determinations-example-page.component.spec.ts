@@ -5,6 +5,7 @@ import { provideRouter } from '@angular/router';
 import { API_URL, GenericCrudService } from '@praxisui/core';
 import { PraxisDynamicForm, providePraxisDynamicFormMetadata } from '@praxisui/dynamic-form';
 import { ReactiveDeterminationDiagnosticsComponent } from '@praxisui/metadata-editor';
+import { PayrollEventFormHostComponent } from '../features/payroll-events/payroll-event-form-host.component';
 import { ReactiveDeterminationsExamplePageComponent } from './reactive-determinations-example-page.component';
 
 describe('ReactiveDeterminationsExamplePageComponent', () => {
@@ -208,5 +209,49 @@ describe('ReactiveDeterminationsExamplePageComponent', () => {
       fixture.debugElement.queryAll(By.css('.state')).map((node) => node.nativeElement.textContent.trim()),
     ).toEqual(['unavailable', 'unavailable']);
     http.verify();
+  });
+
+  it('passes the active payroll id as initialParentId when opening the event editor in create mode', () => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule, ReactiveDeterminationsExamplePageComponent],
+      providers: [
+        provideRouter([]),
+        GenericCrudService,
+        providePraxisDynamicFormMetadata(),
+        { provide: API_URL, useValue: { default: { baseUrl: 'http://localhost/api' } } },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(ReactiveDeterminationsExamplePageComponent);
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('http://localhost/auth/session').flush({ authenticated: true });
+    http
+      .expectOne(
+        'http://localhost/schemas/filtered?path=/api/human-resources/enderecos&operation=post&schemaType=request',
+      )
+      .flush({});
+    http
+      .expectOne(
+        'http://localhost/schemas/filtered?path=/api/human-resources/folhas-pagamento&operation=post&schemaType=request',
+      )
+      .flush({});
+
+    const page = fixture.componentInstance as any;
+    page.openPayrollEditor('3249');
+    http.expectOne((request) => request.url.includes('operation=put')).flush({});
+    http.expectOne('http://localhost/api/human-resources/folhas-pagamento/3249').flush(
+      { data: { id: 3249, reconciliacao: 'CONFIRMADA', salarioBruto: 1000, descontosBase: 100 } },
+      { headers: { ETag: '"payroll-3249-v1"' } },
+    );
+    fixture.detectChanges();
+
+    page.openEventEditor('');
+    fixture.detectChanges();
+
+    const eventHost = fixture.debugElement.query(By.directive(PayrollEventFormHostComponent))
+      .componentInstance as PayrollEventFormHostComponent;
+    expect(eventHost.eventId).toBeNull();
+    expect(eventHost.initialParentId).toBe(3249);
+    expect(eventHost.initialValue.folhaPagamentoId).toBe(3249);
   });
 });

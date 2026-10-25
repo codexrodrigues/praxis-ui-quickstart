@@ -44,6 +44,16 @@ const EVENT_PATH = '/api/human-resources/eventos-folha';
       }
     </section>
   `,
+  styles: [`
+    :host { display:block; min-width:0; margin-top:12px; padding-top:14px; border-top:1px solid var(--qs-example-panel-border, rgba(128,128,128,.24)); }
+    section { display:grid; gap:12px; min-width:0; }
+    h3 { margin:0; font-family:var(--font-display); color:var(--qs-example-title); font-size:1.05rem; }
+    p[role='status'] { margin:0; color:var(--qs-example-body); line-height:1.5; }
+    details dl { display:grid; grid-template-columns:auto minmax(0,1fr); gap:6px 14px; margin:10px 0 0; }
+    details dt { font-weight:700; }
+    details dd { margin:0; color:var(--qs-example-body); }
+    button { width:max-content; min-height:38px; padding:6px 14px; }
+  `],
 })
 export class PayrollEventFormHostComponent implements OnChanges, OnDestroy {
   @Input() eventId: number | null = null;
@@ -80,6 +90,7 @@ export class PayrollEventFormHostComponent implements OnChanges, OnDestroy {
   private destroyed = false;
   private destinationRead?: Subscription;
   private eventRead?: Subscription;
+  private serializeTimer?: ReturnType<typeof setTimeout>;
   private readonly captureValidator: ValidatorFn = (control: AbstractControl) =>
     this.form === control && this.schemaAdmitted && this.state() === 'ready' && !this.conflict && this.serialized
       && this.sameConditions(control.get('precondicoesFolhas')?.getRawValue(), this.expectedConditions())
@@ -234,13 +245,18 @@ export class PayrollEventFormHostComponent implements OnChanges, OnDestroy {
       ? 'Conflito preservado. Reset não renova revisões; recarregue explicitamente para revisão.'
       : expected.length ? 'Revisões capturadas. A confirmação depende também da validação do formulário.'
       : 'A revisão selecionada não está capturada. Faça uma captura explícita antes de confirmar.');
-    // Defer the controlled emission past PraxisDynamicForm's synchronous buildForm bootstrap suppression window.
-    const form = this.form, cycle = this.cycle, generation = this.generation;
-    setTimeout(() => {
-      if (!this.destroyed && this.form === form && this.cycle === cycle && this.generation === generation && !this.serialized) {
-        form?.updateValueAndValidity({ emitEvent: true });
-      }
-    }, 0);
+    this.clearSerializeTimer();
+    if (expected.length > 0 && !this.conflict) {
+      // Defer the controlled emission past PraxisDynamicForm's synchronous buildForm bootstrap suppression window.
+      const form = this.form, cycle = this.cycle, generation = this.generation;
+      this.serializeTimer = setTimeout(() => {
+        this.serializeTimer = undefined;
+        if (!this.destroyed && this.form === form && this.cycle === cycle && this.generation === generation
+          && !this.conflict && this.state() === 'ready' && !this.serialized) {
+          form?.updateValueAndValidity({ emitEvent: true });
+        }
+      }, 0);
+    }
   }
 
   private expectedConditions(): PayrollParentPrecondition[] {
@@ -258,9 +274,13 @@ export class PayrollEventFormHostComponent implements OnChanges, OnDestroy {
   private safeDraft(value: any): EventDraft { return { descricao: value?.descricao, tipo: value?.tipo, valor: value?.valor, folhaPagamentoId: value?.folhaPagamentoId }; }
   private setState(state: CaptureState, message: string): void { this.state.set(state); this.message.set(message); this.revalidate(); }
   private revalidate(): void { this.form?.updateValueAndValidity({ emitEvent: false }); }
-  private cancelDestination(): void { this.generation++; this.destinationRead?.unsubscribe(); this.destinationRead = undefined; }
+  private clearSerializeTimer(): void {
+    if (this.serializeTimer !== undefined) { clearTimeout(this.serializeTimer); this.serializeTimer = undefined; }
+  }
+  private cancelDestination(): void { this.clearSerializeTimer(); this.generation++; this.destinationRead?.unsubscribe(); this.destinationRead = undefined; }
   private cancelReads(): void { this.cancelDestination(); this.eventRead?.unsubscribe(); this.eventRead = undefined; }
   private detachForm(): void {
+    this.clearSerializeTimer();
     const detached = this.form;
     this.form = undefined; this.arrayMetadata = undefined; this.schemaAdmitted = false;
     // An async submit still holding the obsolete group must also stay invalid.

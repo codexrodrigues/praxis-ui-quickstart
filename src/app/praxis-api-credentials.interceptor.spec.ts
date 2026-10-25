@@ -60,4 +60,33 @@ describe('praxisApiCredentialsInterceptor', () => {
 
     controller.verify();
   });
+
+  it('evicts the cached X-XSRF-TOKEN even when /auth/logout fails or returns a header', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(withInterceptors([praxisApiCredentialsInterceptor])),
+        provideHttpClientTesting(),
+        { provide: API_URL, useValue: { default: { baseUrl: 'https://api.example.test/api' } } },
+      ],
+    });
+    const http = TestBed.inject(HttpClient);
+    const controller = TestBed.inject(HttpTestingController);
+
+    http.get('https://api.example.test/auth/session').subscribe();
+    controller
+      .expectOne('https://api.example.test/auth/session')
+      .flush(null, { headers: new HttpHeaders({ 'X-XSRF-TOKEN': 'csrf-token-active' }) });
+
+    http.post('https://api.example.test/auth/logout', null).subscribe({ error: () => undefined });
+    controller
+      .expectOne('https://api.example.test/auth/logout')
+      .flush({ message: 'session already expired' }, { status: 401, statusText: 'Unauthorized' });
+
+    http.post('https://api.example.test/api/human-resources/folhas-pagamento', {}).subscribe();
+    const postAfterFailedLogout = controller.expectOne('https://api.example.test/api/human-resources/folhas-pagamento');
+    expect(postAfterFailedLogout.request.headers.has('X-XSRF-TOKEN')).toBeFalse();
+    postAfterFailedLogout.flush({});
+
+    controller.verify();
+  });
 });

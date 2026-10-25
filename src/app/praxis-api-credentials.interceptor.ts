@@ -52,16 +52,26 @@ export const praxisApiCredentialsInterceptor: HttpInterceptorFn = (request, next
     setHeaders: shouldAttachXsrf ? { 'X-XSRF-TOKEN': xsrfToken } : undefined,
   });
 
+  const isLogout = requestUrl.pathname.endsWith('/auth/logout');
   return next(forwarded).pipe(
-    tap((event) => {
-      if (event instanceof HttpResponse) {
-        const headerToken = event.headers.get('X-XSRF-TOKEN');
-        if (headerToken) {
-          xsrfTokenByOrigin.set(apiOrigin, headerToken);
-        } else if (requestUrl.pathname.endsWith('/auth/logout')) {
+    tap({
+      next: (event) => {
+        if (event instanceof HttpResponse) {
+          if (isLogout) {
+            xsrfTokenByOrigin.delete(apiOrigin);
+            return;
+          }
+          const headerToken = event.headers.get('X-XSRF-TOKEN');
+          if (headerToken) {
+            xsrfTokenByOrigin.set(apiOrigin, headerToken);
+          }
+        }
+      },
+      error: () => {
+        if (isLogout) {
           xsrfTokenByOrigin.delete(apiOrigin);
         }
-      }
+      },
     }),
   );
 };

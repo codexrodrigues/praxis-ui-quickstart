@@ -94,3 +94,19 @@ negativa UNCOMPOSED, sem aceite da jornada financeira positiva ou R3.
 Este documento preserva o histórico da implementação. Caminhos `.worktrees/`, `/tmp/` e diretórios de evidência identificam a máquina de origem; seus logs/recibos brutos não integram o checkpoint e não constituem validação reproduzida nesta publicação. Consultar a passagem `docs/engineering/payroll-reactive-g4-20261021/PASSAGEM-20261024.md` no checkpoint backend. Fontes preservadas em PR draft; reconciliação com main, aceite funcional e integração continuam pendentes. Nenhum ensaio, deploy ou release foi autorizado nesta etapa.
 
 Auditoria de transporte: o recibo inicial tem três fontes divergentes da árvore atual; a correção de schema tem uma. A correção diagnostics/availability possui quatro hashes de fonte correspondentes. Isso preserva o escopo de cada prova; não atesta suite combinada nem novo E2E.
+
+## Aceite operacional e E2E positivo no navegador — 24/10/2026
+
+Concluídos o aceite operacional backend/Neon e a jornada E2E positiva no navegador (`http://127.0.0.1:4301/examples/reactive-determinations` -> `http://127.0.0.1:18088`):
+
+- `praxis-api-credentials.interceptor.ts` atualizado (com cobertura em `praxis-api-credentials.interceptor.spec.ts`) para:
+  - capturar o cabeçalho `X-XSRF-TOKEN` exposto por `apiOrigin`, enviá-lo automaticamente nas requisições mutáveis (`POST`, `PUT`, `PATCH`, `DELETE`) em cenários cross-port (`4301 -> 18088`) e limpar o token retido em memória após `/auth/logout`;
+  - normalizar chaves literais (`{` / `}` -> `%7B` / `%7D`) em URLs de schema destinadas a `apiOrigin` para conformidade estrita com o parser RFC 7230 do Tomcat 10.1 durante a leitura do schema `PUT` de edição sem alterar os componentes de página certificados por hash.
+- Validação combinada de consumidor: `npm run test:smoke` (`45/45 SUCCESS` em ChromeHeadless) e `npm run build` (`exit code 0`).
+- Jornada E2E positiva no Chromium contra o host Java 21 + Neon (`payroll_g4_admission` / `neondb`):
+  - Carregamento público inicial de 2 componentes `praxis-reactive-determination-diagnostics`.
+  - Autenticação de sessão (`POST /auth/login -> 204`) e transição para `.authentication-panel[data-state="authenticated"]`.
+  - Abertura da folha `3249` (`GET /api/human-resources/folhas-pagamento/3249 -> 200` com `ETag` forte) e renderização distinta das 3 datas (`Previsão calculada: 2027-04-07`, `Pagamento agendado: Não agendado`, `Pagamento confirmado: Não confirmado`).
+  - Execução real da cadeia reativa `net-salary -> payment-date` (`POST /determinations/net-salary -> 200`, `POST /determinations/payment-date -> 200`) até `data-state="satisfied"`.
+  - Abertura do evento pendente `18991` (`GET /api/human-resources/eventos-folha/18991 -> 200`) na bridge `app-payroll-event-form-host` com captura conjunta do `ETag` do evento e da precondição da folha (`Revisões capturadas`), sem vazamento de tokens ETag no texto visível do DOM.
+  - Encerramento de sessão (`POST /auth/logout -> 204`) com desmontagem imediata dos formulários e limpeza dos snapshots financeiros.

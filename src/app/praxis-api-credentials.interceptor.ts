@@ -1,11 +1,31 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { API_URL } from '@praxisui/core';
+import { tap } from 'rxjs';
+
+const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS', 'TRACE']);
+const xsrfTokenByOrigin = new Map<string, string>();
+
+function readCookie(name: string): string | null {
+  const cookieSource = globalThis.document?.cookie;
+  if (!cookieSource) return null;
+  for (const part of cookieSource.split(';')) {
+    const trimmed = part.trim();
+    if (trimmed.startsWith(`${name}=`)) {
+      return decodeURIComponent(trimmed.slice(name.length + 1));
+    }
+  }
+  return null;
+}
+
+export function resetPraxisApiXsrfCacheForTesting(): void {
+  xsrfTokenByOrigin.clear();
+}
 
 /**
- * Sends the host-managed HttpOnly session only to the configured Praxis API origin.
- * Corporate hosts normally replace the Quickstart login with their IdP/BFF while
- * preserving this same origin boundary.
+ * Sends the host-managed HttpOnly session and CSRF header only to the configured
+ * Praxis API origin. Corporate hosts normally replace the Quickstart login with
+ * their IdP/BFF while preserving this same origin boundary.
  */
 export const praxisApiCredentialsInterceptor: HttpInterceptorFn = (request, next) => {
   const apiUrl = inject(API_URL);
@@ -14,6 +34,34 @@ export const praxisApiCredentialsInterceptor: HttpInterceptorFn = (request, next
 
   const documentOrigin = globalThis.location?.origin ?? baseUrl;
   const apiOrigin = new URL(baseUrl, documentOrigin).origin;
-  const requestOrigin = new URL(request.url, documentOrigin).origin;
-  return next(requestOrigin === apiOrigin ? request.clone({ withCredentials: true }) : request);
+  const requestUrl = new URL(request.url, documentOrigin);
+  if (requestUrl.origin !== apiOrigin) {
+    return next(request);
+  }
+
+  const method = request.method.toUpperCase();
+  const xsrfToken = xsrfTokenByOrigin.get(apiOrigin) ?? readCookie('XSRF-TOKEN');
+  const shouldAttachXsrf = !SAFE_METHODS.has(method) && !!xsrfToken && !request.headers.has('X-XSRF-TOKEN');
+  const normalizedUrl =
+    request.url.includes('{') || request.url.includes('}')
+      ? request.url.replaceAll('{', '%7B').replaceAll('}', '%7D')
+      : request.url;
+  const forwarded = request.clone({
+    url: normalizedUrl,
+    withCredentials: true,
+    setHeaders: shouldAttachXsrf ? { 'X-XSRF-TOKEN': xsrfToken } : undefined,
+  });
+
+  return next(forwarded).pipe(
+    tap((event) => {
+      if (event instanceof HttpResponse) {
+        const headerToken = event.headers.get('X-XSRF-TOKEN');
+        if (headerToken) {
+          xsrfTokenByOrigin.set(apiOrigin, headerToken);
+        } else if (requestUrl.pathname.endsWith('/auth/logout')) {
+          xsrfTokenByOrigin.delete(apiOrigin);
+        }
+      }
+    }),
+  );
 };

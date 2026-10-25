@@ -95,8 +95,11 @@ describe('Payroll event bridge + actual Dynamic Form rc.34 runtime', () => {
         && fixture.componentInstance.state() === 'ready') break;
     }
     const runtime = fixture.componentInstance.eventForm!;
+    await new Promise((resolve) => setTimeout(resolve, 400)); fixture.detectChanges();
     expect(runtime.form.get('precondicoesFolhas')!.getRawValue())
       .toEqual([{ folhaPagamentoId: 10, resourceVersion: '"origin-snapshot"' }]);
+    expect(runtime.form.hasError('payrollParentCapture')).toBeFalse();
+    expect(runtime.form.valid).toBeTrue();
     http.expectNone('https://g4-runtime.test/api/human-resources/folhas-pagamento/10');
     runtime.form.get('folhaPagamentoId')!.markAsDirty();
     runtime.form.get('folhaPagamentoId')!.setValue(20);

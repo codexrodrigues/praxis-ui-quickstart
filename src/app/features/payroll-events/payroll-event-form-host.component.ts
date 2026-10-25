@@ -234,8 +234,13 @@ export class PayrollEventFormHostComponent implements OnChanges, OnDestroy {
       ? 'Conflito preservado. Reset não renova revisões; recarregue explicitamente para revisão.'
       : expected.length ? 'Revisões capturadas. A confirmação depende também da validação do formulário.'
       : 'A revisão selecionada não está capturada. Faça uma captura explícita antes de confirmar.');
-    // One controlled emission makes the official preview prove the serialized list.
-    this.form?.updateValueAndValidity({ emitEvent: true });
+    // Defer the controlled emission past PraxisDynamicForm's synchronous buildForm bootstrap suppression window.
+    const form = this.form, cycle = this.cycle, generation = this.generation;
+    setTimeout(() => {
+      if (!this.destroyed && this.form === form && this.cycle === cycle && this.generation === generation && !this.serialized) {
+        form?.updateValueAndValidity({ emitEvent: true });
+      }
+    }, 0);
   }
 
   private expectedConditions(): PayrollParentPrecondition[] {

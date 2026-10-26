@@ -195,6 +195,24 @@ describe('PayrollEventFormHostComponent snapshot bridge (published rc.34 APIs)',
     expect(rebuilt.invalid).toBeTrue(); http.expectNone(`${API}/folhas-pagamento/20`);
   });
 
+  it('captures destination for move when folhaPagamentoId is selected via entityLookup result object', () => {
+    const form = edit();
+    form.get('folhaPagamentoId')!.setValue({
+      id: 20,
+      label: 'Folha 2027-04 · #20',
+      extra: { selectable: true, resourcePath: '/api/human-resources/folhas-pagamento', entityKey: 'payroll' },
+    });
+    host.onValueChange({ formData: form.getRawValue(), changedFields: ['folhaPagamentoId'], isValid: form.valid } as FormValueChangeEvent);
+    expect(form.invalid).toBeTrue();
+    http.expectOne(`${API}/folhas-pagamento/20`).flush({ data: { id: 20, reconciliacao: 'CONFIRMADA' } }, { headers: { ETag: '"target-v9"' } });
+    preview(form);
+    expect(form.valid).toBeTrue();
+    expect(form.getRawValue().precondicoesFolhas).toEqual([
+      { folhaPagamentoId: 10, resourceVersion: '"origin-v3"' },
+      { folhaPagamentoId: 20, resourceVersion: '"target-v9"' },
+    ]);
+  });
+
   it('preserves operational decimal JSON values at the public transport boundary without calculating money', () => {
     const form = edit();
     for (const value of [0, 0.01, 100, 999999999999.99]) {

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, ViewChild, inject, signal } from '@angular/core';
 import { AbstractControl, FormArray, FormGroup, ValidatorFn } from '@angular/forms';
-import { DynamicFormService, GenericCrudService, readStrongResourceEtag, type FieldMetadata, type FormPayloadPreviewEvent,
+import { DynamicFormService, GenericCrudService, readStrongResourceEtag, serializeEntityLookupValueForPayload, type FieldMetadata, type FormPayloadPreviewEvent,
   type FormReadyEvent, type FormSubmitEvent, type FormValueChangeEvent } from '@praxisui/core';
 import { PraxisDynamicForm } from '@praxisui/dynamic-form';
 import { Subscription } from 'rxjs';
@@ -270,8 +270,18 @@ export class PayrollEventFormHostComponent implements OnChanges, OnDestroy {
       && value.every((item, index) => item?.folhaPagamentoId === expected[index].folhaPagamentoId
         && item?.resourceVersion === expected[index].resourceVersion);
   }
-  private parentId(value: unknown): number | null { return typeof value === 'number' && Number.isSafeInteger(value) && value > 0 ? value : null; }
-  private safeDraft(value: any): EventDraft { return { descricao: value?.descricao, tipo: value?.tipo, valor: value?.valor, folhaPagamentoId: value?.folhaPagamentoId }; }
+  private parentId(value: unknown): number | null {
+    const candidate = serializeEntityLookupValueForPayload(value);
+    return typeof candidate === 'number' && Number.isSafeInteger(candidate) && candidate > 0 ? candidate : null;
+  }
+  private safeDraft(value: any): EventDraft {
+    return {
+      descricao: value?.descricao,
+      tipo: value?.tipo,
+      valor: value?.valor,
+      folhaPagamentoId: this.parentId(value?.folhaPagamentoId) ?? undefined,
+    };
+  }
   private setState(state: CaptureState, message: string): void { this.state.set(state); this.message.set(message); this.revalidate(); }
   private revalidate(): void { this.form?.updateValueAndValidity({ emitEvent: false }); }
   private clearSerializeTimer(): void {

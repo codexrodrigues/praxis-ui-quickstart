@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy, ViewChild, computed, inj
 import { FormGroup } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { API_URL, readStrongResourceEtag, type FormReadyEvent, type FormSubmitEvent, type ReactiveDeterminationExecutionEvent } from '@praxisui/core';
+import { API_URL, readStrongResourceEtag, serializeEntityLookupValueForPayload, type FormReadyEvent, type FormSubmitEvent, type ReactiveDeterminationExecutionEvent } from '@praxisui/core';
 import { PraxisDynamicForm } from '@praxisui/dynamic-form';
 import { ReactiveDeterminationDiagnosticsComponent } from '@praxisui/metadata-editor';
 import { Subscription, forkJoin } from 'rxjs';
@@ -439,7 +439,7 @@ export class ReactiveDeterminationsExamplePageComponent implements OnDestroy {
       this.payrollMessage.set('Informe uma identidade inteira positiva ou deixe o campo vazio.'); return;
     }
     if (preserve && !this.payrollPreservedDraft())
-      this.payrollPreservedDraft.set(this.payrollRoot?.getRawValue() ?? null);
+      this.payrollPreservedDraft.set(this.capturePayrollDraft());
     if (!preserve) this.payrollPreservedDraft.set(null);
     this.discardPayroll();
     this.selectedPayrollId.set(id);
@@ -507,10 +507,24 @@ export class ReactiveDeterminationsExamplePageComponent implements OnDestroy {
       this.discardPayroll();
       this.payrollMessage.set('Folha confirmada. Abra uma nova revisão para editar novamente.'); return;
     }
-    this.payrollPreservedDraft.set(this.payrollRoot?.getRawValue() ?? null);
+    this.payrollPreservedDraft.set(this.capturePayrollDraft());
     this.payrollConflict.set(true);
     this.payrollRoot?.updateValueAndValidity({ emitEvent: false });
     this.payrollMessage.set('Confirmação recusada ou indisponível. Rascunho preservado; recarregue e compare explicitamente. Reset não renova a revisão.');
+  }
+
+  private capturePayrollDraft(): Record<string, unknown> | null {
+    const raw = this.payrollRoot?.getRawValue();
+    if (!raw || typeof raw !== 'object') return null;
+    const prevDate = raw['dataPagamentoPrevista'];
+    const formattedDate = prevDate instanceof Date && !Number.isNaN(prevDate.getTime())
+      ? `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, '0')}-${String(prevDate.getDate()).padStart(2, '0')}`
+      : prevDate;
+    return {
+      ...raw,
+      funcionarioId: serializeEntityLookupValueForPayload(raw['funcionarioId']),
+      dataPagamentoPrevista: formattedDate,
+    };
   }
 
   private discardPayroll(): void {

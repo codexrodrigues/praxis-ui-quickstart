@@ -89,4 +89,33 @@ describe('praxisApiCredentialsInterceptor', () => {
 
     controller.verify();
   });
+
+  it('captures X-XSRF-TOKEN when anonymous /auth/session responds with 401 Unauthorized', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(withInterceptors([praxisApiCredentialsInterceptor])),
+        provideHttpClientTesting(),
+        { provide: API_URL, useValue: { default: { baseUrl: 'https://api.example.test/api' } } },
+      ],
+    });
+    const http = TestBed.inject(HttpClient);
+    const controller = TestBed.inject(HttpTestingController);
+
+    http.get('https://api.example.test/auth/session').subscribe({ error: () => undefined });
+    controller.expectOne('https://api.example.test/auth/session').flush(null, {
+      status: 401,
+      statusText: 'Unauthorized',
+      headers: new HttpHeaders({ 'X-XSRF-TOKEN': 'csrf-token-anon-401' }),
+    });
+
+    http.post('https://api.example.test/api/human-resources/funcionarios/filter', {}).subscribe();
+    const filterReq = controller.expectOne(
+      'https://api.example.test/api/human-resources/funcionarios/filter',
+    );
+    expect(filterReq.request.withCredentials).toBeTrue();
+    expect(filterReq.request.headers.get('X-XSRF-TOKEN')).toBe('csrf-token-anon-401');
+    filterReq.flush({});
+
+    controller.verify();
+  });
 });

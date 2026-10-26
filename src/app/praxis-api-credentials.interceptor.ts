@@ -1,4 +1,4 @@
-import { HttpInterceptorFn, HttpResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpInterceptorFn, HttpResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { API_URL } from '@praxisui/core';
 import { tap } from 'rxjs';
@@ -67,9 +67,16 @@ export const praxisApiCredentialsInterceptor: HttpInterceptorFn = (request, next
           }
         }
       },
-      error: () => {
+      error: (error: unknown) => {
         if (isLogout) {
           xsrfTokenByOrigin.delete(apiOrigin);
+          return;
+        }
+        if (error instanceof HttpErrorResponse) {
+          const headerToken = error.headers?.get('X-XSRF-TOKEN');
+          if (headerToken) {
+            xsrfTokenByOrigin.set(apiOrigin, headerToken);
+          }
         }
       },
     }),

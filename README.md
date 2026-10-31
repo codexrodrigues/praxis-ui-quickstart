@@ -1,6 +1,6 @@
 # Praxis UI Quickstart
 
-Canonical Angular host for a first adoption path with PraxisUI.
+Canonical Angular host for a first adoption path with **PraxisUI** — the official interface runtime of the **Praxis Platform** (a semantically oriented platform for AI-native enterprise applications where resources, rules, actions, data, and policies are described once and operated across traditional interfaces, generative interfaces, AI agents, and integrations).
 
 [![Angular 21](https://img.shields.io/badge/Angular-21-DD0031?logo=angular&logoColor=white)](https://angular.dev/)
 [![PraxisUI Beta](https://img.shields.io/badge/PraxisUI-Beta-0F766E)](https://praxisui.dev)

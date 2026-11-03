@@ -750,3 +750,26 @@ app-crud-example-page .runtime-shell--crud {
   border-bottom: 0 !important;
   background: transparent !important;
 }
+
+.mat-mdc-icon-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+}
+
+.mat-mdc-icon-button > .mat-icon {
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
+
+button .mdc-button__label,
+button .prx-rich-text,
+button .prx-rich-content {
+  container-type: normal !important;
+  white-space: nowrap !important;
+}
+

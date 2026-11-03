@@ -2,7 +2,15 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import {
+  GlobalActionService,
+  ResourceDiscoveryService,
+  type ResourceSurfaceCatalogItem,
+  ResourceSurfaceOpenAdapterService,
+  type SurfaceOpenPayload,
+} from '@praxisui/core';
 import { PraxisTable } from '@praxisui/table';
+import { firstValueFrom } from 'rxjs';
 import { CustomizationModeService } from '../customization-mode.service';
 import {
   QUICKSTART_RESOURCE_PATH,
@@ -15,7 +23,6 @@ import {
   TABLE_RELATED_SURFACES_CONFIG,
   TABLE_SNIPPET,
 } from '../quickstart-content';
-import { QuickstartSurfaceOpenService } from '../quickstart-surface-open.service';
 
 type RelatedSurfaceRowActionEvent = {
   action?: string;
@@ -152,7 +159,9 @@ type RelatedSurfaceRowActionHandler = (row: Record<string, unknown>) => void;
 })
 export class TableExamplePageComponent {
   private readonly customizationMode = inject(CustomizationModeService);
-  private readonly surfaceOpen = inject(QuickstartSurfaceOpenService);
+  private readonly globalActions = inject(GlobalActionService);
+  private readonly discovery = inject(ResourceDiscoveryService);
+  private readonly surfaceAdapter = inject(ResourceSurfaceOpenAdapterService);
   private readonly relatedSurfaceRowActionHandlers: Record<string, RelatedSurfaceRowActionHandler> = {
     'hero-profile': (row) => this.openHeroProfileSurface(row),
     'payroll-history': (row) => this.openPayrollHistorySurface(row),
@@ -178,19 +187,19 @@ export class TableExamplePageComponent {
   }
 
   private openHeroProfileSurface(row: Record<string, unknown>): void {
-    void this.surfaceOpen.openBackendSurfaceFromRow({
+    void this.openCanonicalBackendSurface({
       row,
       resourcePath: QUICKSTART_RESOURCE_PATH,
       surfaceId: 'hero-profile',
       title: `Perfil 360 de ${row['nomeCompleto'] || 'funcionario'}`,
-      subtitle: 'Backend READ_PROJECTION opened through the Praxis surface adapter.',
+      subtitle: 'Backend READ_PROJECTION opened through the canonical Praxis surface bridge.',
       icon: 'person',
       size: { width: '760px', maxWidth: 'calc(100vw - 32px)', maxHeight: 'calc(100vh - 48px)' },
     });
   }
 
   private openPayrollHistorySurface(row: Record<string, unknown>): void {
-    void this.surfaceOpen.openBackendSurfaceFromRow({
+    void this.openCanonicalBackendSurface({
       row,
       resourcePath: QUICKSTART_RESOURCE_PATH,
       surfaceId: 'payroll-history',
@@ -202,7 +211,7 @@ export class TableExamplePageComponent {
   }
 
   private openMissionParticipationsSurface(row: Record<string, unknown>): void {
-    void this.surfaceOpen.openBackendSurfaceFromRow({
+    void this.openCanonicalBackendSurface({
       row,
       resourcePath: QUICKSTART_RESOURCE_PATH,
       surfaceId: 'mission-participations',
@@ -211,6 +220,70 @@ export class TableExamplePageComponent {
       icon: 'flag',
       size: { width: '960px', maxWidth: 'calc(100vw - 32px)', maxHeight: 'calc(100vh - 48px)' },
       payload: EMPLOYEE_MISSIONS_SURFACE_PAYLOAD,
+    });
+  }
+
+  private async openCanonicalBackendSurface(options: {
+    row: Record<string, unknown>;
+    resourcePath: string;
+    surfaceId: string;
+    title?: string;
+    subtitle?: string;
+    icon?: string;
+    size?: SurfaceOpenPayload['size'];
+    payload?: SurfaceOpenPayload;
+  }): Promise<void> {
+    const catalog = await firstValueFrom(this.discovery.getSurfaces((options.row as any)._links));
+    const surface = catalog.surfaces.find(
+      (candidate) => candidate.id === options.surfaceId,
+    ) as ResourceSurfaceCatalogItem | undefined;
+    if (!surface) {
+      return;
+    }
+
+    const resourceId = catalog.resourceId ?? (options.row['id'] as string | number | null);
+    const basePayload: SurfaceOpenPayload = options.payload
+      ? (JSON.parse(JSON.stringify(options.payload)) as SurfaceOpenPayload)
+      : this.surfaceAdapter.toPayload(surface, {
+          resourcePath: options.resourcePath,
+          resourceId,
+          presentation: 'modal',
+          title: options.title || surface.title,
+          subtitle: options.subtitle || surface.description || undefined,
+          icon: options.icon,
+        });
+
+    const payload: SurfaceOpenPayload = {
+      ...basePayload,
+      size: options.size ?? basePayload.size,
+      context: {
+        ...(basePayload.context || {}),
+        resource: {
+          resourceKey: surface.resourceKey,
+          resourcePath: options.resourcePath,
+          resourceId,
+        },
+        surface: {
+          id: surface.id,
+          kind: surface.kind,
+          scope: surface.scope,
+          intent: surface.intent ?? null,
+          operationId: surface.operationId,
+          path: surface.path,
+          method: surface.method,
+          schemaId: surface.schemaId,
+          schemaUrl: surface.schemaUrl,
+          responseCardinality: surface.responseCardinality ?? null,
+          availability: surface.availability,
+          tags: surface.tags,
+        },
+      },
+    };
+
+    await this.globalActions.execute('surface.open', payload, {
+      payload: { row: options.row },
+      runtime: { row: options.row },
+      meta: { actionId: surface.id, surface },
     });
   }
 }

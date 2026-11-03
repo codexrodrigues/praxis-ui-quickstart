@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { GenericCrudService } from '@praxisui/core';
 import { providePraxisDynamicFormMetadata } from '@praxisui/dynamic-form';
+import { CRUD_METADATA } from './quickstart-content';
 
 export const routes: Routes = [
   {
@@ -70,8 +71,51 @@ export const routes: Routes = [
   },
   {
     path: 'examples/master-detail',
-    loadChildren: () => import('./routes/master-detail.routes').then(m => m.MASTER_DETAIL_ROUTES),
+    loadChildren: () => import('./routes/master-detail.routes').then((m) => m.MASTER_DETAIL_ROUTES),
     title: 'Praxis UI Quickstart | Master-detail',
+  },
+  {
+    path: 'resources/funcionarios',
+    loadComponent: () => import('@praxisui/crud').then((m) => m.PraxisResourcePage),
+    title: 'Praxis UI Quickstart | Employees Resource',
+    data: {
+      kind: 'resource',
+      resource: 'human-resources/funcionarios',
+      crudId: 'quickstart-resource-funcionarios',
+      loadMetadata: () => Promise.resolve(CRUD_METADATA),
+    },
+  },
+  {
+    path: 'resources/departamentos',
+    loadComponent: () => import('@praxisui/crud').then((m) => m.PraxisResourcePage),
+    title: 'Praxis UI Quickstart | Departments Resource',
+    data: {
+      kind: 'resource',
+      resource: 'human-resources/departamentos',
+      crudId: 'quickstart-resource-departamentos',
+    },
+  },
+  {
+    path: 'resources/cargos',
+    loadComponent: () => import('@praxisui/crud').then((m) => m.PraxisResourcePage),
+    title: 'Praxis UI Quickstart | Roles Resource',
+    data: {
+      kind: 'resource',
+      resource: 'human-resources/cargos',
+      crudId: 'quickstart-resource-cargos',
+    },
+  },
+  {
+    path: 'studio/:studioKey',
+    loadComponent: () =>
+      import('./pages/studio-example-page.component').then((m) => m.StudioExamplePageComponent),
+    title: 'Praxis UI Quickstart | Page Builder Studio',
+  },
+  {
+    path: 'pages/:pageId',
+    loadComponent: () =>
+      import('./pages/studio-example-page.component').then((m) => m.StudioExamplePageComponent),
+    title: 'Praxis UI Quickstart | Custom Dynamic Page',
   },
   { path: '**', redirectTo: '' },
 ];

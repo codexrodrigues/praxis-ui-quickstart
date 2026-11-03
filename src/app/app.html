@@ -22,6 +22,8 @@
             <a routerLink="/examples/tabs" routerLinkActive="is-active">Tabs</a>
             <a routerLink="/examples/stepper" routerLinkActive="is-active">Stepper</a>
             <a routerLink="/examples/expansion" routerLinkActive="is-active">Expansion</a>
+            <a routerLink="/examples/master-detail" routerLinkActive="is-active">Master-detail</a>
+            <a routerLink="/studio/workspace" routerLinkActive="is-active">Studio Page Builder</a>
           </div>
         </details>
       </nav>
@@ -31,6 +33,36 @@
         <button type="button" [class.is-active]="activeTheme() === 'corporate'" [attr.aria-pressed]="activeTheme() === 'corporate'" (click)="setTheme('corporate')">Corporate</button>
         <button type="button" [class.is-active]="activeTheme() === 'high-contrast'" [attr.aria-pressed]="activeTheme() === 'high-contrast'" (click)="setTheme('high-contrast')">High contrast</button>
       </div>
+
+      <label class="tenant-switcher" aria-label="Tenant switcher">
+        <select
+          aria-label="Active tenant"
+          [ngModel]="tenantContext.activeTenantId()"
+          (ngModelChange)="selectTenant($event)"
+        >
+          @for (tenant of tenantContext.tenants; track tenant.id) {
+            <option [value]="tenant.id">{{ tenant.badge }} · {{ tenant.label }}</option>
+          }
+        </select>
+      </label>
+
+      <button
+        type="button"
+        class="global-config-btn"
+        aria-label="Open global platform settings"
+        (click)="openGlobalSettings()"
+      >
+        Settings
+      </button>
+
+      <button
+        type="button"
+        class="ai-assistant-btn"
+        aria-label="Toggle Praxis AI Assistant"
+        (click)="aiAssistant.toggle()"
+      >
+        AI Assistant
+      </button>
 
       <label class="customization-toggle">
         <span class="toggle-copy">
@@ -69,6 +101,49 @@
   }
 
   <main class="shell-content">
-    <router-outlet />
+    @for (tenantId of [tenantContext.activeTenantId()]; track tenantId) {
+      <router-outlet />
+    }
   </main>
+
+  <div class="quickstart-ai-dock-anchor">
+    @if (!aiAssistant.isOpen()) {
+      <praxis-ai-assistant-dock
+        [title]="'Quickstart AI'"
+        [summary]="aiAssistant.statusText()"
+        [badge]="'12 Pillars'"
+        [icon]="'smart_toy'"
+        [state]="aiAssistant.state()"
+        (open)="aiAssistant.open()"
+      />
+    }
+  </div>
+
+  @if (aiAssistant.isOpen()) {
+    <aside class="quickstart-ai-drawer" aria-label="Quickstart AI Assistant">
+      <praxis-ai-assistant-shell
+        [labels]="aiAssistant.labels"
+        [mode]="aiAssistant.mode()"
+        [state]="aiAssistant.state()"
+        [contextItems]="aiAssistant.contextItems()"
+        [messages]="aiAssistant.messages()"
+        [quickReplies]="aiAssistant.quickReplies()"
+        [recommendedIntents]="aiAssistant.recommendedIntents()"
+        [prompt]="aiAssistant.prompt()"
+        [statusText]="aiAssistant.statusText()"
+        [errorText]="aiAssistant.errorText()"
+        [busy]="aiAssistant.busy()"
+        [canSubmit]="aiAssistant.canSubmit()"
+        [canApply]="aiAssistant.canApply()"
+        [layout]="aiAssistant.layout()"
+        (promptChange)="aiAssistant.setPrompt($event)"
+        (submitPrompt)="aiAssistant.submitPrompt()"
+        (apply)="aiAssistant.applyPendingSuggestion()"
+        (quickReply)="aiAssistant.triggerQuickReply($event)"
+        (recommendedIntent)="aiAssistant.triggerRecommendedIntent($event)"
+        (shellAction)="aiAssistant.handleShellAction($event)"
+        (close)="aiAssistant.close()"
+      />
+    </aside>
+  }
 </div>

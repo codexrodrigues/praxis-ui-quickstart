@@ -66,6 +66,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
+  align-items: center;
   gap: 14px;
 }
 
@@ -73,6 +74,7 @@
   color: var(--qs-shell-accent);
   text-decoration: none;
   font-weight: 600;
+  white-space: nowrap;
   padding: 10px 14px;
   border-radius: var(--qs-nav-pill-radius);
   border: 1px solid var(--qs-nav-pill-border);
@@ -92,6 +94,7 @@
   list-style: none;
   color: var(--qs-shell-accent);
   font-weight: 600;
+  white-space: nowrap;
   padding: 10px 14px;
   border-radius: var(--qs-nav-pill-radius);
   border: 1px solid var(--qs-nav-pill-border);
@@ -171,6 +174,36 @@
   background: linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary));
   border-color: transparent;
   color: var(--md-sys-color-on-primary);
+}
+
+.tenant-switcher select,
+.global-config-btn,
+.ai-assistant-btn {
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--qs-nav-pill-radius);
+  background: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-on-surface);
+  padding: 9px 12px;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 650;
+  cursor: pointer;
+  box-shadow: var(--qs-nav-pill-shadow);
+}
+
+.quickstart-ai-dock-anchor {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 900;
+}
+
+.quickstart-ai-drawer {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 950;
+  max-width: calc(100vw - 32px);
 }
 
 .customization-toggle {

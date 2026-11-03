@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { CustomizationModeService } from '../customization-mode.service';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ASYNC_CONFIG_STORAGE, buildPageKey, CompositionValidatorService, ComponentMetadataRegistry, PRAXIS_DYNAMIC_PAGE_COMPONENT_METADATA, type WidgetPageDefinition } from '@praxisui/core';
+import { ASYNC_CONFIG_STORAGE, buildPageKey, CompositionValidatorService, ComponentMetadataRegistry, PRAXIS_DYNAMIC_PAGE_COMPONENT_METADATA, PRAXIS_RELATED_RESOURCE_OUTLET_COMPONENT_METADATA, providePraxisRelatedResourceOutletMetadata, type WidgetPageDefinition } from '@praxisui/core';
 import { DynamicPageBuilderComponent, preflightUiCompositionPlan, type UiCompositionPlan } from '@praxisui/page-builder';
 
 @Component({
@@ -46,6 +46,7 @@ export class MasterDetailExamplePageComponent {
 
   constructor() {
     this.registry.register(PRAXIS_DYNAMIC_PAGE_COMPONENT_METADATA);
+    this.registry.register(PRAXIS_RELATED_RESOURCE_OUTLET_COMPONENT_METADATA);
     inject(HttpClient).get<UiCompositionPlan>('recipes/master-detail.ui-composition-plan.json')
       .pipe(takeUntilDestroyed()).subscribe({
         next: async plan => {

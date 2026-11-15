@@ -1,281 +1,231 @@
 # Praxis UI Quickstart
 
-Canonical Angular host for a first adoption path with **PraxisUI** — the official interface runtime of the **Praxis Platform** (a semantically oriented platform for AI-native enterprise applications where resources, rules, actions, data, and policies are described once and operated across traditional interfaces, generative interfaces, AI agents, and integrations).
+Host Angular 21 canônico para o primeiro caminho de adoção do **PraxisUI** — o runtime oficial de interface da [**Praxis Platform**](https://praxisui.dev/) (uma plataforma semanticamente orientada para aplicações corporativas *AI-native*, em que recursos, regras, ações, dados e políticas são descritos uma única vez e operados por interfaces tradicionais, interfaces generativas, agentes de IA e integrações).
 
 [![Angular 21](https://img.shields.io/badge/Angular-21-DD0031?logo=angular&logoColor=white)](https://angular.dev/)
 [![PraxisUI Beta](https://img.shields.io/badge/PraxisUI-Beta-0F766E)](https://praxisui.dev)
 [![Firebase Hosting](https://img.shields.io/badge/Hosting-Firebase-FFCA28?logo=firebase&logoColor=black)](https://praxis-ui-4e602.web.app)
 [![Smoke tests](https://img.shields.io/badge/Smoke%20tests-passing-16A34A)](./package.json)
 
-This repository is the shortest path from zero to a working PraxisUI Angular host. It is the installable proof that a host can bootstrap PraxisUI, call the published API, pass tenant and locale headers, keep visual ownership, and render metadata-driven runtimes without local shortcuts.
+Este repositório é o menor caminho entre o zero e um host Angular corporativo conectado à plataforma Praxis. Ele serve como prova instalável de que uma aplicação Angular consegue inicializar o PraxisUI com pacotes publicados (`@praxisui/*` `10.0.0-rc.43`), apontar para a API publicada, propagar headers de tenant/idioma, manter **100% da posse visual** no host e renderizar telas guiadas por metadados sem atalhos locais.
 
-It is not the full component catalog and it is not the source of platform semantics. The quickstart proves the host path; [praxisui.dev](https://praxisui.dev) publishes the broader documentation and playgrounds; `praxis-metadata-starter` and `praxis-config-starter` own the backend and runtime contracts.
+Este host **não** substitui o catálogo completo de componentes nem é a fonte canônica de metadados ou políticas: o quickstart prova o caminho de adoção em uma aplicação consumidora; o portal [praxisui.dev](https://praxisui.dev/) publica a documentação e os playgrounds completos; e os starters/motores backend detêm a semântica de domínio, configuração, autorização e regras.
 
-## Related links
+---
 
-- [PraxisUI website](https://praxisui.dev)
-- [Published quickstart API](https://praxis-api-quickstart.onrender.com/api)
-- [Quickstart repository](https://github.com/codexrodrigues/praxis-ui-quickstart)
-- [Live quickstart](https://praxis-ui-4e602.web.app)
-- [Official host contract](./docs/official-host-contract.md)
-- [Production host provisioning](./docs/production-host-provisioning.md)
-- [Machine-readable example inventory](./public/examples.manifest.json)
+## Links relacionados
 
-## Canonical platform sources
+- [Portal oficial PraxisUI](https://praxisui.dev)
+- [API publicada de Quickstart](https://praxis-api-quickstart.onrender.com/api)
+- [Repositório do Quickstart](https://github.com/codexrodrigues/praxis-ui-quickstart)
+- [Aplicação publicada (Live Quickstart)](https://praxis-ui-4e602.web.app)
+- [Contrato oficial de host](./docs/official-host-contract.md)
+- [Runbook de provisionamento em produção](./docs/production-host-provisioning.md)
+- [Política de CI e publicação](./ACTIONS-RELEASE-POLICY.md)
+- [Inventário legível por máquina (`examples.manifest.json`)](./public/examples.manifest.json)
 
-- [praxis-metadata-starter](https://github.com/codexrodrigues/praxis-metadata-starter)
-  Canonical source for metadata-driven semantics and the `x-ui` vocabulary consumed by the platform.
-- [praxis-config-starter](https://github.com/codexrodrigues/praxis-config-starter)
-  Canonical source for runtime configuration, authoring state, AI registry, templates, headers, and ETag behavior.
+---
 
-## Role in the Praxis ecosystem
+## Qual problema o Praxis resolve e papel no ecossistema
 
-Use this repository when you need to verify that an Angular application can consume the public Praxis stack correctly.
+Em sistemas corporativos convencionais, cada nova entidade de negócio exige reescrever manualmente o mesmo conhecimento em múltiplas camadas: modelo no banco, DTOs REST, validações no backend, formulários reativos no frontend, colunas de tabela, filtros combinados, combos de relacionamento, máscaras, fluxos de aprovação e regras de exibição. Plataformas *low-code* tradicionais ou ferramentas de BI tentam encurtar esse caminho prendendo a empresa a editores proprietários ou visuais engessados.
+
+Na **Praxis Platform**, essa semântica é declarada uma única vez em metadados e contratos determinísticos — trazendo ganhos diretos de **economia de tokens em IA e velocidade de entrega**:
+
+- **Zero duplicação entre frontend e backend:** O mesmo `resourcePath` (`human-resources/funcionarios`, `human-resources/folhas-pagamento`, `human-resources/eventos-folha`, etc.) alimenta tabela, formulário dinâmico, CRUD, lista e visões compostas sem redeclarar campos no Angular.
+- **Economia drástica de tokens de IA e maior precisão de agentes:** Quando um agente de IA ou fluxo generativo precisa criar ou operar uma tela corporativa, ele não consome dezenas de arquivos HTML/TS e serviços HTTP arbitrários na janela de contexto — basta ler o schema filtrado (`GET /schemas/filtered`), as capabilities e o manifesto declarativo dos pacotes `@praxisui/*`.
+- **Regras no servidor, UX reativa no navegador:** Em vez de vazar regras financeiras ou tributárias para JavaScript no cliente, determinações em tempo de preenchimento (`x-ui.reactiveDeterminations`) executam no backend e retornam prévia autoritativa, trilha de proveniência e diagnóstico seguro para a UI.
 
 ```mermaid
 flowchart LR
-  metadata["praxis-metadata-starter"] --> api["Published quickstart API"]
-  config["praxis-config-starter"] --> runtimeConfig["Runtime config and authoring state"]
-  api --> quickstart["praxis-ui-quickstart"]
+  metadata["praxis-metadata-starter<br/>Semântica x-ui, schemas e capabilities"] --> api["API de Referência (Quickstart)"]
+  config["praxis-config-starter<br/>Config UI, AI registry e ETag"] --> runtimeConfig["Configuração em runtime e estado de autoria"]
+  rules["praxis-rules-engine + praxis-policy-studio<br/>Regras de negócio e autoria 4-olhos"] --> api
+  authz["praxis-authz-* (OPA Rego v1)<br/>Autorização e proteção de dados"] --> api
+  api --> quickstart["praxis-ui-quickstart<br/>Este host Angular canônico"]
   runtimeConfig --> quickstart
-  quickstart --> core["Table / Form / CRUD / List"]
-  quickstart --> composition["Manual Form / Tabs / Stepper / Expansion"]
+  quickstart --> core["Table / Dynamic Form / CRUD / Determinações Reativas / List"]
+  quickstart --> composition["Manual Form / Tabs / Stepper / Expansion / Master-detail"]
   quickstart --> docs["praxisui.dev"]
-  docs --> playgrounds["Docs, examples, recipes, playgrounds"]
+  docs --> playgrounds["Guias, exemplos, receitas e playgrounds"]
 ```
 
-The ownership boundary is intentional:
+### Fontes canônicas e projetos relacionados da plataforma
 
-- `praxis-ui-quickstart` proves the host integration path.
-- `praxisui.dev` explains the broader product surface.
-- `praxis-metadata-starter` owns resource semantics, `x-ui`, schemas, actions, and capabilities.
-- `praxis-config-starter` owns runtime configuration and authoring persistence.
-- `praxis-ui-angular` owns the public Angular runtime packages.
+| Repositório / Projeto | O que faz na Plataforma Praxis | Por que importa para este Quickstart |
+| --- | --- | --- |
+| [`praxis-metadata-starter`](https://github.com/codexrodrigues/praxis-metadata-starter) | Gera schemas estruturais (`/schemas/filtered`), vocabulário `x-ui`, filtros dinâmicos, `@UiSurface`, `@WorkflowAction`, `capabilities` e `/schemas/domain` | É a fonte de metadados que permite aos componentes deste quickstart renderizarem formulários, tabelas e ações sem hardcode |
+| [`praxis-config-starter`](https://github.com/codexrodrigues/praxis-config-starter) & [`praxis-config-contracts`](https://github.com/codexrodrigues/praxis-config-contracts) | Plano de controle (PAP) para `ui_user_config` com `ETag`, `ai_registry`, grounding RAG, streaming e ciclo de vida de regras | Sustenta a personalização em tempo de execução, preferências de layout e serviços de autoria |
+| [`praxis-rules-engine`](https://github.com/codexrodrigues/praxis-rules-engine) | Motor Java 21 puro e determinístico em 5 estados para JSON Logic (`decisionKind = BUSINESS`) | Garante avaliação idêntica de regras de negócio declarativas sem dependência de framework |
+| [`praxis-authz-contracts`](https://github.com/codexrodrigues/praxis-authz-contracts) · [`praxis-authz-enforcement-core`](https://github.com/codexrodrigues/praxis-authz-enforcement-core) · [`praxis-authz-opa`](https://github.com/codexrodrigues/praxis-authz-opa) · [`praxis-authz-starter`](https://github.com/codexrodrigues/praxis-authz-starter) | Família de autorização declarativa baseada em OPA Rego v1, escopo SQL 3VL e mascaramento server-side (`decisionKind = AUTHORIZATION`) | Impede vazamento de dados e valida permissões no backend independentemente da UI |
+| [`praxis-policy-studio`](https://github.com/codexrodrigues/praxis-policy-studio) | Estação visual com aprovação 4-olhos (**Lente de Regras de Negócio** e **Lente de Acesso e Proteção de Dados**) | Permite governar, simular e publicar políticas consumidas pelo runtime |
+| [`praxis-file-management`](https://github.com/codexrodrigues/praxis-file-management) | Starter de upload seguro (Apache Tika *magic number*, rate limit, cotas, lote e pré-assinatura) | Integra-se ao pacote `@praxisui/files-upload` já presente no grafo do `@praxisui/*` |
+| [`praxisui-http-examples`](https://github.com/codexrodrigues/praxisui-http-examples) | Corpus canônico de provas HTTP, payloads, capabilities e determinações reativas | Documenta na prática as requisições reais executadas por fluxos como o deste quickstart |
+| [`praxis-hero-hq-ui`](https://github.com/codexrodrigues/praxis-hero-hq-ui) | Vitrine corporativa completa multi-domínio e laboratório visual avançado | Demonstra cenários complexos em produção além do caminho inicial deste quickstart |
+| [`praxis-ui-angular`](https://github.com/codexrodrigues/praxis-ui-angular) & [`praxis-api-quickstart`](https://github.com/codexrodrigues/praxis-api-quickstart) | Monorepo dos 22 pacotes Angular `@praxisui/*` e backend de referência publicado no Render | Fornecem respectivamente os pacotes npm consumidos e a API operacional |
 
-## Why this repository exists
+---
 
-Most teams do not need a bigger component catalog on day one. They need a host that:
+## O que este repositório comprova
 
-- boots correctly with the Praxis runtime
-- points to a real published API
-- proves the same `resourcePath` across multiple runtimes
-- keeps theme, branding, and application ownership in the host
+- Bootstrap oficial de uma aplicação Angular standalone (`21.2.20`)
+- `API_URL` apontando para a API publicada do `praxis-api-quickstart`
+- `PAX_FETCH_HEADERS` propagando tenant e locale nas chamadas
+- Conjunto completo de **22 pacotes `@praxisui/*` compatíveis com Angular 21** fixados na versão exata `10.0.0-rc.43`
+- Cinco exemplos principais (**Core**) provando recursos reais em fluxo contínuo (`Table`, `Dynamic Form`, `CRUD`, `Reactive Determinations`, `List`)
+- Cinco exemplos de composição (**Composition**) cobrindo `Manual Form`, `Tabs`, `Stepper`, `Expansion` (com `@praxisui/charts` e `@praxisui/editorial-forms` embarcados) e `Master-detail` (`@praxisui/page-builder`)
+- Alternância de customização em tempo de execução a partir do shell do host
+- Posse total de tema e identidade visual pelo host sobre o runtime compartilhado
 
-That is the purpose of this quickstart.
+---
 
-The published backend behind this host already exposes broader public domains such as `operations`, `assets`, and `risk-intelligence`, but this Angular quickstart intentionally keeps the first adoption path narrower. Its job is to prove the canonical path with one stable resource before expanding into additional domains.
+## Caminho de leitura e exemplos incluídos
 
-## What it proves
+O quickstart é organizado em duas camadas alinhadas ao inventário oficial em [`public/examples.manifest.json`](./public/examples.manifest.json):
 
-- Angular standalone host bootstrap
-- `API_URL` pointing to the published `praxis-api-quickstart`
-- `PAX_FETCH_HEADERS` carrying tenant and locale
-- Angular 21 compatible PraxisUI package train pinned to `10.0.0-rc.29`
-- four core runtimes proving the same remote resource in real flows
-- four expansion examples for manual layout, tabs, stepper, and expansion panels
-- charts and editorial runtime embedded inside composition examples
-- runtime customization toggled from the host shell
-- host-owned theme over a shared Praxis runtime
-- compatibility with a backend that already publishes additional domains beyond the first quickstart path
+### 1. Camada Core (caminho inicial recomendado)
 
-## Reading path
+1. **`praxis-table`** (`/examples/table`) — leitura de coleção paginada e filtragem orientada ao schema de `human-resources/funcionarios`
+2. **`praxis-dynamic-form`** (`/examples/form`) — hidratação, layout e submissão guiados por metadados de `human-resources/funcionarios`
+3. **`praxis-crud`** (`/examples/crud`) — orquestração unificada de tabela + formulário em fluxo CRUD governado
+4. **`reactive-determinations`** (`/examples/reactive-determinations`) — decisões reativas em tempo de formulário sobre `human-resources/enderecos`, `human-resources/folhas-pagamento` e `human-resources/eventos-folha`
+5. **`praxis-list`** (`/examples/list`) — leitura alternativa da mesma coleção publicada em formato de lista
 
-The quickstart has two layers.
+### 2. Camada de Composição (`Expansion`)
 
-The first layer is intentionally narrow:
+1. **`praxis-manual-form`** (`/examples/manual-form`) — campos manuais ligados à ponte de metadados (`@praxisui/manual-form` + `@praxisui/dynamic-fields`)
+2. **`praxis-tabs`** (`/examples/tabs`) — abas com `@praxisui/charts` e `@praxisui/editorial-forms` embarcados
+3. **`praxis-stepper`** (`/examples/stepper`) — fluxo multi-etapas com `@praxisui/stepper` e `@praxisui/dynamic-form`
+4. **`praxis-expansion`** (`/examples/expansion`) — painéis expansíveis compondo `@praxisui/charts` e `@praxisui/editorial-forms`
+5. **`master-detail`** (`/examples/master-detail`) — composição mestre-detalhe gerida pelo runtime de `@praxisui/page-builder`
 
-1. `praxis-table`
-2. `praxis-dynamic-form`
-3. `praxis-crud`
-4. `praxis-list`
+Além dos 10 exemplos do manifesto oficial, o roteador ([`src/app/app.routes.ts`](./src/app/app.routes.ts)) registra rotas de recursos genéricos (`PraxisResourcePage` em `/resources/funcionarios`, `/resources/departamentos` e `/resources/cargos`) e páginas dinâmicas (`/studio/:studioKey` e `/pages/:pageId`).
 
-These four examples are the canonical first reading because they prove the same published `resourcePath` through multiple resource runtimes.
+---
 
-The second layer shows where the current libraries go next:
+## Determinações Reativas: o fluxo completo de decisão em formulário
 
-1. `praxis-manual-form`
-2. `praxis-tabs`
-3. `praxis-stepper`
-4. `praxis-expansion`
-5. `praxis-charts` embedded in tabs and expansion panels
-6. `praxis-editorial-forms` embedded as guided narrative blocks
+Acesse `/examples/reactive-determinations` após conhecer o formulário dinâmico básico. O exemplo demonstra decisões pertencentes ao backend sem embutir regras de negócio em código Angular:
 
-Use this layer after the core path is clear. It is the expansion path, not a replacement for the first proof.
+- preenchimento de CEP determina campos de endereço;
+- valor bruto e descontos determinam o valor líquido, e esse valor líquido autoritativo participa da determinação da data de pagamento.
 
-## Reactive Determinations: the complete form decision example
+O schema de requisição publica `x-ui.reactiveDeterminations`, contendo apenas identificadores estáveis de operação, gatilhos, bindings de entrada/saída, escopo e proveniência. **Não** são publicadas fórmulas executáveis, URLs arbitrárias, headers nem políticas locais de patch no frontend.
 
-Open `/examples/reactive-determinations` after the basic Dynamic Form example.
-It demonstrates two backend-owned decisions without placing business rules in
-Angular:
+A página separa explicitamente três responsabilidades:
 
-- postal code determines address fields;
-- gross pay and discounts determine net pay, then the authoritative net pay
-  participates in determining the payment date.
+1. **`PraxisDynamicForm`** executa a capability compilada a partir dos metadados e gerencia o ciclo de vida dos campos derivados transitórios.
+2. **O host** observa `reactiveDeterminationExecuted` e `reactiveDeterminationPendingChange` apenas para feedback de UX e diagnóstico seguro.
+3. **`ReactiveDeterminationDiagnosticsComponent`** exibe o schema de requisição e eventos livres de valores sensíveis em modo somente leitura — qualquer alteração de regra de negócio pertence à autoria governada no backend/Config.
 
-The request schema publishes `x-ui.reactiveDeterminations`. It contains stable
-operation IDs, trigger sources, input/output bindings, scope and provenance. It
-does not publish executable formulas, arbitrary URLs, headers, callbacks or
-frontend patch policies.
+O caminho autenticado consulta `/auth/session`, mantém os formulários desabilitados quando não há principal autenticado e fornece um login mínimo de demonstração com sessão `HttpOnly` enviada exclusivamente à origem de `API_URL`. O interceptor [`praxis-api-credentials.interceptor.ts`](./src/app/praxis-api-credentials.interceptor.ts) só anexa `withCredentials` (e cabeçalho CSRF `X-XSRF-TOKEN`) para a origem configurada em `API_URL`, sem expor tokens JWT ao código Angular. Em um host corporativo real, substitua o login de demonstração pelo IdP/BFF da organização.
 
-The example deliberately displays three different responsibilities:
+A submissão permanece bloqueada enquanto houver determinação pendente ou quando a geração mais recente não produzir rascunho autoritativo, e o fluxo falha fechado (*fail-closed*) caso o schema não possa ser carregado (`401/403` principal ausente ou não autorizado, `422` fonte não determinável, `503` decisão ou snapshot indisponível), sem jamais instalar fórmula local de fallback. Consulte também o registro operacional de homologação em [docs/payroll-g4-adoption.md](./docs/payroll-g4-adoption.md).
 
-1. `PraxisDynamicForm` executes the Metadata-compiled capability and owns the
-   transient derived-field lifecycle.
-2. The host observes `reactiveDeterminationExecuted` and
-   `reactiveDeterminationPendingChange` only for UX and safe diagnostics.
-3. `ReactiveDeterminationDiagnosticsComponent` explains the exact request
-   schema and metadata-only events. It is read-only; changing a business
-   decision belongs to governed Praxis Config authoring.
+---
 
-The live capability path is authenticated. The page probes `/auth/session`,
-keeps both forms disabled while no business principal is present, and offers a
-minimal Quickstart login that sends an HttpOnly session only to the configured
-Praxis API origin. The public deployment does not publish credentials. In a
-downloaded Quickstart, use the `admin` principal configured by the local API;
-in a corporate host, replace the demo login with the organization's IdP/BFF.
+## Primeiros 10 minutos
 
-The reference interceptor in `praxis-api-credentials.interceptor.ts` sets
-`withCredentials` only when a request resolves to the `API_URL` origin. It does
-not forward the session to third-party origins and it does not expose the JWT to
-Angular code.
+1. Instale as dependências com `npm install`.
+2. Inicie o host Angular em `http://127.0.0.1:4301` com `npm start`.
+3. Confirme que o host consome a API publicada configurada em `src/app/app.config.ts`.
+4. Navegue pelos exemplos `Table`, `Form`, `CRUD`, `Reactive Determinations` e `List`.
+5. Verifique que `Table`, `Form`, `CRUD` e `List` reutilizam o mesmo `resourcePath` (`human-resources/funcionarios`).
+6. Abra o menu `Expansion` e inspecione `Manual form`, `Tabs`, `Stepper`, `Expansion` e `Master-detail`.
+7. Alterne a customização e os temas do host para confirmar que o runtime respeita o design system da aplicação.
 
-Submit remains blocked while a determination is pending or when its latest
-generation did not produce an authoritative draft. Composed hosts such as
-Stepper and CRUD must consume their aggregate stability outputs and must never
-interpret “settled” alone as success.
+---
 
-The page fails closed if the published schema cannot be loaded. It never
-installs a local fallback rule, which is the essential boundary for a reusable
-enterprise host.
-
-The page also separates the negative paths instead of presenting every failure
-as a broken calculation: `401/403` means the host principal is missing or not
-authorized, `422` means the backend could not determine the supplied source,
-and `503` means the governed decision/snapshot is unavailable. These are
-diagnostics; Angular still must not install a local formula as fallback.
-
-## First 10 minutes
-
-1. Install dependencies.
-2. Start the Angular host on `127.0.0.1:4301`.
-3. Confirm the host points to the published API.
-4. Open `Table`, `Form`, `CRUD`, and `List`.
-5. Verify that all four surfaces reuse the same `resourcePath`.
-6. Open `Expansion` from the top navigation and inspect `Manual form`, `Tabs`, `Stepper`, and `Expansion`.
-7. Toggle customization and change the host theme to confirm the runtime follows host-owned state.
-
-## Quick start
+## Início rápido (`Quick start`)
 
 ```bash
 npm install
 npm start
 ```
 
-Open:
+Abra no navegador: `http://127.0.0.1:4301`.
 
-- `http://127.0.0.1:4301`
+### Trem de dependências fixado (*Dependency Train*)
 
-### Dependency train
+Este host é intencionalmente travado em versões exatas compatíveis entre si (verificado automaticamente por `npm run validate:official-host`):
 
-This project is intentionally pinned to the Angular 21 compatible PraxisUI train:
+- Framework/compiler Angular (`@angular/core`, etc.): `21.2.20`
+- Angular Material e CDK (`@angular/material`, `@angular/cdk`): `21.2.14`
+- Angular CLI / Build (`@angular/cli`, `@angular/build`): `21.2.21`
+- Pacotes `@praxisui/*` (todos os 22 pacotes): `10.0.0-rc.43`
 
-- Angular framework/compiler packages: `21.2.20`
-- Angular Material/CDK: `21.2.14`
-- Angular CLI/build: `21.2.21`
-- PraxisUI packages: `10.0.0-rc.29`
+Preserve exatamente o conjunto de versões alinhadas ao atualizar; não substitua por *dist-tags* ou faixas abertas sem validar a *peer range* completa do Angular e toda a clausura dos pacotes `@praxisui/*`.
 
-Keep the exact package train instead of replacing it with dist-tags or version ranges. Promote the host deliberately, validating the matching Angular peer range and the complete `@praxisui/*` dependency closure in the same change.
+---
 
-## Validate against local Praxis libs
+## Validação contra bibliotecas locais do `@praxisui/*`
 
-Use this mode when the quickstart needs to validate unpublished changes from `../praxis-ui-angular/dist`.
+Use este modo apenas quando precisar validar alterações ainda não publicadas em `../praxis-ui-angular/dist`:
 
 ```bash
 npm run build:local-praxis
 npm run start:local-praxis -- --host 127.0.0.1 --port 4301
 ```
 
-What this does:
+Esse fluxo:
 
-- generates `tsconfig.local-praxis.json`
-- copies each required `@praxisui/*` dist package into `.local-praxis/node_modules/@praxisui/*`
-- keeps Angular and shared peer dependencies resolved from the quickstart host itself
-- starts the host on the same official validation origin: `http://127.0.0.1:4301`
+- gera `tsconfig.local-praxis.json` (não versionar);
+- copia os artefatos compilados de `@praxisui/*` para `.local-praxis/node_modules/@praxisui/*`;
+- mantém as dependências *peer* do Angular resolvidas pelo próprio quickstart;
+- inicia o host na mesma origem oficial de validação (`http://127.0.0.1:4301`).
 
-Operational notes:
+> **Observação:** compile primeiro as bibliotecas em `../praxis-ui-angular/dist` (`npm run watch-all` em `praxis-ui-angular`). Prefira esse modo a `npm link` pacote por pacote.
 
-- build the libs in `../praxis-ui-angular/dist` first; `npm run watch-all` in `praxis-ui-angular` is the recommended source workflow
-- prefer this mode over `npm link` package by package; the host owns the mapping and the Praxis workspace stays canonical
-- `tsconfig.local-praxis.json` is generated and must not be versioned
-- use `npm run build:local-praxis` when you need a production-style host build still pointing to local Praxis libs
+---
 
-## How it works
+## Como funciona na prática
 
 ```mermaid
 flowchart LR
-  host["Angular host"] --> bootstrap["API_URL + PAX_FETCH_HEADERS + providers"]
-  bootstrap --> api["Published Praxis API"]
-  api --> metadata["Resource metadata and x-ui contracts"]
-  metadata --> core["Core resource runtimes"]
+  host["Host Angular"] --> bootstrap["API_URL + PAX_FETCH_HEADERS + providers"]
+  bootstrap --> api["API Praxis Publicada"]
+  api --> metadata["Metadados de recursos e contratos x-ui"]
+  metadata --> core["Runtimes Core de Recursos"]
   core --> table["Table"]
   core --> form["Dynamic Form"]
   core --> crud["CRUD"]
   core --> list["List"]
-  host --> theme["Host-owned theme and customization toggle"]
+  host --> theme["Tema do host e alternância de customização"]
   theme --> core
-  core --> expansion["Expansion path"]
+  core --> expansion["Caminho de Composição (Expansion)"]
   expansion --> manual["Manual Form"]
   expansion --> tabs["Tabs + Charts + Editorial"]
   expansion --> stepper["Stepper"]
   expansion --> panels["Expansion + Charts + Editorial"]
+  expansion --> md["Master-detail (Page Builder)"]
 ```
 
-## Public API mode
+### Modo API pública
 
-- origin: `https://praxis-api-quickstart.onrender.com`
-- base URL: `https://praxis-api-quickstart.onrender.com/api`
-- local app URL: `http://127.0.0.1:4301`
+- **Origem:** `https://praxis-api-quickstart.onrender.com`
+- **Base URL (`API_URL`):** `https://praxis-api-quickstart.onrender.com/api`
+- **URL local de desenvolvimento:** `http://127.0.0.1:4301` (já permitida em CORS pela API publicada)
 
-`127.0.0.1:4301` is already allowed in CORS for this published API.
+### Para adotantes externos
 
-## External adopters
+Este quickstart consome os pacotes `@praxisui/*` diretamente do registro npm público. Não é necessário acesso ao workspace fonte das bibliotecas nem orquestração local de build dos pacotes para subir e operar o host.
 
-This quickstart consumes published `@praxisui/*` packages from npm. You do not need access to the PraxisUI source workspace or any internal library build orchestration to get started with this host.
+### Decisões canônicas de host
 
-The package list is broader than the first screen because several runtimes expose peer packages for authoring, settings panels, metadata editing, rich content, dialogs, files upload, and visual builder integration. They are pinned in `package.json` so a fresh install resolves the Angular 21 compatible graph deterministically.
+- `API_URL` já inclui o sufixo `/api`; os exemplos usam `resourcePath` relativo (ex.: `'human-resources/funcionarios'`).
+- [`src/app/app.config.ts`](./src/app/app.config.ts) registra `provideHttpClient(...)`, providers dos módulos `@praxisui/*`, seed global (`GLOBAL_CONFIG_SEED`) e interceptors canônicos (incluindo fallback local para `/praxis/config/ui` apenas quando visitantes anônimos recebem `0/401/403/404/502/503/504`, preservando `ETag`).
+- Tenant e locale trafegam via `PAX_FETCH_HEADERS`.
+- Os quatro exemplos iniciais compartilham a mesma superfície remota antes de avançar para os demais domínios já publicados na API de referência (`/api/human-resources/**`, `/api/operations/**`, `/api/assets/**`, `/api/risk-intelligence/**`).
 
-## Canonical host decisions
+### O host é dono do visual e do tema
 
-This quickstart is opinionated on purpose.
+A plataforma Praxis entrega interpretação de metadados, comportamento de runtime e customização governada; o host mantém autonomia total sobre cores/tokens, tipografia, espaçamento, densidade, marca e composição. O tema `Corporate` incluído neste quickstart demonstra explicitamente que é possível aplicar gradientes escuros, raios amplos e superfícies estilizadas sem interferir no funcionamento dos runtimes.
 
-- `API_URL` already includes `/api`
-- examples use relative `resourcePath`
-- the host registers `provideHttpClient(...)`, Praxis providers, and runtime defaults
-- tenant and locale flow through `PAX_FETCH_HEADERS`
-- the same backend surface is reused across table, form, CRUD, and list
-- the first path stays on `human-resources/funcionarios` even though the published backend also exposes `operations`, `assets`, and `risk-intelligence`
+---
 
-This keeps the first integration aligned with the platform instead of improvising local shortcuts.
-
-## The host owns the theme
-
-Praxis provides runtime behavior, metadata interpretation, and governed customization. The host keeps ownership of:
-
-- colors and design tokens
-- typography
-- spacing and density
-- company branding
-- application composition
-
-Adopting PraxisUI does not require accepting a proprietary visual skin. The quickstart explicitly proves that the host can switch themes while Praxis runtimes continue to work on the same operational surface.
-
-The `Corporate` theme is intentionally more radical than a normal palette swap. It pushes darker gradients, larger radii, glass surfaces, and a more SaaS-like shell so teams can see that PraxisUI does not force an Angular-default visual language on the host.
-
-## Core examples
+## Snippets dos exemplos principais
 
 ### Praxis Table
-
-Use it first to prove the canonical runtime path against a real published collection.
 
 ```html
 <praxis-table
@@ -286,10 +236,7 @@ Use it first to prove the canonical runtime path against a real published collec
 
 ### Praxis Dynamic Form
 
-Use it to confirm metadata-driven hydration for an existing employee profile.
-The fixed `resourceId` below points to the seeded demo record used by the
-quickstart; replace it with the selected row, route param, or host state in a
-real application. For create flows, omit `resourceId` and use `mode="create"`.
+No exemplo de leitura abaixo, `resourceId="1"` aponta para um registro de demonstração da API; em aplicações reais, substitua pelo ID da linha selecionada, parâmetro de rota ou estado do host (ou use `mode="create"` sem `resourceId` para criação):
 
 ```html
 <praxis-dynamic-form
@@ -300,9 +247,7 @@ real application. For create flows, omit `resourceId` and use `mode="create"`.
 </praxis-dynamic-form>
 ```
 
-### Praxis CRUD
-
-Use it to connect table and form behavior inside a governed CRUD runtime.
+### Praxis CRUD e Praxis List
 
 ```html
 <praxis-crud
@@ -311,10 +256,6 @@ Use it to connect table and form behavior inside a governed CRUD runtime.
 </praxis-crud>
 ```
 
-### Praxis List
-
-Use it to prove that the same published collection can be resolved by a different runtime reading.
-
 ```html
 <praxis-list
   listId="quickstart-list"
@@ -322,109 +263,53 @@ Use it to prove that the same published collection can be resolved by a differen
 </praxis-list>
 ```
 
-## Advanced examples
+---
 
-The expansion path includes:
+## Estrutura do projeto
 
-- `manual-form`
-- `tabs`
-- `stepper`
-- `expansion`
-- chart widgets embedded in `tabs` and `expansion`
-- editorial runtime blocks embedded in `tabs` and `expansion`
+- [`src/app/app.config.ts`](./src/app/app.config.ts) — bootstrap canônico do host, `API_URL`, providers Praxis e factory de headers
+- [`src/app/app.routes.ts`](./src/app/app.routes.ts) — rotas de exemplos core, composição, recursos e Page Builder
+- [`src/app/quickstart-content.ts`](./src/app/quickstart-content.ts) — passos de setup, snippets, constantes e catálogo
+- [`src/app/pages/home-page.component.ts`](./src/app/pages/home-page.component.ts) — página inicial de onboarding
+- [`src/app/app.html`](./src/app/app.html) — shell e navegação superior
+- [`src/styles.scss`](./src/styles.scss) — ponte de temas controlada pelo host
 
-These examples are useful once the core host path is already clear. They are now surfaced from the top navigation under `Expansion` so users can see that the quickstart tracks the evolved PraxisUI runtime surface without making the first screen overwhelming.
+---
 
-## Backend scope versus frontend scope
+## Validação e deploy
 
-The backend published at `praxis-api-quickstart.onrender.com` already exposes multiple public route groups:
-
-- `/api/human-resources/**`
-- `/api/operations/**`
-- `/api/assets/**`
-- `/api/risk-intelligence/**`
-
-This frontend quickstart does not try to cover all of them at once. The current Angular host intentionally keeps its primary runtime examples on `human-resources/funcionarios` because that is the cleanest first proof that:
-
-- the host bootstrap is correct
-- metadata can be loaded from the published API
-- the same `resourcePath` works across table, form, CRUD, and list
-
-When this repository grows, the correct next step is to add new examples for those additional domains without diluting the first-read path. New examples should either strengthen the core adoption path or clearly belong to the expansion path.
-
-## Why the install is broader than the first examples
-
-The first reading path is narrower than the full dependency graph. Some `@praxisui/*` packages bring peer dependencies that support the runtime ecosystem even when the first examples do not expose every capability in the top navigation.
-
-That is expected. The adoption path stays focused even when the package graph is broader.
-
-## Project structure
-
-- `src/app/app.config.ts`
-  Canonical host bootstrap, `API_URL`, and headers factory.
-- `src/app/app.routes.ts`
-  Core and advanced example routes.
-- `src/app/quickstart-content.ts`
-  Setup steps, snippets, constants, and example catalog.
-- `src/app/pages/home-page.component.ts`
-  Onboarding home for the quickstart path.
-- `src/app/app.html`
-  Shell and top navigation.
-- `src/styles.scss`
-  Host-owned theme bridge.
-
-## Validation
-
-Useful local gates:
+### Gates locais
 
 ```bash
-npm run build
+npm run validate:official-host
 npm run test:smoke
+npm run build
 ```
 
-What these validate:
+Esses comandos verificam integridade de rotas, manifesto [`public/examples.manifest.json`](./public/examples.manifest.json), alinhamento exato do trem de versões (`Angular` + `@praxisui/*`), testes smoke em `ChromeHeadless` e build de produção.
 
-- production build of the Angular host
-- smoke coverage for routes, shell, theme switcher, and onboarding path
+### Deploy em produção (Firebase Hosting + GitHub Actions)
 
-## Deployment
-
-The repository already contains Firebase Hosting configuration:
-
-- project mapping in `.firebaserc`
-- hosting config in `firebase.json`
-- publish target: `dist/praxis-ui-quickstart/browser`
-
-Production releases are executed only by the official GitHub Actions workflow by explicit dispatch on `main`. That run invokes CI before deploying its validated artifact without rebuilding:
+As configurações de hosting ficam em `.firebaserc` e `firebase.json` (destino `dist/praxis-ui-quickstart/browser`). Publicações em produção ocorrem **exclusivamente** via workflow oficial no GitHub Actions por despacho explícito em `main`:
 
 ```bash
 gh workflow run "Deploy Production" --repo codexrodrigues/praxis-ui-quickstart --ref main
 ```
 
-The workflow authenticates through Google Workload Identity Federation, deploys the validated revision and verifies the public example manifest. It fails closed when the required repository variables are absent. Do not use local `firebase deploy` or long-lived service-account keys as a release path. Administrators should follow the [production host provisioning runbook](./docs/production-host-provisioning.md).
+O workflow autentica via Google Workload Identity Federation (WIF), executa o gate de CI antes do deploy e valida o manifesto publicado, falhando fechado quando variáveis obrigatórias estão ausentes. Não utilize `firebase deploy` local nem chaves estáticas de service account; siga o runbook [docs/production-host-provisioning.md](./docs/production-host-provisioning.md).
 
-## Troubleshooting
+---
 
-### The remote API does not answer
+## Solução de problemas rápida (*Troubleshooting*)
 
-Confirm that:
+- **API remota não responde:** confirme que o host está em `http://127.0.0.1:4301` (origem permitida em CORS) e que `API_URL` aponta para `https://praxis-api-quickstart.onrender.com/api`.
+- **Tema muda no shell mas não nos overlays:** o tema do host precisa alcançar a fronteira global de overlays (`cdk-overlay-container`); este quickstart já aplica a configuração global em nível de aplicação.
+- **Instalação maior que o esperado no primeiro exemplo:** o grafo de `package.json` inclui pacotes *peer* de composição, autoria, gráficos, conteúdo rico e builder de regras além dos exemplos iniciais, todos fixados no trem `10.0.0-rc.43` para resolução determinística.
 
-- the host is running at `127.0.0.1:4301`
-- the published API is reachable
-- `API_URL` still points to `https://praxis-api-quickstart.onrender.com/api`
+---
 
-### The theme changes in the shell but not in overlays
+## Posicionamento e política de CI
 
-The host theme must reach the global overlay boundary, not only the visible page shell. This quickstart already handles that at the app level.
+O **PraxisUI** não se propõe aqui como uma simples biblioteca genérica de widgets: este quickstart demonstra um runtime governado e orientado a metadados para aplicações corporativas *AI-native*, hospedado em Angular e sincronizado com APIs backend reais.
 
-### The first install feels broader than expected
-
-That is normal for the current PraxisUI beta graph. Start with the core path and ignore advanced examples until the host integration is proven.
-
-## Positioning
-
-PraxisUI is not presented here as a generic widget library. This quickstart demonstrates a governed metadata-driven UI runtime for enterprise applications, hosted by Angular and aligned with a real backend surface.
-
-## Política de CI e publicação
-
-Validação local durante desenvolvimento; Actions apenas no fechamento necessário de versões. Consulte [ACTIONS-RELEASE-POLICY.md](ACTIONS-RELEASE-POLICY.md) para gatilhos, gates e recuperação.
+Consulte [ACTIONS-RELEASE-POLICY.md](./ACTIONS-RELEASE-POLICY.md) para as diretrizes de economia de GitHub Actions, gatilhos de publicação e validação local.

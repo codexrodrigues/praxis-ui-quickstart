@@ -3,7 +3,7 @@
 Consumidor isolado: 22 pacotes `@praxisui/*` em `9.0.68-rc.1`.
 Rota: `/examples/master-detail`, porta oficial 4301.
 
-O artefato em `public/recipes/master-detail.ui-composition-plan.json` é uma variante de configuração derivada de `praxis-ui-angular/examples/ai-recipes/praxis-dynamic-page.ergon-archetype-master-detail.ui-composition-plan.artifact.json`, commit `572949f708c9a9061288944215b0bc952da18b5a`. SHA-256: `f575148c3444542bc9335a70c9ecc40e7fdac9e2ba0b2950bb6b586bd5e45477`. O hash identifica a cópia original. A única diferença semântica da variante é `widgets[master].inputs.config.behavior.selection.mode`: `row` → `both`, para expor o seletor explícito já suportado. Sincronizar a partir dessa fonte preservando essa diferença documentada; não evoluir uma semântica paralela neste host.
+O artefato em `public/recipes/master-detail.ui-composition-plan.json` é uma variante de configuração derivada de `praxis-ui-angular/examples/ai-recipes/praxis-dynamic-page.enterprise-archetype-master-detail.ui-composition-plan.artifact.json`, commit `572949f708c9a9061288944215b0bc952da18b5a`. SHA-256: `f575148c3444542bc9335a70c9ecc40e7fdac9e2ba0b2950bb6b586bd5e45477`. O hash identifica a cópia original. A única diferença semântica da variante é `widgets[master].inputs.config.behavior.selection.mode`: `row` → `both`, para expor o seletor explícito já suportado. Sincronizar a partir dessa fonte preservando essa diferença documentada; não evoluir uma semântica paralela neste host.
 
 O host usa `preflightUiCompositionPlan` e o registro de metadados público antes de renderizar `DynamicPageBuilderComponent`. Seleção, transformações, estado e entrega ao detalhe pertencem ao runtime Core. Não há callback local ligando tabela e formulário.
 

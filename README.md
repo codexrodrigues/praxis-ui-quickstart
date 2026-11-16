@@ -87,7 +87,7 @@ O quickstart é organizado em duas camadas alinhadas ao inventário oficial em [
 
 1. **`praxis-table`** (`/examples/table`) — leitura de coleção paginada e filtragem orientada ao schema de `human-resources/funcionarios`
 2. **`praxis-dynamic-form`** (`/examples/form`) — hidratação, layout e submissão guiados por metadados de `human-resources/funcionarios`
-3. **`praxis-crud`** (`/examples/crud`) — orquestração unificada de tabela + formulário em fluxo CRUD governado
+3. **`praxis-crud`** (`/examples/crud`) — orquestração unificada de tabela + formulário em ciclo de vida governado de recurso
 4. **`reactive-determinations`** (`/examples/reactive-determinations`) — decisões reativas em tempo de formulário sobre `human-resources/enderecos`, `human-resources/folhas-pagamento` e `human-resources/eventos-folha`
 5. **`praxis-list`** (`/examples/list`) — leitura alternativa da mesma coleção publicada em formato de lista
 

@@ -286,7 +286,7 @@ npm run test:smoke
 npm run build
 ```
 
-Esses comandos verificam integridade de rotas, manifesto [`public/examples.manifest.json`](./public/examples.manifest.json), alinhamento exato do trem de versões (`Angular` + `@praxisui/*`), testes smoke em `ChromeHeadless` e build de produção.
+Esses comandos verificam integridade de rotas, manifesto [`public/examples.manifest.json`](./public/examples.manifest.json), alinhamento exato do trem de versões (`Angular` + `@praxisui/*`), testes smoke em `ChromeHeadless` e build de produção. Nas specs de host completo (como [`src/app/quickstart-12-pillars.spec.ts`](./src/app/quickstart-12-pillars.spec.ts)), o `TestBed` faz o spread de `...providePraxisTestingDefaults()` de `@praxisui/core` após `...(appConfig.providers ?? [])` junto de `provideHttpClientTesting()`, isolando `ASYNC_CONFIG_STORAGE` e `EnterpriseRuntimeContextService` em memória sem chamadas a `/api/praxis/runtime/context` nem vazamento em `localStorage`.
 
 ### Deploy em produção (Firebase Hosting + GitHub Actions)
 

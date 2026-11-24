@@ -7,7 +7,7 @@ Host Angular 21 canônico para o primeiro caminho de adoção do **PraxisUI** �
 [![Firebase Hosting](https://img.shields.io/badge/Hosting-Firebase-FFCA28?logo=firebase&logoColor=black)](https://praxis-ui-4e602.web.app)
 [![Smoke tests](https://img.shields.io/badge/Smoke%20tests-passing-16A34A)](./package.json)
 
-Este repositório é o menor caminho entre o zero e um host Angular corporativo conectado à plataforma Praxis. Ele serve como prova instalável de que uma aplicação Angular consegue inicializar o PraxisUI com pacotes publicados (`@praxisui/*` `10.0.0-rc.43`), apontar para a API publicada, propagar headers de tenant/idioma, manter **100% da posse visual** no host e renderizar telas guiadas por metadados sem atalhos locais.
+Este repositório é o menor caminho entre o zero e um host Angular corporativo conectado à plataforma Praxis. Ele serve como prova instalável de que uma aplicação Angular consegue inicializar o PraxisUI com pacotes publicados (`@praxisui/*` `10.0.0-rc.61`), apontar para a API publicada, propagar headers de tenant/idioma, manter **100% da posse visual** no host e renderizar telas guiadas por metadados sem atalhos locais.
 
 Este host **não** substitui o catálogo completo de componentes nem é a fonte canônica de metadados ou políticas: o quickstart prova o caminho de adoção em uma aplicação consumidora; o portal [praxisui.dev](https://praxisui.dev/) publica a documentação e os playgrounds completos; e os starters/motores backend detêm a semântica de domínio, configuração, autorização e regras.
 
@@ -71,7 +71,7 @@ flowchart LR
 - Bootstrap oficial de uma aplicação Angular standalone (`21.2.20`)
 - `API_URL` apontando para a API publicada do `praxis-api-quickstart`
 - `PAX_FETCH_HEADERS` propagando tenant e locale nas chamadas
-- Conjunto completo de **22 pacotes `@praxisui/*` compatíveis com Angular 21** fixados na versão exata `10.0.0-rc.43`
+- Conjunto completo de **22 pacotes `@praxisui/*` compatíveis com Angular 21** fixados na versão exata `10.0.0-rc.61`
 - Cinco exemplos principais (**Core**) provando recursos reais em fluxo contínuo (`Table`, `Dynamic Form`, `CRUD`, `Reactive Determinations`, `List`)
 - Cinco exemplos de composição (**Composition**) cobrindo `Manual Form`, `Tabs`, `Stepper`, `Expansion` (com `@praxisui/charts` e `@praxisui/editorial-forms` embarcados) e `Master-detail` (`@praxisui/page-builder`)
 - Alternância de customização em tempo de execução a partir do shell do host
@@ -152,7 +152,7 @@ Este host é intencionalmente travado em versões exatas compatíveis entre si (
 - Framework/compiler Angular (`@angular/core`, etc.): `21.2.20`
 - Angular Material e CDK (`@angular/material`, `@angular/cdk`): `21.2.14`
 - Angular CLI / Build (`@angular/cli`, `@angular/build`): `21.2.21`
-- Pacotes `@praxisui/*` (todos os 22 pacotes): `10.0.0-rc.43`
+- Pacotes `@praxisui/*` (todos os 22 pacotes): `10.0.0-rc.61`
 
 Preserve exatamente o conjunto de versões alinhadas ao atualizar; não substitua por *dist-tags* ou faixas abertas sem validar a *peer range* completa do Angular e toda a clausura dos pacotes `@praxisui/*`.
 
@@ -304,7 +304,7 @@ O workflow autentica via Google Workload Identity Federation (WIF), executa o ga
 
 - **API remota não responde:** confirme que o host está em `http://127.0.0.1:4301` (origem permitida em CORS) e que `API_URL` aponta para `https://praxis-api-quickstart.onrender.com/api`.
 - **Tema muda no shell mas não nos overlays:** o tema do host precisa alcançar a fronteira global de overlays (`cdk-overlay-container`); este quickstart já aplica a configuração global em nível de aplicação.
-- **Instalação maior que o esperado no primeiro exemplo:** o grafo de `package.json` inclui pacotes *peer* de composição, autoria, gráficos, conteúdo rico e builder de regras além dos exemplos iniciais, todos fixados no trem `10.0.0-rc.43` para resolução determinística.
+- **Instalação maior que o esperado no primeiro exemplo:** o grafo de `package.json` inclui pacotes *peer* de composição, autoria, gráficos, conteúdo rico e builder de regras além dos exemplos iniciais, todos fixados no trem `10.0.0-rc.61` para resolução determinística.
 
 ---
 

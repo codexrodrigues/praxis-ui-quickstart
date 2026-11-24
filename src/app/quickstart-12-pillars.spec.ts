@@ -8,10 +8,11 @@ import {
   ComponentMetadataRegistry,
   EnterpriseRuntimeContextService,
   PraxisCustomizationModeService,
+  providePraxisTestingDefaults,
   ResourceDiscoveryService,
   SchemaMetadataClient,
 } from '@praxisui/core';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { appConfig } from './app.config';
 import { CustomizationModeService } from './customization-mode.service';
 import {
@@ -87,10 +88,22 @@ describe('Praxis UI Quickstart · 12-Pillar Host Architecture', () => {
   });
 
   describe('Pillar 2 & 5 · 24 Widget Metadata Registrations & Customization Mode Sync', () => {
-    it('registers all 24 providePraxis*Metadata contracts in appConfig and synchronizes CustomizationModeService with PraxisCustomizationModeService', () => {
+    it('registers all 24 providePraxis*Metadata contracts in appConfig and synchronizes CustomizationModeService with PraxisCustomizationModeService', async () => {
+      const fetchSpy = spyOn(window, 'fetch').and.rejectWith(
+        new Error('Unexpected network fetch in TestBed'),
+      );
+
       TestBed.configureTestingModule({
-        providers: [...(appConfig.providers ?? [])],
+        providers: [
+          ...(appConfig.providers ?? []),
+          provideHttpClientTesting(),
+          ...providePraxisTestingDefaults(),
+        ],
       });
+
+      const runtimeContext = TestBed.inject(EnterpriseRuntimeContextService);
+      expect(await runtimeContext.ready()).toBeNull();
+      expect(fetchSpy).not.toHaveBeenCalled();
 
       const registry = TestBed.inject(ComponentMetadataRegistry);
       expect(registry.get('praxis-table')).toBeTruthy();
@@ -117,7 +130,9 @@ describe('Praxis UI Quickstart · 12-Pillar Host Architecture', () => {
   describe('Pillar 12 · Studio Page Builder Save-As & Route Restoration', () => {
     it('saves a studio page definition to /pages/:pageId and restores it when navigating to that route', async () => {
       const paramMap$ = new BehaviorSubject(convertToParamMap({ studioKey: 'workspace' }));
-      const saveConfigSpy = jasmine.createSpy('saveConfig').and.returnValue(of(undefined));
+      const fetchSpy = spyOn(window, 'fetch').and.rejectWith(
+        new Error('Unexpected network fetch in TestBed'),
+      );
 
       await TestBed.configureTestingModule({
         imports: [StudioExamplePageComponent],
@@ -126,13 +141,7 @@ describe('Praxis UI Quickstart · 12-Pillar Host Architecture', () => {
           provideHttpClientTesting(),
           provideNoopAnimations(),
           provideRouter([]),
-          {
-            provide: ASYNC_CONFIG_STORAGE,
-            useValue: {
-              saveConfig: saveConfigSpy,
-              loadConfig: () => of(null),
-            },
-          },
+          ...providePraxisTestingDefaults(),
           {
             provide: ActivatedRoute,
             useValue: {
@@ -141,6 +150,9 @@ describe('Praxis UI Quickstart · 12-Pillar Host Architecture', () => {
           },
         ],
       }).compileComponents();
+
+      const asyncStorage = TestBed.inject(ASYNC_CONFIG_STORAGE);
+      const saveConfigSpy = spyOn(asyncStorage, 'saveConfig').and.callThrough();
 
       const router = TestBed.inject(Router);
       spyOn(router, 'navigateByUrl').and.resolveTo(true);
@@ -178,6 +190,7 @@ describe('Praxis UI Quickstart · 12-Pillar Host Architecture', () => {
       expect(
         fixture.nativeElement.querySelector('[data-testid="quickstart-studio-title"]')?.textContent,
       ).toContain('Executive HR Studio Board');
+      expect(fetchSpy).not.toHaveBeenCalled();
     });
   });
 
